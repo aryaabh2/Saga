@@ -109,8 +109,10 @@ function SagaRouter() {
 }
 
 export default function App() {
+  const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={baseUrl || undefined}>
       <SagaLayout>
         <SagaRouter />
       </SagaLayout>
