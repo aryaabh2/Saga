@@ -3,33 +3,47 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from
 import { AppBar, Box, Container, Step, StepLabel, Stepper, Toolbar, Typography } from '@mui/material';
 import UploadPage from './pages/UploadPage.jsx';
 import ProcessingPage from './pages/ProcessingPage.jsx';
-import StoryboardPage from './pages/StoryboardPage.jsx';
+import SagaPage from './pages/SagaPage.jsx';
 
-const steps = ['Upload memories', 'Processing', 'Storyboard'];
+const steps = ['Upload memories', 'Processing', 'Saga'];
 
 function SagaLayout({ children }) {
   const location = useLocation();
   const activeStep = useMemo(() => {
     if (location.pathname.startsWith('/processing')) return 1;
-    if (location.pathname.startsWith('/storyboard')) return 2;
+    if (location.pathname.startsWith('/saga')) return 2;
     return 0;
   }, [location.pathname]);
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="static" color="primary" elevation={0}>
-        <Toolbar sx={{ justifyContent: 'center' }}>
-          <Typography variant="h5" component="div" sx={{ fontWeight: 600 }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        backgroundImage:
+          'radial-gradient(circle at top, rgba(234, 193, 124, 0.25), transparent 45%), radial-gradient(circle at bottom, rgba(166, 32, 64, 0.18), transparent 40%)'
+      }}
+    >
+      <AppBar
+        position="static"
+        elevation={0}
+        sx={{
+          backgroundImage: (theme) =>
+            `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
+        }}
+      >
+        <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
+          <Typography variant="h5" component="div" sx={{ fontWeight: 700, letterSpacing: 1 }}>
             Saga
           </Typography>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
+      <Container maxWidth="md" sx={{ py: { xs: 5, md: 7 } }}>
         <Box sx={{ mb: { xs: 4, md: 6 } }}>
           <Stepper activeStep={activeStep} alternativeLabel>
             {steps.map((label) => (
               <Step key={label}>
-                <StepLabel>{label}</StepLabel>
+                <StepLabel sx={{ '& .MuiStepLabel-label': { fontWeight: 600 } }}>{label}</StepLabel>
               </Step>
             ))}
           </Stepper>
@@ -42,12 +56,12 @@ function SagaLayout({ children }) {
 
 function SagaRouter() {
   const [uploadData, setUploadData] = useState(null);
-  const [storyboard, setStoryboard] = useState(null);
+  const [saga, setSaga] = useState(null);
   const navigate = useNavigate();
 
   const handleUpload = (data) => {
     setUploadData(data);
-    setStoryboard(null);
+    setSaga(null);
     navigate('/processing');
   };
 
@@ -67,7 +81,6 @@ function SagaRouter() {
       return formatted || `Moment ${index + 1}`;
     };
 
-    const promptText = uploadData.prompt?.trim();
     const summaryText = uploadData.summary?.trim();
 
     const storyMoments = uploadData.files.map((file, index) => {
@@ -76,10 +89,9 @@ function SagaRouter() {
         id: index + 1,
         title: generateMomentTitle(file.name, index),
         description:
-          promptText ||
-          (summaryText
-            ? `${summaryText} — captured through ${file.name}`
-            : 'A treasured memory shared together.'),
+          summaryText
+            ? `${summaryText} — lovingly remembered through ${file.name}`
+            : 'A treasured memory shared together, filled with love and warmth.',
         imageName: file.name,
         imageUrl: objectUrl,
         isObjectUrl: true
@@ -89,11 +101,11 @@ function SagaRouter() {
     const stockImageUrl =
       'https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=1000&q=80';
 
-    const generatedStoryboard = {
-      title: uploadData.title || 'Saga Storyboard',
+    const generatedSaga = {
+      title: uploadData.title?.trim() || 'Our Holiday Saga',
       summary:
-        uploadData.summary ||
-        'A heartfelt recollection of treasured memories, arranged for easy sharing with loved ones.',
+        summaryText ||
+        'A heartfelt recollection of treasured memories, wrapped in kindness for family and friends to share.',
       moments:
         storyMoments.length > 0
           ? storyMoments
@@ -103,7 +115,7 @@ function SagaRouter() {
                 title: 'A cherished beginning',
                 description:
                   summaryText ||
-                  'We imagine the gentle start of this memory — a warm gathering filled with smiles.',
+                  'Imagine the gentle start of this saga — a cozy gathering with carols, cocoa, and welcoming smiles.',
                 imageName: 'Stock family photo',
                 imageUrl: stockImageUrl
               },
@@ -111,8 +123,7 @@ function SagaRouter() {
                 id: 2,
                 title: 'Shared laughter',
                 description:
-                  promptText ||
-                  'In our storyboard, everyone leans in close, sharing stories and laughter across generations.',
+                  'Loved ones lean in close, sharing stories, laughter, and twinkling lights across generations.',
                 imageName: 'Stock family photo',
                 imageUrl: stockImageUrl
               },
@@ -120,26 +131,26 @@ function SagaRouter() {
                 id: 3,
                 title: 'Legacy of love',
                 description:
-                  'The closing moment celebrates the wisdom and love that continue to guide the family forward.',
+                  'The closing moment celebrates the wisdom and love that continue to guide the family forward with festive cheer.',
                 imageName: 'Stock family photo',
                 imageUrl: stockImageUrl
               }
             ]
     };
 
-    setStoryboard(generatedStoryboard);
-    navigate('/storyboard');
+    setSaga(generatedSaga);
+    navigate('/saga');
   };
 
   useEffect(() => {
     return () => {
-      storyboard?.moments?.forEach((moment) => {
+      saga?.moments?.forEach((moment) => {
         if (moment.isObjectUrl && moment.imageUrl) {
           URL.revokeObjectURL(moment.imageUrl);
         }
       });
     };
-  }, [storyboard]);
+  }, [saga]);
 
   return (
     <Routes>
@@ -149,13 +160,9 @@ function SagaRouter() {
         element={<ProcessingPage uploadData={uploadData} onComplete={handleProcessingComplete} />}
       />
       <Route
-        path="/storyboard"
+        path="/saga"
         element={
-          storyboard ? (
-            <StoryboardPage storyboard={storyboard} uploadData={uploadData} />
-          ) : (
-            <Navigate to="/" replace />
-          )
+          saga ? <SagaPage saga={saga} /> : <Navigate to="/" replace />
         }
       />
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -18,13 +18,12 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate } from 'react-router-dom';
 
-function downloadStoryboard(storyboard, uploadData) {
+function downloadSaga(saga) {
   const documentContent = {
     generatedAt: new Date().toISOString(),
-    title: storyboard.title,
-    summary: storyboard.summary,
-    guidance: uploadData?.prompt || '',
-    moments: storyboard.moments
+    title: saga.title,
+    summary: saga.summary,
+    moments: saga.moments
   };
 
   const blob = new Blob([JSON.stringify(documentContent, null, 2)], {
@@ -34,19 +33,19 @@ function downloadStoryboard(storyboard, uploadData) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `${storyboard.title.replace(/\s+/g, '-').toLowerCase()}-storyboard.json`;
+  link.download = `${saga.title.replace(/\s+/g, '-').toLowerCase()}-saga.json`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
 
-export default function StoryboardPage({ storyboard, uploadData }) {
+export default function SagaPage({ saga }) {
   const navigate = useNavigate();
   const fallbackHeroImage =
     'https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=1200&q=80';
 
-  const moments = useMemo(() => storyboard.moments ?? [], [storyboard.moments]);
+  const moments = useMemo(() => saga.moments ?? [], [saga.moments]);
   const [activeMomentIndex, setActiveMomentIndex] = useState(0);
 
   useEffect(() => {
@@ -74,71 +73,78 @@ export default function StoryboardPage({ storyboard, uploadData }) {
           position: 'relative',
           borderRadius: 4,
           overflow: 'hidden',
-          minHeight: { xs: 260, md: 320 },
-          backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.4), rgba(17, 24, 39, 0.6)), url(${heroImage})`,
+          minHeight: { xs: 280, md: 360 },
+          backgroundImage: `linear-gradient(135deg, rgba(166, 32, 64, 0.75), rgba(40, 94, 74, 0.75)), url(${heroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          color: 'common.white'
+          color: 'common.white',
+          boxShadow: (theme) => theme.shadows[8]
         }}
       >
-        <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(17, 24, 39, 0.35)' }} />
-        <Stack spacing={2} sx={{ position: 'relative', p: { xs: 4, md: 6 }, maxWidth: 520 }}>
-          <Typography variant="overline" sx={{ letterSpacing: 1.2 }}>
-            Storyboard
+        <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(84, 22, 47, 0.25)' }} />
+        <Stack spacing={2.5} sx={{ position: 'relative', p: { xs: 4, md: 6 }, maxWidth: 560 }}>
+          <Typography variant="overline" sx={{ letterSpacing: 1.6, color: 'secondary.light' }}>
+            Saga keepsake
           </Typography>
-          <Typography variant="h3" component="h1">
-            {storyboard.title}
+          <Typography variant="h3" component="h1" sx={{ fontWeight: 700 }}>
+            {saga.title}
           </Typography>
-          <Typography variant="h6" component="p">
-            {storyboard.summary}
+          <Typography variant="h6" component="p" sx={{ lineHeight: 1.6 }}>
+            {saga.summary}
           </Typography>
         </Stack>
       </Box>
 
-      <Card variant="outlined">
+      <Card
+        variant="outlined"
+        sx={{
+          borderRadius: 3,
+          background: (theme) =>
+            `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.secondary.light}15)`
+        }}
+      >
         <CardContent>
-          <Stack spacing={2}>
-            <Typography variant="subtitle1" color="text.secondary">
-              Story guidance
+          <Stack spacing={2.5}>
+            <Typography variant="h5" component="h2" color="primary">
+              A note of gratitude
             </Typography>
-            <Typography>
-              {uploadData?.prompt
-                ? uploadData.prompt
-                : 'We used your notes and photos to organize the storyboard below.'}
+            <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
+              This saga is a warm tribute to the love shared across generations. Share it with family,
+              friends, and caregivers so everyone can celebrate the memories that make this season bright.
             </Typography>
           </Stack>
         </CardContent>
       </Card>
 
       <Box>
-        <Typography variant="h5" gutterBottom>
-          Story moments
+        <Typography variant="h5" gutterBottom color="primary">
+          Saga moments
         </Typography>
         {totalMoments > 0 ? (
           <Grid container spacing={3} justifyContent="center">
             <Grid item xs={12} md={10}>
               <Card
                 variant="outlined"
-                sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+                sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 3 }}
               >
                 <CardMedia
                   component="img"
                   image={activeMoment?.imageUrl || fallbackHeroImage}
-                  alt={activeMoment?.imageName || activeMoment?.title || storyboard.title}
+                  alt={activeMoment?.imageName || activeMoment?.title || saga.title}
                   sx={{
-                    height: { xs: 260, sm: 320 },
+                    height: { xs: 280, sm: 340 },
                     objectFit: 'cover'
                   }}
                 />
-                <CardContent>
+                <CardContent sx={{ bgcolor: 'background.default' }}>
                   <Stack spacing={1.5}>
-                    <Typography variant="subtitle2" color="primary">
+                    <Typography variant="subtitle2" color="secondary.dark" sx={{ letterSpacing: 1 }}>
                       Moment {activeMomentIndex + 1} of {totalMoments}
                     </Typography>
                     <Typography variant="h5" component="h2">
                       {activeMoment?.title}
                     </Typography>
-                    <Typography color="text.secondary">
+                    <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
                       {activeMoment?.description}
                     </Typography>
                     {activeMoment?.imageName && (
@@ -153,14 +159,21 @@ export default function StoryboardPage({ storyboard, uploadData }) {
                   steps={totalMoments}
                   position="static"
                   activeStep={activeMomentIndex}
-                  sx={{ px: 3, pb: 2 }}
+                  sx={{
+                    px: 3,
+                    pb: 2,
+                    backgroundColor: 'transparent',
+                    '& .MuiMobileStepper-dotActive': {
+                      backgroundColor: 'secondary.main'
+                    }
+                  }}
                   backButton={
-                    <Button onClick={handleBack} size="small" startIcon={<KeyboardArrowLeft />}>
+                    <Button onClick={handleBack} size="small" startIcon={<KeyboardArrowLeft />} color="primary">
                       Previous
                     </Button>
                   }
                   nextButton={
-                    <Button onClick={handleNext} size="small" endIcon={<KeyboardArrowRight />}>
+                    <Button onClick={handleNext} size="small" endIcon={<KeyboardArrowRight />} color="primary">
                       Next
                     </Button>
                   }
@@ -169,42 +182,40 @@ export default function StoryboardPage({ storyboard, uploadData }) {
             </Grid>
           </Grid>
         ) : (
-          <Card variant="outlined">
+          <Card variant="outlined" sx={{ borderRadius: 3 }}>
             <CardContent>
               <Typography color="text.secondary">
-                Your storyboard moments will appear here once memories are added.
+                Your saga moments will appear here once memories are added.
               </Typography>
             </CardContent>
           </Card>
         )}
       </Box>
 
-      <Card variant="outlined">
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
         <CardContent>
-          <Stack spacing={2}>
-            <Typography variant="subtitle1" color="text.secondary">
-              Next steps
+          <Stack spacing={2.5}>
+            <Typography variant="h6" color="primary">
+              Share the joy
             </Typography>
-            <Typography>
-              Download the storyboard summary to save or share with family members. You can restart to make changes anytime.
+            <Typography color="text.secondary">
+              Download this saga to print, email, or display at your community gathering. You can always
+              start a new saga to add fresh memories and festive cheer.
             </Typography>
           </Stack>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: { xs: 'center', sm: 'space-between' }, flexWrap: 'wrap', gap: 2, p: 3 }}>
-          <Button
-            variant="contained"
-            startIcon={<DownloadIcon />}
-            onClick={() => downloadStoryboard(storyboard, uploadData)}
-          >
-            Download storyboard
+          <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => downloadSaga(saga)}>
+            Download saga
           </Button>
           <Button
             variant="outlined"
             startIcon={<RestartAltIcon />}
             onClick={() => navigate('/')}
+            sx={{ borderRadius: 999 }}
           >
-            Start a new storyboard
+            Start a new saga
           </Button>
         </CardActions>
       </Card>

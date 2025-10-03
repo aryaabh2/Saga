@@ -18,14 +18,13 @@ export default function UploadPage({ onSubmit }) {
   const [files, setFiles] = useState([]);
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
-  const [prompt, setPrompt] = useState('');
   const [error, setError] = useState('');
 
   const onDrop = useCallback((acceptedFiles) => {
     const newFiles = [...files, ...acceptedFiles].slice(0, MAX_FILES);
     setFiles(newFiles);
     if (files.length + acceptedFiles.length > MAX_FILES) {
-      setError(`You can add up to ${MAX_FILES} files for a single storyboard.`);
+      setError(`You can add up to ${MAX_FILES} files for a single saga.`);
     } else {
       setError('');
     }
@@ -49,7 +48,7 @@ export default function UploadPage({ onSubmit }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!files.length && !summary && !prompt) {
+    if (!files.length && !summary) {
       setError('Please add at least one image or a short note to get started.');
       return;
     }
@@ -57,8 +56,7 @@ export default function UploadPage({ onSubmit }) {
     onSubmit({
       files,
       title,
-      summary,
-      prompt
+      summary
     });
   };
 
@@ -70,11 +68,12 @@ export default function UploadPage({ onSubmit }) {
   return (
     <Stack spacing={4} component="form" onSubmit={handleSubmit}>
       <Box>
-        <Typography variant="h3" gutterBottom>
+        <Typography variant="h3" gutterBottom sx={{ fontWeight: 700 }}>
           Welcome to Saga
         </Typography>
-        <Typography variant="h6" color="text.secondary">
-          Gather photos and notes from loved ones and let Saga create a storyboard that is easy to share.
+        <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600 }}>
+          Gather photos and notes from loved ones and let Saga weave a festive keepsake that is easy to share
+          with family and friends.
         </Typography>
       </Box>
 
@@ -99,7 +98,7 @@ export default function UploadPage({ onSubmit }) {
                 {isDragActive ? 'Drop the files here' : 'Drag and drop images or click to choose'}
               </Typography>
               <Typography color="text.secondary">
-                Accepted formats: JPG, PNG, GIF. Up to {MAX_FILES} images.
+                Accepted formats: JPG, PNG, GIF. Up to {MAX_FILES} images for your saga.
               </Typography>
             </Box>
 
@@ -134,10 +133,11 @@ export default function UploadPage({ onSubmit }) {
         <CardContent>
           <Stack spacing={3}>
             <TextField
-              label="Story title (optional)"
+              label="Saga title (optional)"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               fullWidth
+              placeholder="Grandma & Grandpa's Holiday Memories"
             />
             <TextField
               label="Short description"
@@ -147,15 +147,7 @@ export default function UploadPage({ onSubmit }) {
               multiline
               minRows={3}
               helperText="Share the essence of this memory in a few sentences."
-            />
-            <TextField
-              label="Extra guidance for the storyboard"
-              value={prompt}
-              onChange={(event) => setPrompt(event.target.value)}
-              fullWidth
-              multiline
-              minRows={4}
-              helperText="Add names, locations, or special notes you would like highlighted."
+              placeholder="A joyful afternoon decorating the tree together at the community home."
             />
           </Stack>
         </CardContent>
@@ -164,8 +156,8 @@ export default function UploadPage({ onSubmit }) {
       {error && <Alert severity="warning">{error}</Alert>}
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button type="submit" variant="contained" size="large">
-          Start processing
+        <Button type="submit" variant="contained" size="large" sx={{ px: 4, borderRadius: 999 }}>
+          Create my saga
         </Button>
       </Box>
     </Stack>
