@@ -43,7 +43,7 @@ function downloadSaga(saga) {
 export default function SagaPage({ saga }) {
   const navigate = useNavigate();
   const fallbackHeroImage =
-    'https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=1200&q=80';
+    'https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=1200&q=80';
 
   const moments = useMemo(() => saga.moments ?? [], [saga.moments]);
   const [activeMomentIndex, setActiveMomentIndex] = useState(0);
@@ -71,7 +71,7 @@ export default function SagaPage({ saga }) {
       <Box
         sx={{
           position: 'relative',
-          borderRadius: 4,
+          borderRadius: 3,
           overflow: 'hidden',
           minHeight: { xs: 280, md: 360 },
           backgroundImage: `linear-gradient(135deg, rgba(166, 32, 64, 0.75), rgba(40, 94, 74, 0.75)), url(${heroImage})`,
@@ -83,7 +83,7 @@ export default function SagaPage({ saga }) {
       >
         <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(84, 22, 47, 0.25)' }} />
         <Stack spacing={2.5} sx={{ position: 'relative', p: { xs: 4, md: 6 }, maxWidth: 560 }}>
-          <Typography variant="overline" sx={{ letterSpacing: 1.6, color: 'secondary.light' }}>
+          <Typography variant="overline" sx={{ letterSpacing: 1.4, lineHeight: 1.1, color: 'secondary.light' }}>
             Saga keepsake
           </Typography>
           <Typography variant="h3" component="h1" sx={{ fontWeight: 700 }}>
@@ -95,27 +95,6 @@ export default function SagaPage({ saga }) {
         </Stack>
       </Box>
 
-      <Card
-        variant="outlined"
-        sx={{
-          borderRadius: 3,
-          background: (theme) =>
-            `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.secondary.light}15)`
-        }}
-      >
-        <CardContent>
-          <Stack spacing={2.5}>
-            <Typography variant="h5" component="h2" color="primary">
-              A note of gratitude
-            </Typography>
-            <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
-              This saga is a warm tribute to the love shared across generations. Share it with family,
-              friends, and caregivers so everyone can celebrate the memories that make this season bright.
-            </Typography>
-          </Stack>
-        </CardContent>
-      </Card>
-
       <Box>
         <Typography variant="h5" gutterBottom color="primary">
           Saga moments
@@ -125,7 +104,7 @@ export default function SagaPage({ saga }) {
             <Grid item xs={12} md={10}>
               <Card
                 variant="outlined"
-                sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 3 }}
+                sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 2 }}
               >
                 <CardMedia
                   component="img"
@@ -182,7 +161,7 @@ export default function SagaPage({ saga }) {
             </Grid>
           </Grid>
         ) : (
-          <Card variant="outlined" sx={{ borderRadius: 3 }}>
+          <Card variant="outlined" sx={{ borderRadius: 2 }}>
             <CardContent>
               <Typography color="text.secondary">
                 Your saga moments will appear here once memories are added.
@@ -192,15 +171,19 @@ export default function SagaPage({ saga }) {
         )}
       </Box>
 
-      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+      <Card variant="outlined" sx={{ borderRadius: 2 }}>
         <CardContent>
           <Stack spacing={2.5}>
-            <Typography variant="h6" color="primary">
+            <Typography variant="h5" component="h2" color="primary">
               Share the joy
             </Typography>
+            <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
+              This saga is a warm note of gratitude for the love shared across generations. Invite family,
+              friends, and caregivers to gather around these memories and add their own chapters to the story.
+            </Typography>
             <Typography color="text.secondary">
-              Download this saga to print, email, or display at your community gathering. You can always
-              start a new saga to add fresh memories and festive cheer.
+              Download this saga to print, email, or display at your next get-together. You can always start a
+              new saga to add fresh memories and keep everyone connected.
             </Typography>
           </Stack>
         </CardContent>
@@ -213,7 +196,7 @@ export default function SagaPage({ saga }) {
             variant="outlined"
             startIcon={<RestartAltIcon />}
             onClick={() => navigate('/')}
-            sx={{ borderRadius: 999 }}
+            sx={{ borderRadius: 3 }}
           >
             Start a new saga
           </Button>
