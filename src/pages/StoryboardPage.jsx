@@ -5,6 +5,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardMedia,
   Divider,
   Grid,
   Stack,
@@ -39,20 +40,44 @@ function downloadStoryboard(storyboard, uploadData) {
 
 export default function StoryboardPage({ storyboard, uploadData }) {
   const navigate = useNavigate();
+  const fallbackHeroImage =
+    'https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=1200&q=80';
 
   const sceneGrid = useMemo(
     () =>
-      storyboard.scenes.map((scene) => (
+      storyboard.scenes.map((scene, index) => (
         <Grid item xs={12} sm={6} key={scene.id}>
-          <Card variant="outlined" sx={{ height: '100%' }}>
-            <CardContent>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                {scene.imageName}
+          <Card
+            variant="outlined"
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}
+          >
+            <CardMedia
+              component="img"
+              image={scene.imageUrl || fallbackHeroImage}
+              alt={scene.imageName || scene.title}
+              sx={{
+                height: 240,
+                objectFit: 'cover'
+              }}
+            />
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="subtitle2" color="primary" gutterBottom>
+                Scene {index + 1}
               </Typography>
               <Typography variant="h6" gutterBottom>
                 {scene.title}
               </Typography>
               <Typography color="text.secondary">{scene.description}</Typography>
+              {scene.imageName && (
+                <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 2 }}>
+                  From: {scene.imageName}
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -60,15 +85,35 @@ export default function StoryboardPage({ storyboard, uploadData }) {
     [storyboard.scenes]
   );
 
+  const primaryScene = storyboard.scenes[0];
+  const heroImage = primaryScene?.imageUrl || fallbackHeroImage;
+
   return (
     <Stack spacing={4}>
-      <Box>
-        <Typography variant="h3" gutterBottom>
-          {storyboard.title}
-        </Typography>
-        <Typography variant="h6" color="text.secondary">
-          {storyboard.summary}
-        </Typography>
+      <Box
+        sx={{
+          position: 'relative',
+          borderRadius: 4,
+          overflow: 'hidden',
+          minHeight: { xs: 260, md: 320 },
+          backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.4), rgba(17, 24, 39, 0.6)), url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          color: 'common.white'
+        }}
+      >
+        <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(17, 24, 39, 0.35)' }} />
+        <Stack spacing={2} sx={{ position: 'relative', p: { xs: 4, md: 6 }, maxWidth: 520 }}>
+          <Typography variant="overline" sx={{ letterSpacing: 1.2 }}>
+            Storyboard
+          </Typography>
+          <Typography variant="h3" component="h1">
+            {storyboard.title}
+          </Typography>
+          <Typography variant="h6" component="p">
+            {storyboard.summary}
+          </Typography>
+        </Stack>
       </Box>
 
       <Card variant="outlined">
