@@ -92,7 +92,7 @@ export default function UploadPage({ onSubmit }) {
           Welcome to Saga
         </Typography>
         <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600 }}>
-          Gather photos and notes from loved ones and let Saga weave a festive keepsake that is easy to share
+          Gather photos and notes from loved ones and let Saga weave a memorable keepsake that is easy to share
           with family and friends.
         </Typography>
       </Box>
@@ -168,7 +168,7 @@ export default function UploadPage({ onSubmit }) {
               helperText={
                 showValidation && !title.trim()
                   ? 'A title is required.'
-                  : "Give your saga a festive name."
+                  : "Give your saga a memorable name."
               }
             />
             <TextField
