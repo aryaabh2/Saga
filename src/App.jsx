@@ -98,44 +98,37 @@ function SagaRouter() {
       };
     });
 
-    const stockImageUrl =
-      'https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=1000&q=80';
+    const stockImageUrls = [
+      'https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1000&q=80'
+    ];
 
     const generatedSaga = {
       title: uploadData.title?.trim() || 'Our Holiday Saga',
       summary:
         summaryText ||
-        'A heartfelt recollection of treasured memories, wrapped in kindness for family and friends to share.',
+        'A heartfelt recollection of treasured memories, lovingly gathered for family and friends to revisit together.',
       moments:
         storyMoments.length > 0
           ? storyMoments
-          : [
-              {
-                id: 1,
-                title: 'A cherished beginning',
-                description:
-                  summaryText ||
-                  'Imagine the gentle start of this saga — a cozy gathering with carols, cocoa, and welcoming smiles.',
-                imageName: 'Stock family photo',
-                imageUrl: stockImageUrl
-              },
-              {
-                id: 2,
-                title: 'Shared laughter',
-                description:
-                  'Loved ones lean in close, sharing stories, laughter, and twinkling lights across generations.',
-                imageName: 'Stock family photo',
-                imageUrl: stockImageUrl
-              },
-              {
-                id: 3,
-                title: 'Legacy of love',
-                description:
-                  'The closing moment celebrates the wisdom and love that continue to guide the family forward with festive cheer.',
-                imageName: 'Stock family photo',
-                imageUrl: stockImageUrl
-              }
-            ]
+          : stockImageUrls.map((imageUrl, index) => {
+              const defaultDescriptions = [
+                summaryText ||
+                  'Imagine the story beginning with everyone arriving, arms full of hugs, ready to remember together.',
+                'Loved ones lean in close, sharing stories, laughter, and the glow of being together in one place.',
+                'The closing moment celebrates the wisdom and love that continue to guide the family forward.'
+              ];
+
+              return {
+                id: index + 1,
+                title: ['A cherished beginning', 'Shared laughter', 'Legacy of love'][index] ||
+                  `Moment ${index + 1}`,
+                description: defaultDescriptions[index] || 'A treasured family memory.',
+                imageName: 'Family memory photo',
+                imageUrl
+              };
+            })
     };
 
     setSaga(generatedSaga);
