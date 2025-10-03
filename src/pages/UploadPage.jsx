@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Box,
@@ -19,16 +19,25 @@ export default function UploadPage({ onSubmit }) {
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [error, setError] = useState('');
+  const [showValidation, setShowValidation] = useState(false);
 
   const onDrop = useCallback((acceptedFiles) => {
-    const newFiles = [...files, ...acceptedFiles].slice(0, MAX_FILES);
+    const combinedFiles = [...files, ...acceptedFiles];
+    const newFiles = combinedFiles.slice(0, MAX_FILES);
     setFiles(newFiles);
-    if (files.length + acceptedFiles.length > MAX_FILES) {
+
+    if (combinedFiles.length > MAX_FILES) {
       setError(`You can add up to ${MAX_FILES} files for a single saga.`);
+    } else if (showValidation) {
+      if (newFiles.length && title.trim() && summary.trim()) {
+        setError('');
+      } else {
+        setError('Please add a title, description, and at least one image to continue.');
+      }
     } else {
       setError('');
     }
-  }, [files]);
+  }, [files, showValidation, summary, title]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -48,22 +57,33 @@ export default function UploadPage({ onSubmit }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!files.length && !summary) {
-      setError('Please add at least one image or a short note to get started.');
+    setShowValidation(true);
+
+    const trimmedTitle = title.trim();
+    const trimmedSummary = summary.trim();
+
+    if (!files.length || !trimmedTitle || !trimmedSummary) {
+      setError('Please add a title, description, and at least one image to continue.');
       return;
     }
 
     onSubmit({
       files,
-      title,
-      summary
+      title: trimmedTitle,
+      summary: trimmedSummary
     });
   };
 
   const handleClearFiles = () => {
     setFiles([]);
-    setError('');
+    setError(showValidation ? 'Please add a title, description, and at least one image to continue.' : '');
   };
+
+  useEffect(() => {
+    if (showValidation && files.length && title.trim() && summary.trim()) {
+      setError('');
+    }
+  }, [files.length, showValidation, summary, title]);
 
   return (
     <Stack spacing={4} component="form" onSubmit={handleSubmit}>
@@ -100,6 +120,11 @@ export default function UploadPage({ onSubmit }) {
               <Typography color="text.secondary">
                 Accepted formats: JPG, PNG, GIF. Up to {MAX_FILES} images for your saga.
               </Typography>
+              {showValidation && files.length === 0 && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                  Please upload at least one image.
+                </Typography>
+              )}
             </Box>
 
             {filePreviews.length > 0 && (
@@ -133,11 +158,18 @@ export default function UploadPage({ onSubmit }) {
         <CardContent>
           <Stack spacing={3}>
             <TextField
-              label="Saga title (optional)"
+              label="Saga title"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               fullWidth
               placeholder="Grandma & Grandpa's Holiday Memories"
+              required
+              error={showValidation && !title.trim()}
+              helperText={
+                showValidation && !title.trim()
+                  ? 'A title is required.'
+                  : "Give your saga a festive name."
+              }
             />
             <TextField
               label="Short description"
@@ -146,8 +178,14 @@ export default function UploadPage({ onSubmit }) {
               fullWidth
               multiline
               minRows={3}
-              helperText="Share the essence of this memory in a few sentences."
               placeholder="A joyful afternoon decorating the tree together at the community home."
+              required
+              error={showValidation && !summary.trim()}
+              helperText={
+                showValidation && !summary.trim()
+                  ? 'Please share a short description to continue.'
+                  : 'Share the essence of this memory in a few sentences.'
+              }
             />
           </Stack>
         </CardContent>
