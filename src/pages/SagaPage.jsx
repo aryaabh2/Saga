@@ -7,7 +7,6 @@ import {
   CardContent,
   CardMedia,
   Divider,
-  Grid,
   MobileStepper,
   Stack,
   Typography
@@ -43,7 +42,7 @@ function downloadSaga(saga) {
 export default function SagaPage({ saga }) {
   const navigate = useNavigate();
   const fallbackHeroImage =
-    'https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=1200&q=80';
+    'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80';
 
   const moments = useMemo(() => saga.moments ?? [], [saga.moments]);
   const [activeMomentIndex, setActiveMomentIndex] = useState(0);
@@ -66,100 +65,103 @@ export default function SagaPage({ saga }) {
     setActiveMomentIndex((prev) => (prev - 1 + totalMoments) % totalMoments);
   };
 
+  const sectionContainerSx = { width: '100%', maxWidth: { xs: '100%', md: 900 } };
+
   return (
-    <Stack spacing={4}>
-      <Box
-        sx={{
-          position: 'relative',
-          borderRadius: 3,
-          overflow: 'hidden',
-          minHeight: { xs: 280, md: 360 },
-          backgroundImage: `linear-gradient(135deg, rgba(166, 32, 64, 0.75), rgba(40, 94, 74, 0.75)), url(${heroImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          color: 'common.white',
-          boxShadow: (theme) => theme.shadows[8]
-        }}
-      >
-        <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(84, 22, 47, 0.25)' }} />
-        <Stack spacing={2.5} sx={{ position: 'relative', p: { xs: 4, md: 6 }, maxWidth: 560 }}>
-          <Typography variant="overline" sx={{ letterSpacing: 1.4, lineHeight: 1.1, color: 'secondary.light' }}>
-            Saga keepsake
-          </Typography>
-          <Typography variant="h3" component="h1" sx={{ fontWeight: 700 }}>
-            {saga.title}
-          </Typography>
-          <Typography variant="h6" component="p" sx={{ lineHeight: 1.6 }}>
-            {saga.summary}
-          </Typography>
-        </Stack>
+    <Stack spacing={4} alignItems="center">
+      <Box sx={sectionContainerSx}>
+        <Box
+          sx={{
+            position: 'relative',
+            borderRadius: 3,
+            overflow: 'hidden',
+            minHeight: { xs: 140, md: 180 },
+            backgroundImage: `linear-gradient(135deg, rgba(166, 32, 64, 0.75), rgba(40, 94, 74, 0.75)), url(${heroImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            color: 'common.white',
+            boxShadow: (theme) => theme.shadows[8]
+          }}
+        >
+          <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(84, 22, 47, 0.25)' }} />
+          <Stack
+            spacing={2.5}
+            sx={{ position: 'relative', p: { xs: 4, md: 5 }, maxWidth: { xs: '100%', md: 720 } }}
+          >
+            <Typography variant="overline" sx={{ letterSpacing: 1.4, lineHeight: 1.1, color: 'secondary.light' }}>
+              Saga keepsake
+            </Typography>
+            <Typography variant="h3" component="h1" sx={{ fontWeight: 700 }}>
+              {saga.title}
+            </Typography>
+            <Typography variant="h6" component="p" sx={{ lineHeight: 1.6 }}>
+              {saga.summary}
+            </Typography>
+          </Stack>
+        </Box>
       </Box>
 
-      <Box>
+      <Box sx={sectionContainerSx}>
         <Typography variant="h5" gutterBottom color="primary">
           Saga moments
         </Typography>
         {totalMoments > 0 ? (
-          <Grid container spacing={3} justifyContent="center">
-            <Grid item xs={12} md={10}>
-              <Card
-                variant="outlined"
-                sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 2 }}
-              >
-                <CardMedia
-                  component="img"
-                  image={activeMoment?.imageUrl || fallbackHeroImage}
-                  alt={activeMoment?.imageName || activeMoment?.title || saga.title}
-                  sx={{
-                    height: { xs: 280, sm: 340 },
-                    objectFit: 'cover'
-                  }}
-                />
-                <CardContent sx={{ bgcolor: 'background.default' }}>
-                  <Stack spacing={1.5}>
-                    <Typography variant="subtitle2" color="secondary.dark" sx={{ letterSpacing: 1 }}>
-                      Moment {activeMomentIndex + 1} of {totalMoments}
-                    </Typography>
-                    <Typography variant="h5" component="h2">
-                      {activeMoment?.title}
-                    </Typography>
-                    <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
-                      {activeMoment?.description}
-                    </Typography>
-                    {activeMoment?.imageName && (
-                      <Typography variant="caption" color="text.secondary" display="block">
-                        From: {activeMoment.imageName}
-                      </Typography>
-                    )}
-                  </Stack>
-                </CardContent>
-                <MobileStepper
-                  variant="dots"
-                  steps={totalMoments}
-                  position="static"
-                  activeStep={activeMomentIndex}
-                  sx={{
-                    px: 3,
-                    pb: 2,
-                    backgroundColor: 'transparent',
-                    '& .MuiMobileStepper-dotActive': {
-                      backgroundColor: 'secondary.main'
-                    }
-                  }}
-                  backButton={
-                    <Button onClick={handleBack} size="small" startIcon={<KeyboardArrowLeft />} color="primary">
-                      Previous
-                    </Button>
-                  }
-                  nextButton={
-                    <Button onClick={handleNext} size="small" endIcon={<KeyboardArrowRight />} color="primary">
-                      Next
-                    </Button>
-                  }
-                />
-              </Card>
-            </Grid>
-          </Grid>
+          <Card
+            variant="outlined"
+            sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 2 }}
+          >
+            <CardMedia
+              component="img"
+              image={activeMoment?.imageUrl || fallbackHeroImage}
+              alt={activeMoment?.imageName || activeMoment?.title || saga.title}
+              sx={{
+                height: { xs: 280, sm: 340 },
+                objectFit: 'cover'
+              }}
+            />
+            <CardContent sx={{ bgcolor: 'background.default' }}>
+              <Stack spacing={1.5}>
+                <Typography variant="subtitle2" color="secondary.dark" sx={{ letterSpacing: 1 }}>
+                  Moment {activeMomentIndex + 1} of {totalMoments}
+                </Typography>
+                <Typography variant="h5" component="h2">
+                  {activeMoment?.title}
+                </Typography>
+                <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
+                  {activeMoment?.description}
+                </Typography>
+                {activeMoment?.imageName && (
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    From: {activeMoment.imageName}
+                  </Typography>
+                )}
+              </Stack>
+            </CardContent>
+            <MobileStepper
+              variant="dots"
+              steps={totalMoments}
+              position="static"
+              activeStep={activeMomentIndex}
+              sx={{
+                px: 3,
+                pb: 2,
+                backgroundColor: 'transparent',
+                '& .MuiMobileStepper-dotActive': {
+                  backgroundColor: 'secondary.main'
+                }
+              }}
+              backButton={
+                <Button onClick={handleBack} size="small" startIcon={<KeyboardArrowLeft />} color="primary">
+                  Previous
+                </Button>
+              }
+              nextButton={
+                <Button onClick={handleNext} size="small" endIcon={<KeyboardArrowRight />} color="primary">
+                  Next
+                </Button>
+              }
+            />
+          </Card>
         ) : (
           <Card variant="outlined" sx={{ borderRadius: 2 }}>
             <CardContent>
@@ -171,37 +173,37 @@ export default function SagaPage({ saga }) {
         )}
       </Box>
 
-      <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardContent>
-          <Stack spacing={2.5}>
-            <Typography variant="h5" component="h2" color="primary">
-              Share the joy
-            </Typography>
-            <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
-              This saga is a warm note of gratitude for the love shared across generations. Invite family,
-              friends, and caregivers to gather around these memories and add their own chapters to the story.
-            </Typography>
-            <Typography color="text.secondary">
-              Download this saga to print, email, or display at your next get-together. You can always start a
-              new saga to add fresh memories and keep everyone connected.
-            </Typography>
-          </Stack>
-        </CardContent>
-        <Divider />
-        <CardActions sx={{ justifyContent: { xs: 'center', sm: 'space-between' }, flexWrap: 'wrap', gap: 2, p: 3 }}>
-          <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => downloadSaga(saga)}>
-            Download saga
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<RestartAltIcon />}
-            onClick={() => navigate('/')}
-            sx={{ borderRadius: 3 }}
+      <Box sx={sectionContainerSx}>
+        <Card variant="outlined" sx={{ borderRadius: 2 }}>
+          <CardContent>
+            <Stack spacing={2.5}>
+              <Typography variant="h5" component="h2" color="primary">
+                Share the joy
+              </Typography>
+              <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
+                This saga is a warm note of gratitude for the love shared across generations—download it and
+                invite family and caregivers to add their own chapters.
+              </Typography>
+            </Stack>
+          </CardContent>
+          <Divider />
+          <CardActions
+            sx={{ justifyContent: { xs: 'center', sm: 'space-between' }, flexWrap: 'wrap', gap: 2, p: 3 }}
           >
-            Start a new saga
-          </Button>
-        </CardActions>
-      </Card>
+            <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => downloadSaga(saga)}>
+              Download saga
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<RestartAltIcon />}
+              onClick={() => navigate('/')}
+              sx={{ borderRadius: 3 }}
+            >
+              Start a new saga
+            </Button>
+          </CardActions>
+        </Card>
+      </Box>
     </Stack>
   );
 }
