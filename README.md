@@ -7,7 +7,7 @@ Saga is a gentle, three-step web experience for older adults to upload cherished
 - **Accessible flow** with large typography and simple language tailored for older storytellers.
 - **Drag-and-drop uploader** for images with text guidance fields.
 - **Processing screen** that simulates AI generation with a five-second progress indicator.
-- **Storyboard summary** with downloadable JSON output that captures the generated scenes and notes.
+- **Storyboard summary** with downloadable JSON output that captures the generated moments and notes.
 
 ## Getting started locally
 

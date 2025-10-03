@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { AppBar, Box, Container, Step, StepLabel, Stepper, Toolbar, Typography } from '@mui/material';
 import UploadPage from './pages/UploadPage.jsx';
@@ -57,34 +57,89 @@ function SagaRouter() {
       return;
     }
 
-    const storyScenes = uploadData.files.map((file, index) => ({
-      id: index + 1,
-      title: `Scene ${index + 1}`,
-      description: uploadData.prompt || `Moment captured from ${file.name}`,
-      imageName: file.name
-    }));
+    const generateMomentTitle = (fileName, index) => {
+      if (!fileName) {
+        return `Moment ${index + 1}`;
+      }
+
+      const baseName = fileName.replace(/\.[^/.]+$/, '').replace(/[-_]+/g, ' ');
+      const formatted = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+      return formatted || `Moment ${index + 1}`;
+    };
+
+    const promptText = uploadData.prompt?.trim();
+    const summaryText = uploadData.summary?.trim();
+
+    const storyMoments = uploadData.files.map((file, index) => {
+      const objectUrl = URL.createObjectURL(file);
+      return {
+        id: index + 1,
+        title: generateMomentTitle(file.name, index),
+        description:
+          promptText ||
+          (summaryText
+            ? `${summaryText} — captured through ${file.name}`
+            : 'A treasured memory shared together.'),
+        imageName: file.name,
+        imageUrl: objectUrl,
+        isObjectUrl: true
+      };
+    });
+
+    const stockImageUrl =
+      'https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=1000&q=80';
 
     const generatedStoryboard = {
       title: uploadData.title || 'Saga Storyboard',
       summary:
         uploadData.summary ||
         'A heartfelt recollection of treasured memories, arranged for easy sharing with loved ones.',
-      scenes: storyScenes.length
-        ? storyScenes
-        : [
-            {
-              id: 1,
-              title: 'Scene 1',
-              description:
-                'Your story will appear here once we have images or text to guide the storyboard.',
-              imageName: 'Placeholder image'
-            }
-          ]
+      moments:
+        storyMoments.length > 0
+          ? storyMoments
+          : [
+              {
+                id: 1,
+                title: 'A cherished beginning',
+                description:
+                  summaryText ||
+                  'We imagine the gentle start of this memory — a warm gathering filled with smiles.',
+                imageName: 'Stock family photo',
+                imageUrl: stockImageUrl
+              },
+              {
+                id: 2,
+                title: 'Shared laughter',
+                description:
+                  promptText ||
+                  'In our storyboard, everyone leans in close, sharing stories and laughter across generations.',
+                imageName: 'Stock family photo',
+                imageUrl: stockImageUrl
+              },
+              {
+                id: 3,
+                title: 'Legacy of love',
+                description:
+                  'The closing moment celebrates the wisdom and love that continue to guide the family forward.',
+                imageName: 'Stock family photo',
+                imageUrl: stockImageUrl
+              }
+            ]
     };
 
     setStoryboard(generatedStoryboard);
     navigate('/storyboard');
   };
+
+  useEffect(() => {
+    return () => {
+      storyboard?.moments?.forEach((moment) => {
+        if (moment.isObjectUrl && moment.imageUrl) {
+          URL.revokeObjectURL(moment.imageUrl);
+        }
+      });
+    };
+  }, [storyboard]);
 
   return (
     <Routes>
