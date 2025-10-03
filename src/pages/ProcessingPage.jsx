@@ -47,7 +47,7 @@ export default function ProcessingPage({ uploadData, onComplete }) {
           Creating your saga
         </Typography>
         <Typography variant="h6" color="text.secondary">
-          Please hold tight while we weave together your memories into something warm and festive. This should only take a few moments.
+          Please hold tight while we weave together your memories into something warm and memorable. This should only take a few moments.
         </Typography>
       </Box>
 
