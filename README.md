@@ -1,13 +1,13 @@
 # Saga
 
-Saga is a gentle, three-step web experience for older adults to upload cherished photos and notes so that the platform can shape them into a shareable storyboard. This project is a front-end mock built with React, Material UI, and Vite.
+Saga is a gentle, three-step web experience for older adults to upload cherished photos and notes so that the platform can shape them into a shareable saga. This project is a front-end mock built with React, Material UI, and Vite.
 
 ## Features
 
 - **Accessible flow** with large typography and simple language tailored for older storytellers.
 - **Drag-and-drop uploader** for images with text guidance fields.
 - **Processing screen** that simulates AI generation with a five-second progress indicator.
-- **Storyboard summary** with downloadable JSON output that captures the generated moments and notes.
+- **Saga summary** with downloadable JSON output that captures the generated moments and notes.
 
 ## Getting started locally
 
@@ -59,7 +59,7 @@ To deploy:
 3. Commit and push the contents of the `dist` folder to the branch GitHub Pages serves from (for example, the `gh-pages` branch). You can automate this with the official `peaceiris/actions-gh-pages` GitHub Action. A minimal workflow is shown below:
 
    ```yaml
-   name: Deploy Saga storyboard mock
+   name: Deploy Saga saga mock
 
    on:
      push:
