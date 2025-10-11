@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Fade, Tooltip, Typography } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 
 function buildTreeLayout(members) {
   if (!members.length) {
@@ -149,12 +150,19 @@ function FamilyNode({ member, selected, onSelect }) {
             borderRadius: 2,
             px: 1.25,
             py: 1,
-            bgcolor: selected ? 'rgba(255, 226, 226, 0.95)' : 'rgba(246, 246, 246, 0.9)',
+            bgcolor: (theme) =>
+              selected
+                ? alpha(theme.palette.background.paper, 0.96)
+                : alpha(theme.palette.background.default, 0.88),
             boxShadow: selected
-              ? '0 12px 28px rgba(170, 170, 170, 0.3)'
-              : '0 6px 18px rgba(170, 170, 170, 0.22)',
+              ? '0 12px 28px rgba(125, 46, 50, 0.28)'
+              : '0 8px 22px rgba(44, 95, 45, 0.12)',
             border: (theme) =>
-              `1px solid ${selected ? theme.palette.primary.main : 'rgba(170, 170, 170, 0.35)'}`,
+              `1px solid ${
+                selected
+                  ? alpha(theme.palette.primary.main, 0.65)
+                  : alpha(theme.palette.primary.main, 0.28)
+              }`,
             textAlign: 'center',
             backdropFilter: 'blur(10px)'
           }}
@@ -190,8 +198,8 @@ function ConnectorLayer({ lines }) {
     >
       <defs>
         <linearGradient id="family-connector" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="rgba(255, 199, 199, 0.6)" />
-          <stop offset="100%" stopColor="rgba(170, 170, 170, 0.35)" />
+          <stop offset="0%" stopColor="rgba(180, 67, 75, 0.55)" />
+          <stop offset="100%" stopColor="rgba(44, 95, 45, 0.35)" />
         </linearGradient>
       </defs>
       {lines.map((line) => (
@@ -241,8 +249,6 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
   const [isMounted, setIsMounted] = useState(false);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [view, setView] = useState({ x: 0, y: 0, scale: 1 });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragState = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0 });
 
   const { nodes: positionedMembers, metrics: layoutMetrics } = useMemo(
     () => buildTreeLayout(members),
@@ -390,90 +396,6 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
     positionedMembers
   ]);
 
-  useEffect(() => {
-    return () => {
-      dragState.current.active = false;
-    };
-  }, []);
-
-  const handlePointerDown = (event) => {
-    if (event.button !== 0) return;
-    const nodeTarget = event.target.closest('[data-member-node]');
-    if (nodeTarget) {
-      return;
-    }
-
-    dragState.current = {
-      active: true,
-      startX: event.clientX,
-      startY: event.clientY,
-      originX: view.x,
-      originY: view.y
-    };
-    setIsDragging(true);
-    canvasRef.current?.setPointerCapture(event.pointerId);
-  };
-
-  const handlePointerMove = (event) => {
-    if (!dragState.current.active) {
-      return;
-    }
-
-    const deltaX = event.clientX - dragState.current.startX;
-    const deltaY = event.clientY - dragState.current.startY;
-
-    setView((prev) =>
-      applyViewConstraints({
-        ...prev,
-        x: dragState.current.originX + deltaX,
-        y: dragState.current.originY + deltaY
-      })
-    );
-  };
-
-  const handlePointerUp = (event) => {
-    if (!dragState.current.active) {
-      return;
-    }
-
-    dragState.current.active = false;
-    setIsDragging(false);
-    canvasRef.current?.releasePointerCapture(event.pointerId);
-  };
-
-  const handleWheel = (event) => {
-    if (event.ctrlKey || event.metaKey) {
-      event.preventDefault();
-      if (!containerRef.current) {
-        return;
-      }
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const offsetX = event.clientX - rect.left;
-      const offsetY = event.clientY - rect.top;
-
-      setView((prev) => {
-        const wheelDirection = event.deltaY < 0 ? 1 : -1;
-        const nextScale = clampScale(prev.scale + wheelDirection * 0.08);
-        const preZoomX = (offsetX - prev.x) / prev.scale;
-        const preZoomY = (offsetY - prev.y) / prev.scale;
-        const nextX = offsetX - preZoomX * nextScale;
-        const nextY = offsetY - preZoomY * nextScale;
-        return applyViewConstraints({ scale: nextScale, x: nextX, y: nextY });
-      });
-      return;
-    }
-
-    event.preventDefault();
-    setView((prev) =>
-      applyViewConstraints({
-        ...prev,
-        x: prev.x - event.deltaX * 0.5,
-        y: prev.y - event.deltaY * 0.6
-      })
-    );
-  };
-
   return (
     <Fade in={isMounted} timeout={600}>
       <Box
@@ -481,29 +403,24 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
         sx={{
           position: 'relative',
           borderRadius: { xs: 3, md: 4 },
-          minHeight: { xs: 380, md: 480 },
-          maxHeight: { xs: 560, md: 680 },
+          minHeight: { xs: 320, md: 420 },
+          maxHeight: { xs: 460, md: 560 },
           overflow: 'hidden',
-          bgcolor: 'rgba(255, 226, 226, 0.92)',
-          backgroundImage:
-            'radial-gradient(circle at 18% 18%, rgba(255, 199, 199, 0.3), transparent 55%), radial-gradient(circle at 82% 12%, rgba(170, 170, 170, 0.25), transparent 60%), linear-gradient(135deg, rgba(246, 246, 246, 0.8), rgba(255, 226, 226, 0.95))',
-          boxShadow: '0 18px 40px rgba(170, 170, 170, 0.26)',
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+          backgroundImage: (theme) =>
+            `radial-gradient(circle at 18% 18%, ${alpha(theme.palette.primary.light, 0.4)}, transparent 60%), radial-gradient(circle at 82% 12%, ${alpha(theme.palette.secondary.light, 0.28)}, transparent 65%), linear-gradient(135deg, ${alpha(theme.palette.background.default, 0.95)}, ${alpha(theme.palette.primary.light, 0.85)})`,
+          boxShadow: '0 18px 40px rgba(125, 46, 50, 0.18)',
           p: { xs: 1.6, md: 2.1 },
           userSelect: 'none'
         }}
-        onWheel={handleWheel}
       >
         <Box
           ref={canvasRef}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerUp}
           sx={{
             position: 'absolute',
             inset: 0,
             touchAction: 'none',
-            cursor: isDragging ? 'grabbing' : 'grab'
+            cursor: 'default'
           }}
         >
           <Box
@@ -511,7 +428,7 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
               position: 'absolute',
               inset: 0,
               transformOrigin: 'center center',
-              transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)'
+              transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)'
             }}
             style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
           >

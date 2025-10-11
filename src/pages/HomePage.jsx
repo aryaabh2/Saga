@@ -15,6 +15,7 @@ import {
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FamilyTreeCanvas from '../components/FamilyTreeCanvas.jsx';
 import { fetchFamilySnapshot } from '../data/mockFamilyService.js';
+import { alpha } from '@mui/material/styles';
 
 const quickActions = [
   {
@@ -30,9 +31,9 @@ function MemoryCard({ memory }) {
       sx={{
         borderRadius: 3,
         overflow: 'hidden',
-        border: '1px solid rgba(170, 170, 170, 0.28)',
-        boxShadow: '0 12px 26px rgba(170, 170, 170, 0.22)',
-        bgcolor: 'rgba(255, 226, 226, 0.92)'
+        border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
+        boxShadow: '0 14px 30px rgba(125, 46, 50, 0.18)',
+        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92)
       }}
     >
       <CardActionArea
@@ -77,8 +78,8 @@ function MemberSpotlight({ member }) {
         sx={{
           borderRadius: 3,
           p: { xs: 2, md: 2.5 },
-          border: '1px dashed rgba(170, 170, 170, 0.4)',
-          bgcolor: 'rgba(255, 226, 226, 0.8)',
+          border: (theme) => `1px dashed ${alpha(theme.palette.primary.main, 0.4)}`,
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.8),
           textAlign: 'center'
         }}
       >
@@ -88,7 +89,7 @@ function MemberSpotlight({ member }) {
             display: 'block',
             fontWeight: 700,
             letterSpacing: 1.6,
-            color: 'primary.main',
+            color: 'secondary.dark',
             mb: 0.5
           }}
         >
@@ -106,9 +107,9 @@ function MemberSpotlight({ member }) {
       sx={{
         borderRadius: 3,
         p: { xs: 2, md: 2.5 },
-        bgcolor: 'rgba(255, 226, 226, 0.95)',
-        border: '1px solid rgba(170, 170, 170, 0.28)',
-        boxShadow: '0 12px 28px rgba(170, 170, 170, 0.24)'
+        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.95),
+        border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
+        boxShadow: '0 16px 32px rgba(125, 46, 50, 0.22)'
       }}
     >
       <Stack spacing={2}>
@@ -125,8 +126,8 @@ function MemberSpotlight({ member }) {
             sx={{
               width: 64,
               height: 64,
-              border: '3px solid rgba(255, 199, 199, 0.6)',
-              bgcolor: 'rgba(255, 226, 226, 0.6)'
+              border: (theme) => `3px solid ${alpha(theme.palette.secondary.main, 0.35)}`,
+              bgcolor: (theme) => alpha(theme.palette.background.default, 0.6)
             }}
           />
           <Box>
@@ -190,6 +191,34 @@ export default function HomePage({ onCreateMemory }) {
 
   const selectedMember = selectedMemberId ? memberMap.get(selectedMemberId) : undefined;
 
+  const referenceMember = useMemo(() => {
+    if (!members.length) return undefined;
+    return members.find((member) => member.id === 'jordan') ?? members[0];
+  }, [members]);
+
+  const familyGroupLabel = useMemo(() => {
+    if (!referenceMember?.name) {
+      return 'your family';
+    }
+    const parts = referenceMember.name.trim().split(' ');
+    if (parts.length > 1) {
+      return `${parts[parts.length - 1]} family`;
+    }
+    return `${referenceMember.name}'s family`;
+  }, [referenceMember]);
+
+  const familyGroupLabelWithArticle = useMemo(() => {
+    if (!familyGroupLabel) {
+      return 'your family';
+    }
+    return familyGroupLabel.startsWith('your ') ? familyGroupLabel : `the ${familyGroupLabel}`;
+  }, [familyGroupLabel]);
+
+  const selectedFirstName = selectedMember?.name?.split(' ')[0];
+  const memoriesHeading = selectedFirstName
+    ? `Memories for ${selectedFirstName}`
+    : `Memories for ${familyGroupLabelWithArticle}`;
+
   const selectedMemories = useMemo(() => {
     if (!selectedMemberId) return [];
     return memories.filter((memory) => memory.people.includes(selectedMemberId));
@@ -210,11 +239,14 @@ export default function HomePage({ onCreateMemory }) {
           borderRadius: 3,
           px: { xs: 3, md: 4 },
           py: { xs: 3, md: 4 },
-          border: '1px solid rgba(170, 170, 170, 0.3)',
-          bgcolor: 'rgba(255, 226, 226, 0.92)',
-          backgroundImage:
-            'linear-gradient(135deg, rgba(255, 226, 226, 0.75), rgba(246, 246, 246, 0.6))',
-          boxShadow: '0 16px 34px rgba(170, 170, 170, 0.22)'
+          border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+          backgroundImage: (theme) =>
+            `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.65)}, ${alpha(
+              theme.palette.background.default,
+              0.85
+            )})`,
+          boxShadow: '0 18px 36px rgba(44, 95, 45, 0.16)'
         }}
       >
         <Stack
@@ -224,10 +256,10 @@ export default function HomePage({ onCreateMemory }) {
         >
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              Welcome back
+              Winter stories for {familyGroupLabelWithArticle}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.75 }}>
-              Pick someone in the tree and open a memory when you are ready.
+              Choose someone below to spotlight their cozy-season highlights and open a shared memory when you are ready.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} width={{ xs: '100%', md: 'auto' }}>
@@ -244,7 +276,7 @@ export default function HomePage({ onCreateMemory }) {
                   px: 2.5,
                   py: 1,
                   width: { xs: '100%', sm: 'auto' },
-                  boxShadow: '0 12px 26px rgba(170, 170, 170, 0.24)'
+                  boxShadow: '0 12px 28px rgba(125, 46, 50, 0.22)'
                 }}
               >
                 {action.label}
@@ -259,9 +291,9 @@ export default function HomePage({ onCreateMemory }) {
           borderRadius: 3,
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          border: '1px solid rgba(170, 170, 170, 0.26)',
-          bgcolor: 'rgba(255, 226, 226, 0.9)',
-          boxShadow: '0 14px 30px rgba(170, 170, 170, 0.22)'
+          border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+          boxShadow: '0 16px 34px rgba(44, 95, 45, 0.18)'
         }}
       >
         <Grid container spacing={{ xs: 3, lg: 4 }} alignItems="stretch">
@@ -269,10 +301,10 @@ export default function HomePage({ onCreateMemory }) {
             <Stack spacing={2} sx={{ height: '100%' }}>
               <Box>
                 <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                  Family tree
+                  Three-generation snapshot
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                  Tap anyone to update the spotlight on the right.
+                  A quick view of {familyGroupLabelWithArticle} connections—tap anyone to update the spotlight on the right.
                 </Typography>
               </Box>
               <Box sx={{ width: '100%' }}>
@@ -312,11 +344,11 @@ export default function HomePage({ onCreateMemory }) {
                   onClick={() => actionHandlers[action.action]?.()}
                   sx={{
                     borderRadius: 2,
-                    borderColor: 'rgba(170, 170, 170, 0.45)',
-                    bgcolor: 'rgba(246, 246, 246, 0.7)',
+                    borderColor: (theme) => alpha(theme.palette.primary.main, 0.35),
+                    bgcolor: (theme) => alpha(theme.palette.background.default, 0.7),
                     '&:hover': {
                       borderColor: 'primary.main',
-                      bgcolor: 'rgba(255, 226, 226, 0.6)'
+                      bgcolor: (theme) => alpha(theme.palette.primary.light, 0.4)
                     }
                   }}
                   fullWidth
@@ -337,7 +369,7 @@ export default function HomePage({ onCreateMemory }) {
           alignItems={{ xs: 'flex-start', md: 'center' }}
         >
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Memories
+            {memoriesHeading}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {selectedMemories.length} items
@@ -367,9 +399,9 @@ export default function HomePage({ onCreateMemory }) {
               py: { xs: 4, md: 5 },
               px: { xs: 3, md: 4 },
               textAlign: 'center',
-              border: '1px solid rgba(170, 170, 170, 0.28)',
-              bgcolor: 'rgba(255, 226, 226, 0.92)',
-              boxShadow: '0 16px 30px rgba(170, 170, 170, 0.22)'
+              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+              boxShadow: '0 18px 32px rgba(44, 95, 45, 0.18)'
             }}
           >
             <Stack spacing={1.5} alignItems="center">
