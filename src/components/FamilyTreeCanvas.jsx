@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Avatar, Box, Fade, Tooltip, Typography } from '@mui/material';
+import { Box, Fade, Tooltip, Typography } from '@mui/material';
 
 function buildTreeLayout(members) {
   if (!members.length) {
@@ -8,8 +8,8 @@ function buildTreeLayout(members) {
       metrics: {
         generationCount: 0,
         maxGenerationSize: 0,
-        horizontalMargin: 14,
-        verticalMargin: 12
+        horizontalMargin: 12,
+        verticalMargin: 14
       }
     };
   }
@@ -31,12 +31,12 @@ function buildTreeLayout(members) {
     0
   );
 
-  const verticalMargin = 10; // percentage
-  const horizontalMargin = 10; // percentage
+  const verticalMargin = 14; // percentage
+  const horizontalMargin = 12; // percentage
   const verticalRange = 100 - verticalMargin * 2;
   const horizontalRange = 100 - horizontalMargin * 2;
 
-  const baseColumnSlots = maxGenerationSize + 1;
+  const baseColumnSlots = maxGenerationSize + 2;
   const rowDenominator = generationOrder.length > 1 ? generationOrder.length - 1 : 1;
 
   const nodes = members.map((member) => {
@@ -99,6 +99,9 @@ function buildConnectors(members) {
 }
 
 function FamilyNode({ member, selected, onSelect }) {
+  const [firstName, ...rest] = member.name.split(' ');
+  const remainingName = rest.join(' ');
+
   return (
     <Tooltip
       arrow
@@ -129,61 +132,42 @@ function FamilyNode({ member, selected, onSelect }) {
           position: 'absolute',
           top: `${member.y}%`,
           left: `${member.x}%`,
-          transform: `translate(-50%, -50%) scale(${selected ? 1.12 : 1})`,
+          transform: `translate(-50%, -50%) scale(${selected ? 1.08 : 1})`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 1,
-          width: { xs: 140, md: 160 },
+          width: { xs: 118, md: 140 },
           cursor: 'pointer',
           outline: 'none',
-          transition: 'transform 0.35s ease, opacity 0.35s ease'
+          transition: 'transform 0.25s ease, opacity 0.3s ease',
+          zIndex: selected ? 2 : 1
         }}
       >
         <Box
           sx={{
-            position: 'relative',
-            width: { xs: 72, md: 88 },
-            height: { xs: 72, md: 88 },
-            borderRadius: '50%',
-            backgroundImage: selected
-              ? (theme) => `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
-              : 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7))',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            width: '100%',
+            borderRadius: 3,
+            px: 1.5,
+            py: 1.1,
+            bgcolor: selected ? 'rgba(255, 247, 225, 0.95)' : 'rgba(255, 255, 255, 0.85)',
             boxShadow: selected
-              ? '0 16px 32px rgba(155, 29, 63, 0.3)'
-              : '0 12px 30px rgba(16, 24, 40, 0.12)',
-            border: (theme) => `3px solid ${selected ? theme.palette.primary.main : 'rgba(255,255,255,0.8)'}`,
-            transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
-          }}
-        >
-          <Avatar
-            src={member.avatarUrl}
-            alt={member.name}
-            sx={{
-              width: { xs: 64, md: 76 },
-              height: { xs: 64, md: 76 },
-              border: '3px solid rgba(255,255,255,0.6)'
-            }}
-          />
-        </Box>
-        <Box
-          sx={{
-            bgcolor: selected ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255,255,255,0.85)',
-            borderRadius: 999,
-            px: 2,
-            py: 0.75,
-            boxShadow: selected ? '0 10px 20px rgba(155, 29, 63, 0.18)' : '0 6px 14px rgba(16,24,40,0.12)',
+              ? '0 10px 24px rgba(185, 94, 130, 0.35)'
+              : '0 6px 16px rgba(60, 28, 33, 0.15)',
+            border: (theme) =>
+              `1px solid ${selected ? theme.palette.primary.main : 'rgba(185, 94, 130, 0.25)'}`,
             textAlign: 'center',
-            backdropFilter: 'blur(12px)'
+            backdropFilter: 'blur(10px)'
           }}
         >
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            {member.name.split(' ')[0]}
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            {firstName}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          {remainingName ? (
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+              {remainingName}
+            </Typography>
+          ) : null}
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
             {member.relation}
           </Typography>
         </Box>
@@ -206,8 +190,8 @@ function ConnectorLayer({ lines }) {
     >
       <defs>
         <linearGradient id="family-connector" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="rgba(155, 29, 63, 0.38)" />
-          <stop offset="100%" stopColor="rgba(240, 192, 96, 0.4)" />
+          <stop offset="0%" stopColor="rgba(185, 94, 130, 0.42)" />
+          <stop offset="100%" stopColor="rgba(243, 159, 159, 0.35)" />
         </linearGradient>
       </defs>
       {lines.map((line) => (
@@ -492,11 +476,11 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
           minHeight: { xs: 360, md: 440 },
           maxHeight: { xs: 520, md: 600 },
           overflow: 'hidden',
-          bgcolor: 'rgba(255, 255, 255, 0.88)',
+          bgcolor: 'rgba(255, 247, 225, 0.9)',
           backgroundImage:
-            'radial-gradient(circle at 20% 20%, rgba(240, 192, 96, 0.16), transparent 55%), radial-gradient(circle at 80% 10%, rgba(155, 29, 63, 0.1), transparent 55%), linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255, 250, 245, 0.9))',
-          boxShadow: '0 22px 50px rgba(15, 23, 42, 0.12)',
-          p: { xs: 2, md: 2.5 },
+            'radial-gradient(circle at 18% 18%, rgba(255, 194, 155, 0.25), transparent 55%), radial-gradient(circle at 82% 12%, rgba(185, 94, 130, 0.18), transparent 60%), linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 236, 192, 0.9))',
+          boxShadow: '0 18px 46px rgba(60, 28, 33, 0.16)',
+          p: { xs: 1.75, md: 2.25 },
           userSelect: 'none'
         }}
         onWheel={handleWheel}

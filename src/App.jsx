@@ -61,7 +61,7 @@ function SagaLayout({ children }) {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: (theme) => theme.palette.grey[100]
+        bgcolor: (theme) => theme.palette.background.default
       }}
     >
       <AppBar
@@ -70,8 +70,8 @@ function SagaLayout({ children }) {
         color="default"
         sx={{
           bgcolor: 'background.paper',
-          borderBottom: '1px solid',
-          borderColor: 'divider'
+          borderBottom: '1px solid rgba(185, 94, 130, 0.24)',
+          backgroundImage: 'linear-gradient(90deg, rgba(255, 236, 192, 0.6), rgba(255, 247, 225, 0.95))'
         }}
       >
         <Toolbar
@@ -89,8 +89,11 @@ function SagaLayout({ children }) {
             onClick={() => setMenuOpen(true)}
             aria-label="Open navigation menu"
             sx={{
-              border: '1px solid',
-              borderColor: 'divider'
+              border: '1px solid rgba(185, 94, 130, 0.35)',
+              bgcolor: 'rgba(255, 247, 225, 0.8)',
+              '&:hover': {
+                bgcolor: 'rgba(255, 194, 155, 0.35)'
+              }
             }}
           >
             <MenuRoundedIcon />
@@ -110,7 +113,8 @@ function SagaLayout({ children }) {
             width: { xs: 260, sm: 300 },
             display: 'flex',
             flexDirection: 'column',
-            minHeight: '100%'
+            minHeight: '100%',
+            bgcolor: 'rgba(255, 247, 225, 0.92)'
           }}
           role="presentation"
         >
@@ -127,10 +131,15 @@ function SagaLayout({ children }) {
                 onClick={() => handleNavigate(item.path)}
                 sx={{
                   alignItems: 'flex-start',
-                  py: 1.5
+                  py: 1.5,
+                  borderRadius: 2,
+                  mx: 1,
+                  '&:hover': {
+                    bgcolor: 'rgba(243, 159, 159, 0.18)'
+                  }
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>{item.icon}</ListItemIcon>
                 <ListItemText
                   primary={item.label}
                   primaryTypographyProps={{ fontWeight: 600 }}

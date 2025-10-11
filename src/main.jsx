@@ -7,18 +7,22 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#9b1d3f',
-      light: '#c85a75',
-      dark: '#6c0a26'
+      main: '#B95E82',
+      light: '#D886A4',
+      dark: '#8C3F5F'
     },
     secondary: {
-      main: '#f0c060',
-      light: '#f7d993',
-      dark: '#c59736'
+      main: '#F39F9F',
+      light: '#FFC29B',
+      dark: '#D07474'
     },
     background: {
-      default: '#fdf8f3',
-      paper: '#ffffff'
+      default: '#FFECC0',
+      paper: '#FFF7E1'
+    },
+    text: {
+      primary: '#3C1C21',
+      secondary: '#6B4F54'
     }
   },
   shape: {
@@ -45,10 +49,10 @@ const theme = createTheme({
           borderRadius: 999
         },
         containedPrimary: {
-          backgroundImage: 'linear-gradient(135deg, #9b1d3f, #c85a75)',
-          boxShadow: '0 8px 16px rgba(155, 29, 63, 0.25)',
+          backgroundImage: 'linear-gradient(135deg, #B95E82, #D886A4)',
+          boxShadow: '0 8px 20px rgba(185, 94, 130, 0.35)',
           '&:hover': {
-            backgroundImage: 'linear-gradient(135deg, #831235, #b54765)'
+            backgroundImage: 'linear-gradient(135deg, #8C3F5F, #C97394)'
           }
         }
       }
@@ -57,7 +61,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 20,
-          borderColor: 'rgba(155, 29, 63, 0.12)'
+          borderColor: 'rgba(185, 94, 130, 0.18)',
+          backgroundImage: 'linear-gradient(180deg, rgba(255, 236, 192, 0.5), rgba(255, 247, 225, 0.9))'
         }
       }
     }
