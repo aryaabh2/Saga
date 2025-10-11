@@ -20,7 +20,6 @@ import {
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
 import UploadPage from './pages/UploadPage.jsx';
 import ProcessingPage from './pages/ProcessingPage.jsx';
 import SagaPage from './pages/SagaPage.jsx';
@@ -52,12 +51,6 @@ function SagaLayout({ children }) {
       description: 'Upload photos, letters or videos to start a saga',
       icon: <FavoriteBorderIcon fontSize="medium" />,
       path: '/memories/new'
-    },
-    {
-      label: 'Browse shared saga',
-      description: 'Revisit the story you are crafting together',
-      icon: <AutoStoriesRoundedIcon fontSize="medium" />,
-      path: '/memories/story'
     }
   ];
 
