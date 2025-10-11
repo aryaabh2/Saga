@@ -2,6 +2,11 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Fade, Tooltip, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 
+const NODE_HORIZONTAL_PADDING = 8;
+const NODE_VERTICAL_PADDING = 10;
+const MIN_SCALE = 0.6;
+const MAX_SCALE = 1.6;
+
 function buildTreeLayout(members) {
   if (!members.length) {
     return {
@@ -137,7 +142,7 @@ function FamilyNode({ member, selected, onSelect }) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: { xs: 92, md: 108 },
+          width: { xs: 86, md: 96 },
           cursor: 'pointer',
           outline: 'none',
           transition: 'transform 0.25s ease, opacity 0.3s ease',
@@ -262,11 +267,16 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
     const xs = positionedMembers.map((member) => member.x);
     const ys = positionedMembers.map((member) => member.y);
 
+    const baseMinX = Math.min(...xs);
+    const baseMaxX = Math.max(...xs);
+    const baseMinY = Math.min(...ys);
+    const baseMaxY = Math.max(...ys);
+
     return {
-      minX: Math.min(...xs),
-      maxX: Math.max(...xs),
-      minY: Math.min(...ys),
-      maxY: Math.max(...ys)
+      minX: Math.max(0, baseMinX - NODE_HORIZONTAL_PADDING),
+      maxX: Math.min(100, baseMaxX + NODE_HORIZONTAL_PADDING),
+      minY: Math.max(0, baseMinY - NODE_VERTICAL_PADDING),
+      maxY: Math.min(100, baseMaxY + NODE_VERTICAL_PADDING)
     };
   }, [positionedMembers]);
   const connectors = useMemo(() => computeConnectorPaths(positionedMembers), [positionedMembers]);
@@ -328,7 +338,7 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
     return () => observer.disconnect();
   }, []);
 
-  const clampScale = useCallback((value) => Math.min(Math.max(value, 0.75), 1.75), []);
+  const clampScale = useCallback((value) => Math.min(Math.max(value, MIN_SCALE), MAX_SCALE), []);
   const hasAutoCentered = useRef(false);
 
   useEffect(() => {
@@ -354,14 +364,8 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
 
     const { minX, maxX, minY, maxY } = positionedBounds;
 
-    const widthPercent = Math.max(
-      maxX - minX,
-      Math.max(36, (100 - layoutMetrics.horizontalMargin * 2) * 0.85)
-    );
-    const heightPercent = Math.max(
-      maxY - minY,
-      Math.max(36, (100 - layoutMetrics.verticalMargin * 2) * 0.85)
-    );
+    const widthPercent = Math.max(maxX - minX, (100 - layoutMetrics.horizontalMargin * 2) * 0.9);
+    const heightPercent = Math.max(maxY - minY, (100 - layoutMetrics.verticalMargin * 2) * 0.9);
 
     const widthPx = (widthPercent / 100) * containerSize.width;
     const heightPx = (heightPercent / 100) * containerSize.height;
@@ -370,7 +374,7 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
       Math.min(
         containerSize.width / (widthPx || 1),
         containerSize.height / (heightPx || 1)
-      ) * 0.9
+      ) * 0.88
     );
 
     const centerX = ((minX + maxX) / 2 / 100) * containerSize.width;
@@ -404,13 +408,10 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
           position: 'relative',
           borderRadius: { xs: 3, md: 4 },
           minHeight: { xs: 320, md: 420 },
-          maxHeight: { xs: 460, md: 560 },
           overflow: 'hidden',
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
-          backgroundImage: (theme) =>
-            `radial-gradient(circle at 18% 18%, ${alpha(theme.palette.primary.light, 0.4)}, transparent 60%), radial-gradient(circle at 82% 12%, ${alpha(theme.palette.secondary.light, 0.28)}, transparent 65%), linear-gradient(135deg, ${alpha(theme.palette.background.default, 0.95)}, ${alpha(theme.palette.primary.light, 0.85)})`,
-          boxShadow: '0 18px 40px rgba(125, 46, 50, 0.18)',
-          p: { xs: 1.6, md: 2.1 },
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.96),
+          boxShadow: '0 14px 32px rgba(59, 89, 54, 0.18)',
+          p: { xs: 1.5, md: 2 },
           userSelect: 'none'
         }}
       >
