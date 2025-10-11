@@ -223,9 +223,6 @@ export default function HomePage({ onCreateMemory }) {
           <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5, maxWidth: 540 }}>
             Pick up a memory, invite loved ones, and tap through the tree to relive each shared moment.
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Use the menu above to jump back into a saga or start weaving a new collection of memories.
-          </Typography>
         </Box>
         <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
           {quickActions.map((action) => (
