@@ -489,14 +489,14 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
         sx={{
           position: 'relative',
           borderRadius: { xs: 4, md: 5 },
-          minHeight: { xs: 520, md: 640 },
-          maxHeight: { xs: 680, md: 760 },
+          minHeight: { xs: 360, md: 440 },
+          maxHeight: { xs: 520, md: 600 },
           overflow: 'hidden',
-          bgcolor: 'rgba(255, 255, 255, 0.82)',
+          bgcolor: 'rgba(255, 255, 255, 0.88)',
           backgroundImage:
-            'radial-gradient(circle at 20% 20%, rgba(240, 192, 96, 0.18), transparent 55%), radial-gradient(circle at 80% 10%, rgba(155, 29, 63, 0.12), transparent 55%), linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255, 250, 245, 0.9))',
-          boxShadow: '0 32px 70px rgba(15, 23, 42, 0.12)',
-          p: { xs: 2.5, md: 3 },
+            'radial-gradient(circle at 20% 20%, rgba(240, 192, 96, 0.16), transparent 55%), radial-gradient(circle at 80% 10%, rgba(155, 29, 63, 0.1), transparent 55%), linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255, 250, 245, 0.9))',
+          boxShadow: '0 22px 50px rgba(15, 23, 42, 0.12)',
+          p: { xs: 2, md: 2.5 },
           userSelect: 'none'
         }}
         onWheel={handleWheel}
