@@ -30,10 +30,9 @@ function MemoryCard({ memory }) {
       sx={{
         borderRadius: 3,
         overflow: 'hidden',
-        border: '1px solid',
-        borderColor: 'divider',
-        boxShadow: 'none',
-        bgcolor: 'background.paper'
+        border: '1px solid rgba(185, 94, 130, 0.2)',
+        boxShadow: '0 12px 26px rgba(60, 28, 33, 0.08)',
+        bgcolor: 'rgba(255, 247, 225, 0.92)'
       }}
     >
       <CardActionArea
@@ -78,12 +77,23 @@ function MemberSpotlight({ member }) {
         sx={{
           borderRadius: 3,
           p: { xs: 2, md: 2.5 },
-          border: '1px dashed',
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
+          border: '1px dashed rgba(185, 94, 130, 0.4)',
+          bgcolor: 'rgba(255, 247, 225, 0.8)',
           textAlign: 'center'
         }}
       >
+        <Typography
+          variant="overline"
+          sx={{
+            display: 'block',
+            fontWeight: 700,
+            letterSpacing: 1.6,
+            color: 'primary.main',
+            mb: 0.5
+          }}
+        >
+          Currently viewing
+        </Typography>
         <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
           Choose a person to see their details
         </Typography>
@@ -96,18 +106,28 @@ function MemberSpotlight({ member }) {
       sx={{
         borderRadius: 3,
         p: { xs: 2, md: 2.5 },
-        bgcolor: 'background.paper',
-        border: '1px solid',
-        borderColor: 'divider',
-        boxShadow: 'none'
+        bgcolor: 'rgba(255, 247, 225, 0.92)',
+        border: '1px solid rgba(185, 94, 130, 0.28)',
+        boxShadow: '0 12px 28px rgba(60, 28, 33, 0.18)'
       }}
     >
       <Stack spacing={2}>
+        <Typography
+          variant="overline"
+          sx={{ letterSpacing: 1.6, fontWeight: 700, color: 'primary.main' }}
+        >
+          Currently viewing
+        </Typography>
         <Stack direction="row" spacing={1.5} alignItems="center">
           <Avatar
             src={member.avatarUrl}
             alt={member.name}
-            sx={{ width: 64, height: 64 }}
+            sx={{
+              width: 64,
+              height: 64,
+              border: '3px solid rgba(185, 94, 130, 0.3)',
+              bgcolor: 'rgba(255, 194, 155, 0.2)'
+            }}
           />
           <Box>
             <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
@@ -190,9 +210,11 @@ export default function HomePage({ onCreateMemory }) {
           borderRadius: 3,
           px: { xs: 3, md: 4 },
           py: { xs: 3, md: 4 },
-          border: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'background.paper'
+          border: '1px solid rgba(185, 94, 130, 0.28)',
+          bgcolor: 'rgba(255, 247, 225, 0.9)',
+          backgroundImage:
+            'linear-gradient(135deg, rgba(255, 236, 192, 0.6), rgba(255, 194, 155, 0.25))',
+          boxShadow: '0 16px 34px rgba(60, 28, 33, 0.12)'
         }}
       >
         <Stack
@@ -217,7 +239,13 @@ export default function HomePage({ onCreateMemory }) {
                 size="medium"
                 startIcon={action.icon}
                 onClick={() => actionHandlers[action.action]?.()}
-                sx={{ borderRadius: 2, px: 2.5, py: 1, width: { xs: '100%', sm: 'auto' } }}
+                sx={{
+                  borderRadius: 2,
+                  px: 2.5,
+                  py: 1,
+                  width: { xs: '100%', sm: 'auto' },
+                  boxShadow: '0 12px 28px rgba(185, 94, 130, 0.28)'
+                }}
               >
                 {action.label}
               </Button>
@@ -231,9 +259,9 @@ export default function HomePage({ onCreateMemory }) {
           borderRadius: 3,
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          border: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'background.paper'
+          border: '1px solid rgba(185, 94, 130, 0.22)',
+          bgcolor: 'rgba(255, 247, 225, 0.88)',
+          boxShadow: '0 14px 30px rgba(60, 28, 33, 0.12)'
         }}
       >
         <Grid container spacing={{ xs: 3, lg: 4 }} alignItems="stretch">
@@ -264,7 +292,10 @@ export default function HomePage({ onCreateMemory }) {
             <Stack spacing={2.5} sx={{ width: '100%' }}>
               <MemberSpotlight member={selectedMember} />
               <Box>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 700, color: 'text.primary' }}
+                >
                   {selectedMemories.length} saved moments
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -279,7 +310,15 @@ export default function HomePage({ onCreateMemory }) {
                   size="medium"
                   startIcon={action.icon}
                   onClick={() => actionHandlers[action.action]?.()}
-                  sx={{ borderRadius: 2 }}
+                  sx={{
+                    borderRadius: 2,
+                    borderColor: 'rgba(185, 94, 130, 0.4)',
+                    bgcolor: 'rgba(255, 247, 225, 0.6)',
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      bgcolor: 'rgba(255, 194, 155, 0.25)'
+                    }
+                  }}
                   fullWidth
                 >
                   {action.label}
@@ -328,9 +367,9 @@ export default function HomePage({ onCreateMemory }) {
               py: { xs: 4, md: 5 },
               px: { xs: 3, md: 4 },
               textAlign: 'center',
-              border: '1px solid',
-              borderColor: 'divider',
-              bgcolor: 'background.paper'
+              border: '1px solid rgba(185, 94, 130, 0.24)',
+              bgcolor: 'rgba(255, 247, 225, 0.88)',
+              boxShadow: '0 16px 30px rgba(60, 28, 33, 0.12)'
             }}
           >
             <Stack spacing={1.5} alignItems="center">
