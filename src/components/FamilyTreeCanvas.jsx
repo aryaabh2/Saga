@@ -31,8 +31,8 @@ function buildTreeLayout(members) {
     0
   );
 
-  const verticalMargin = 12; // percentage
-  const horizontalMargin = 14; // percentage
+  const verticalMargin = 10; // percentage
+  const horizontalMargin = 10; // percentage
   const verticalRange = 100 - verticalMargin * 2;
   const horizontalRange = 100 - horizontalMargin * 2;
 
@@ -260,6 +260,62 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
   const [isDragging, setIsDragging] = useState(false);
   const dragState = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0 });
 
+  const { nodes: positionedMembers, metrics: layoutMetrics } = useMemo(
+    () => buildTreeLayout(members),
+    [members]
+  );
+  const positionedBounds = useMemo(() => {
+    if (!positionedMembers.length) {
+      return null;
+    }
+
+    const xs = positionedMembers.map((member) => member.x);
+    const ys = positionedMembers.map((member) => member.y);
+
+    return {
+      minX: Math.min(...xs),
+      maxX: Math.max(...xs),
+      minY: Math.min(...ys),
+      maxY: Math.max(...ys)
+    };
+  }, [positionedMembers]);
+  const connectors = useMemo(() => computeConnectorPaths(positionedMembers), [positionedMembers]);
+
+  const applyViewConstraints = useCallback(
+    (nextView) => {
+      if (!positionedBounds || !containerSize.width || !containerSize.height) {
+        return nextView;
+      }
+
+      const paddingX = Math.min(64, containerSize.width * 0.08);
+      const paddingY = Math.min(64, containerSize.height * 0.08);
+
+      const minX = (positionedBounds.minX / 100) * containerSize.width;
+      const maxX = (positionedBounds.maxX / 100) * containerSize.width;
+      const minY = (positionedBounds.minY / 100) * containerSize.height;
+      const maxY = (positionedBounds.maxY / 100) * containerSize.height;
+
+      const allowedMinX = paddingX - minX * nextView.scale;
+      const allowedMaxX = containerSize.width - paddingX - maxX * nextView.scale;
+      const allowedMinY = paddingY - minY * nextView.scale;
+      const allowedMaxY = containerSize.height - paddingY - maxY * nextView.scale;
+
+      const clampAxis = (value, min, max) => {
+        if (min <= max) {
+          return Math.min(Math.max(value, min), max);
+        }
+        return (min + max) / 2;
+      };
+
+      return {
+        scale: nextView.scale,
+        x: clampAxis(nextView.x, allowedMinX, allowedMaxX),
+        y: clampAxis(nextView.y, allowedMinY, allowedMaxY)
+      };
+    },
+    [containerSize.height, containerSize.width, positionedBounds]
+  );
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -282,12 +338,6 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
     return () => observer.disconnect();
   }, []);
 
-  const { nodes: positionedMembers, metrics: layoutMetrics } = useMemo(
-    () => buildTreeLayout(members),
-    [members]
-  );
-  const connectors = useMemo(() => computeConnectorPaths(positionedMembers), [positionedMembers]);
-
   const clampScale = useCallback((value) => Math.min(Math.max(value, 0.75), 1.75), []);
   const hasAutoCentered = useRef(false);
 
@@ -308,12 +358,11 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
       return;
     }
 
-    const xs = positionedMembers.map((member) => member.x);
-    const ys = positionedMembers.map((member) => member.y);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-    const minY = Math.min(...ys);
-    const maxY = Math.max(...ys);
+    if (!positionedBounds) {
+      return;
+    }
+
+    const { minX, maxX, minY, maxY } = positionedBounds;
 
     const widthPercent = Math.max(
       maxX - minX,
@@ -337,19 +386,23 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
     const centerX = ((minX + maxX) / 2 / 100) * containerSize.width;
     const centerY = ((minY + maxY) / 2 / 100) * containerSize.height;
 
-    setView({
+    const nextView = {
       scale: fittedScale,
       x: containerSize.width / 2 - centerX * fittedScale,
       y: containerSize.height / 2 - centerY * fittedScale
-    });
+    };
+
+    setView(applyViewConstraints(nextView));
 
     hasAutoCentered.current = true;
   }, [
+    applyViewConstraints,
     clampScale,
     containerSize.height,
     containerSize.width,
     layoutMetrics.horizontalMargin,
     layoutMetrics.verticalMargin,
+    positionedBounds,
     positionedMembers
   ]);
 
@@ -385,7 +438,13 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
     const deltaX = event.clientX - dragState.current.startX;
     const deltaY = event.clientY - dragState.current.startY;
 
-    setView((prev) => ({ ...prev, x: dragState.current.originX + deltaX, y: dragState.current.originY + deltaY }));
+    setView((prev) =>
+      applyViewConstraints({
+        ...prev,
+        x: dragState.current.originX + deltaX,
+        y: dragState.current.originY + deltaY
+      })
+    );
   };
 
   const handlePointerUp = (event) => {
@@ -419,7 +478,7 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
       const preZoomY = (offsetY - prev.y) / prev.scale;
       const nextX = offsetX - preZoomX * nextScale;
       const nextY = offsetY - preZoomY * nextScale;
-      return { scale: nextScale, x: nextX, y: nextY };
+      return applyViewConstraints({ scale: nextScale, x: nextX, y: nextY });
     });
   };
 
@@ -430,8 +489,8 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
         sx={{
           position: 'relative',
           borderRadius: { xs: 4, md: 5 },
-          minHeight: { xs: 440, md: 560 },
-          maxHeight: { xs: 540, md: 640 },
+          minHeight: { xs: 520, md: 640 },
+          maxHeight: { xs: 680, md: 760 },
           overflow: 'hidden',
           bgcolor: 'rgba(255, 255, 255, 0.82)',
           backgroundImage:

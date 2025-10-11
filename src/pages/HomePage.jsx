@@ -242,37 +242,24 @@ export default function HomePage({ onCreateMemory }) {
         </Stack>
       </Stack>
 
-      <Grid container spacing={{ xs: 3, md: 4 }} alignItems="stretch">
-        <Grid item xs={12} lg={7}>
-          {loading ? (
-            <Skeleton
-              variant="rounded"
-              height={520}
-              sx={{ borderRadius: { xs: 4, md: 5 }, bgcolor: 'rgba(255,255,255,0.6)' }}
-            />
-          ) : (
-            <FamilyTreeCanvas
-              members={members}
-              selectedMemberId={selectedMemberId}
-              onSelectMember={handleSelectMember}
-            />
-          )}
-        </Grid>
-        <Grid item xs={12} lg={5}>
-          {loading ? (
-            <Stack spacing={2}>
-              {Array.from({ length: 3 }).map((_, index) => (
-                <Skeleton key={index} variant="rounded" height={140} sx={{ borderRadius: 4 }} />
-              ))}
-            </Stack>
-          ) : (
-            <MemberSpotlight member={selectedMember} />
-          )}
-        </Grid>
-      </Grid>
+      <Box sx={{ width: '100%' }}>
+        {loading ? (
+          <Skeleton
+            variant="rounded"
+            height={560}
+            sx={{ borderRadius: { xs: 4, md: 5 }, bgcolor: 'rgba(255,255,255,0.6)' }}
+          />
+        ) : (
+          <FamilyTreeCanvas
+            members={members}
+            selectedMemberId={selectedMemberId}
+            onSelectMember={handleSelectMember}
+          />
+        )}
+      </Box>
 
-      <Stack spacing={2.5}>
-        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+      <Stack spacing={2.75}>
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2.5} alignItems={{ xs: 'flex-start', md: 'center' }}>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
             Memories featuring {selectedMember?.name?.split(' ')[0] ?? 'our family'}
           </Typography>
@@ -292,44 +279,55 @@ export default function HomePage({ onCreateMemory }) {
               </Grid>
             ))}
           </Grid>
-        ) : selectedMemories.length ? (
-          <Grid container spacing={2.5}>
-            {selectedMemories.map((memory) => (
-              <Grid item xs={12} key={memory.id}>
-                <MemoryCard memory={memory} onNavigateToMember={navigateHelper} />
-              </Grid>
-            ))}
-          </Grid>
         ) : (
-          <Card
-            variant="outlined"
-            sx={{
-              borderRadius: 4,
-              py: { xs: 4, md: 5 },
-              px: { xs: 3, md: 4 },
-              textAlign: 'center',
-              background:
-                'linear-gradient(135deg, rgba(240, 192, 96, 0.12), rgba(255,255,255,0.94))'
-            }}
-          >
-            <Stack spacing={1.75} alignItems="center">
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Invite someone to start a new memory with {selectedMember?.name?.split(' ')[0] ?? 'them'}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 420 }}>
-                Tag loved ones in the creation flow so everyone featured can revisit and add to the story when
-                it arrives.
-              </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => onCreateMemory?.()}
-                startIcon={<FavoriteBorderIcon />}
-              >
-                Add a new memory
-              </Button>
-            </Stack>
-          </Card>
+          <Grid container spacing={{ xs: 2.5, md: 3 }} alignItems="stretch">
+            {selectedMember && (
+              <Grid item xs={12} md={4}>
+                <MemberSpotlight member={selectedMember} />
+              </Grid>
+            )}
+            <Grid item xs={12} md={selectedMember ? 8 : 12}>
+              {selectedMemories.length ? (
+                <Grid container spacing={2.5}>
+                  {selectedMemories.map((memory) => (
+                    <Grid item xs={12} key={memory.id}>
+                      <MemoryCard memory={memory} onNavigateToMember={navigateHelper} />
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Card
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 4,
+                    py: { xs: 4, md: 5 },
+                    px: { xs: 3, md: 4 },
+                    textAlign: 'center',
+                    background:
+                      'linear-gradient(135deg, rgba(240, 192, 96, 0.12), rgba(255,255,255,0.94))'
+                  }}
+                >
+                  <Stack spacing={1.75} alignItems="center">
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                      Invite someone to start a new memory with {selectedMember?.name?.split(' ')[0] ?? 'them'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 420 }}>
+                      Tag loved ones in the creation flow so everyone featured can revisit and add to the story when
+                      it arrives.
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={() => onCreateMemory?.()}
+                      startIcon={<FavoriteBorderIcon />}
+                    >
+                      Add a new memory
+                    </Button>
+                  </Stack>
+                </Card>
+              )}
+            </Grid>
+          </Grid>
         )}
       </Stack>
     </Stack>
