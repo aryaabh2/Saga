@@ -29,6 +29,9 @@ function MemoryCard({ memory }) {
   return (
     <Card
       sx={{
+        width: '100%',
+        maxWidth: { sm: 620, md: 700, lg: 760 },
+        mx: 'auto',
         borderRadius: 3,
         overflow: 'hidden',
         border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
@@ -379,15 +382,33 @@ export default function HomePage({ onCreateMemory }) {
         {loading ? (
           <Grid container spacing={2.5}>
             {Array.from({ length: 3 }).map((_, index) => (
-              <Grid key={index} item xs={12}>
-                <Skeleton variant="rounded" height={200} sx={{ borderRadius: 3 }} />
+              <Grid
+                key={index}
+                item
+                xs={12}
+                sx={{ display: 'flex', justifyContent: 'center' }}
+              >
+                <Skeleton
+                  variant="rounded"
+                  height={200}
+                  sx={{
+                    borderRadius: 3,
+                    width: '100%',
+                    maxWidth: { sm: 620, md: 700, lg: 760 }
+                  }}
+                />
               </Grid>
             ))}
           </Grid>
         ) : selectedMemories.length ? (
           <Grid container spacing={{ xs: 2.5, md: 3 }}>
             {selectedMemories.map((memory) => (
-              <Grid item xs={12} key={memory.id}>
+              <Grid
+                item
+                xs={12}
+                key={memory.id}
+                sx={{ display: 'flex', justifyContent: 'center' }}
+              >
                 <MemoryCard memory={memory} />
               </Grid>
             ))}

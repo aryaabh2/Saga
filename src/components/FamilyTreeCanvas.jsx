@@ -9,8 +9,8 @@ function buildTreeLayout(members) {
       metrics: {
         generationCount: 0,
         maxGenerationSize: 0,
-        horizontalMargin: 10,
-        verticalMargin: 12
+        horizontalMargin: 14,
+        verticalMargin: 16
       }
     };
   }
@@ -32,8 +32,8 @@ function buildTreeLayout(members) {
     0
   );
 
-  const verticalMargin = 12; // percentage
-  const horizontalMargin = 10; // percentage
+  const verticalMargin = 16; // percentage
+  const horizontalMargin = 14; // percentage
   const verticalRange = 100 - verticalMargin * 2;
   const horizontalRange = 100 - horizontalMargin * 2;
 
