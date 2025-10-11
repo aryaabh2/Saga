@@ -42,13 +42,11 @@ function SagaLayout({ children }) {
   const navigationItems = [
     {
       label: 'Home',
-      description: 'Return to the family dashboard',
       icon: <HomeRoundedIcon fontSize="medium" />,
       path: '/'
     },
     {
-      label: 'Add a new memory',
-      description: 'Upload photos, letters or videos to start a saga',
+      label: 'Add memory',
       icon: <FavoriteBorderIcon fontSize="medium" />,
       path: '/memories/new'
     }
@@ -63,37 +61,36 @@ function SagaLayout({ children }) {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: 'background.default',
-        backgroundImage:
-          'radial-gradient(circle at top, rgba(234, 193, 124, 0.18), transparent 45%), radial-gradient(circle at bottom, rgba(166, 32, 64, 0.14), transparent 40%)'
+        bgcolor: (theme) => theme.palette.grey[100]
       }}
     >
       <AppBar
         position="static"
         elevation={0}
+        color="default"
         sx={{
-          backgroundImage: (theme) =>
-            `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
+          bgcolor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider'
         }}
       >
         <Toolbar
           sx={{
-            py: 2,
+            py: 1.5,
             px: { xs: 2, sm: 3 },
-            display: 'grid',
+            display: 'flex',
             alignItems: 'center',
-            gridTemplateColumns: 'auto 1fr auto',
             gap: 2
           }}
         >
           <IconButton
-            color="inherit"
+            color="default"
             edge="start"
             onClick={() => setMenuOpen(true)}
             aria-label="Open navigation menu"
             sx={{
-              bgcolor: 'rgba(255,255,255,0.12)',
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }
+              border: '1px solid',
+              borderColor: 'divider'
             }}
           >
             <MenuRoundedIcon />
@@ -101,17 +98,16 @@ function SagaLayout({ children }) {
           <Typography
             variant="h5"
             component="div"
-            sx={{ fontWeight: 700, letterSpacing: 0.6, textAlign: 'center' }}
+            sx={{ fontWeight: 700, letterSpacing: 0.4 }}
           >
             Saga
           </Typography>
-          <Box sx={{ width: 48, height: 48 }} />
         </Toolbar>
       </AppBar>
       <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
         <Box
           sx={{
-            width: { xs: 280, sm: 320 },
+            width: { xs: 260, sm: 300 },
             display: 'flex',
             flexDirection: 'column',
             minHeight: '100%'
@@ -119,8 +115,8 @@ function SagaLayout({ children }) {
           role="presentation"
         >
           <Toolbar sx={{ px: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Navigate Saga
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              Menu
             </Typography>
           </Toolbar>
           <Divider />
@@ -134,33 +130,24 @@ function SagaLayout({ children }) {
                   py: 1.5
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 44, color: 'secondary.main' }}>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>{item.icon}</ListItemIcon>
                 <ListItemText
                   primary={item.label}
-                  secondary={item.description}
-                  primaryTypographyProps={{ fontWeight: 700 }}
-                  secondaryTypographyProps={{ color: 'text.secondary' }}
+                  primaryTypographyProps={{ fontWeight: 600 }}
                 />
               </ListItemButton>
             ))}
           </List>
-          <Divider />
-          <Box sx={{ px: 3, py: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              Use the menu to jump between capturing new memories and reliving the sagas you have created
-              together.
-            </Typography>
-          </Box>
         </Box>
       </Drawer>
       <Container
         maxWidth="lg"
         sx={{
-          py: { xs: 4, md: 6 },
-          px: { xs: 2.5, sm: 4 },
+          py: { xs: 3, md: 5 },
+          px: { xs: 2, sm: 3 },
           display: 'flex',
           flexDirection: 'column',
-          gap: { xs: 3, md: 4 }
+          gap: { xs: 2.5, md: 4 }
         }}
       >
         {inMemoryFlow && (
