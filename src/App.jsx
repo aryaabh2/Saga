@@ -70,8 +70,8 @@ function SagaLayout({ children }) {
         color="default"
         sx={{
           bgcolor: 'background.paper',
-          borderBottom: '1px solid rgba(185, 94, 130, 0.24)',
-          backgroundImage: 'linear-gradient(90deg, rgba(255, 236, 192, 0.6), rgba(255, 247, 225, 0.95))'
+          borderBottom: '1px solid rgba(170, 170, 170, 0.28)',
+          backgroundImage: 'linear-gradient(90deg, rgba(255, 226, 226, 0.75), rgba(246, 246, 246, 0.95))'
         }}
       >
         <Toolbar
@@ -89,10 +89,10 @@ function SagaLayout({ children }) {
             onClick={() => setMenuOpen(true)}
             aria-label="Open navigation menu"
             sx={{
-              border: '1px solid rgba(185, 94, 130, 0.35)',
-              bgcolor: 'rgba(255, 247, 225, 0.8)',
+              border: '1px solid rgba(170, 170, 170, 0.35)',
+              bgcolor: 'rgba(255, 226, 226, 0.8)',
               '&:hover': {
-                bgcolor: 'rgba(255, 194, 155, 0.35)'
+                bgcolor: 'rgba(255, 199, 199, 0.45)'
               }
             }}
           >
@@ -114,7 +114,7 @@ function SagaLayout({ children }) {
             display: 'flex',
             flexDirection: 'column',
             minHeight: '100%',
-            bgcolor: 'rgba(255, 247, 225, 0.92)'
+            bgcolor: 'rgba(255, 226, 226, 0.95)'
           }}
           role="presentation"
         >
@@ -135,7 +135,7 @@ function SagaLayout({ children }) {
                   borderRadius: 2,
                   mx: 1,
                   '&:hover': {
-                    bgcolor: 'rgba(243, 159, 159, 0.18)'
+                    bgcolor: 'rgba(255, 199, 199, 0.25)'
                   }
                 }}
               >

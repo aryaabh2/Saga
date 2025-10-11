@@ -7,26 +7,26 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#B95E82',
-      light: '#D886A4',
-      dark: '#8C3F5F'
+      main: '#FFC7C7',
+      light: '#FFE2E2',
+      dark: '#AAAAAA'
     },
     secondary: {
-      main: '#F39F9F',
-      light: '#FFC29B',
-      dark: '#D07474'
+      main: '#AAAAAA',
+      light: '#FFE2E2',
+      dark: '#AAAAAA'
     },
     background: {
-      default: '#FFECC0',
-      paper: '#FFF7E1'
+      default: '#F6F6F6',
+      paper: '#FFE2E2'
     },
     text: {
-      primary: '#3C1C21',
-      secondary: '#6B4F54'
+      primary: '#3B3B3B',
+      secondary: '#6A6A6A'
     }
   },
   shape: {
-    borderRadius: 16
+    borderRadius: 12
   },
   typography: {
     fontFamily: '"Nunito", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -46,13 +46,13 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 999
+          borderRadius: 16
         },
         containedPrimary: {
-          backgroundImage: 'linear-gradient(135deg, #B95E82, #D886A4)',
-          boxShadow: '0 8px 20px rgba(185, 94, 130, 0.35)',
+          backgroundImage: 'linear-gradient(135deg, #FFC7C7, #FFE2E2)',
+          boxShadow: '0 10px 24px rgba(170, 170, 170, 0.25)',
           '&:hover': {
-            backgroundImage: 'linear-gradient(135deg, #8C3F5F, #C97394)'
+            backgroundImage: 'linear-gradient(135deg, #FFE2E2, #FFC7C7)'
           }
         }
       }
@@ -60,9 +60,9 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 20,
-          borderColor: 'rgba(185, 94, 130, 0.18)',
-          backgroundImage: 'linear-gradient(180deg, rgba(255, 236, 192, 0.5), rgba(255, 247, 225, 0.9))'
+          borderRadius: 16,
+          borderColor: 'rgba(170, 170, 170, 0.2)',
+          backgroundImage: 'linear-gradient(180deg, rgba(255, 226, 226, 0.35), rgba(255, 199, 199, 0.65))'
         }
       }
     }
