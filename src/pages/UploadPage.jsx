@@ -86,20 +86,20 @@ export default function UploadPage({ onSubmit }) {
   }, [files.length, showValidation, summary, title]);
 
   return (
-    <Stack spacing={4} component="form" onSubmit={handleSubmit}>
+    <Stack spacing={3} component="form" onSubmit={handleSubmit}>
       <Box>
         <Typography variant="h3" gutterBottom sx={{ fontWeight: 700 }}>
           Welcome to Saga
         </Typography>
-        <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600 }}>
           Gather photos and notes from loved ones and let Saga weave a memorable keepsake that is easy to share
           with family and friends.
         </Typography>
       </Box>
 
-      <Card variant="outlined">
-        <CardContent>
-          <Stack spacing={3}>
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Stack spacing={2.5}>
             <Box
               {...getRootProps()}
               sx={{
@@ -107,7 +107,7 @@ export default function UploadPage({ onSubmit }) {
                 borderColor: isDragActive ? 'primary.main' : 'grey.400',
                 borderRadius: 2,
                 bgcolor: isDragActive ? 'primary.50' : 'grey.50',
-                p: 5,
+                p: { xs: 4, md: 5 },
                 textAlign: 'center',
                 cursor: 'pointer'
               }}
@@ -128,9 +128,9 @@ export default function UploadPage({ onSubmit }) {
             </Box>
 
             {filePreviews.length > 0 && (
-              <Stack spacing={1}>
+              <Stack spacing={1.25}>
                 <Typography variant="subtitle1">Selected images</Typography>
-                <Stack spacing={1} sx={{ maxHeight: 200, overflow: 'auto', pr: 1 }}>
+                <Stack spacing={0.75} sx={{ maxHeight: 200, overflow: 'auto', pr: 1 }}>
                   {filePreviews.map((file) => (
                     <Box
                       key={file.name}
@@ -154,9 +154,9 @@ export default function UploadPage({ onSubmit }) {
         </CardContent>
       </Card>
 
-      <Card variant="outlined">
-        <CardContent>
-          <Stack spacing={3}>
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Stack spacing={2.5}>
             <TextField
               label="Saga title"
               value={title}

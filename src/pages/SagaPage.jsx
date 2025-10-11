@@ -65,10 +65,10 @@ export default function SagaPage({ saga }) {
     setActiveMomentIndex((prev) => (prev - 1 + totalMoments) % totalMoments);
   };
 
-  const sectionContainerSx = { width: '100%', maxWidth: { xs: '100%', md: 900 } };
+  const sectionContainerSx = { width: '100%', maxWidth: { xs: '100%', md: 880 } };
 
   return (
-    <Stack spacing={4} alignItems="center">
+    <Stack spacing={{ xs: 3, md: 4 }} alignItems="center">
       <Box sx={sectionContainerSx}>
         <Box
           sx={{
@@ -108,7 +108,7 @@ export default function SagaPage({ saga }) {
         {totalMoments > 0 ? (
           <Card
             variant="outlined"
-            sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 2 }}
+            sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 3 }}
           >
             <CardMedia
               component="img"
@@ -119,7 +119,7 @@ export default function SagaPage({ saga }) {
                 objectFit: 'cover'
               }}
             />
-            <CardContent sx={{ bgcolor: 'background.default' }}>
+            <CardContent sx={{ bgcolor: 'background.default', p: { xs: 2.75, sm: 3 } }}>
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2" color="secondary.dark" sx={{ letterSpacing: 1 }}>
                   Moment {activeMomentIndex + 1} of {totalMoments}
@@ -163,8 +163,8 @@ export default function SagaPage({ saga }) {
             />
           </Card>
         ) : (
-          <Card variant="outlined" sx={{ borderRadius: 2 }}>
-            <CardContent>
+          <Card variant="outlined" sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: { xs: 2.75, sm: 3 } }}>
               <Typography color="text.secondary">
                 Your saga moments will appear here once memories are added.
               </Typography>
@@ -174,9 +174,9 @@ export default function SagaPage({ saga }) {
       </Box>
 
       <Box sx={sectionContainerSx}>
-        <Card variant="outlined" sx={{ borderRadius: 2 }}>
-          <CardContent>
-            <Stack spacing={2.5}>
+        <Card variant="outlined" sx={{ borderRadius: 3 }}>
+          <CardContent sx={{ p: { xs: 2.75, sm: 3.25 } }}>
+            <Stack spacing={2.25}>
               <Typography variant="h5" component="h2" color="primary">
                 Share the joy
               </Typography>
@@ -188,7 +188,7 @@ export default function SagaPage({ saga }) {
           </CardContent>
           <Divider />
           <CardActions
-            sx={{ justifyContent: { xs: 'center', sm: 'space-between' }, flexWrap: 'wrap', gap: 2, p: 3 }}
+            sx={{ justifyContent: { xs: 'center', sm: 'space-between' }, flexWrap: 'wrap', gap: 2, p: { xs: 2.5, sm: 3 } }}
           >
             <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => downloadSaga(saga)}>
               Download saga

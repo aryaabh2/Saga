@@ -93,18 +93,20 @@ function FamilyNode({ member, selected, onSelect }) {
           }
         }}
         tabIndex={0}
+        data-member-node
         sx={{
           position: 'absolute',
           top: `${member.y}%`,
           left: `${member.x}%`,
-          transform: 'translate(-50%, -50%)',
+          transform: `translate(-50%, -50%) scale(${selected ? 1.12 : 1})`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 1,
           width: { xs: 140, md: 160 },
           cursor: 'pointer',
-          outline: 'none'
+          outline: 'none',
+          transition: 'transform 0.35s ease, opacity 0.35s ease'
         }}
       >
         <Box
@@ -220,14 +222,124 @@ function computeConnectorPaths(positionedMembers) {
 
 function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
   const containerRef = useRef(null);
+  const canvasRef = useRef(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const [view, setView] = useState({ x: 0, y: 0, scale: 1 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragState = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0 });
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element || typeof ResizeObserver === 'undefined') {
+      return undefined;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry?.contentRect) {
+        setContainerSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+      }
+    });
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
   const positionedMembers = useMemo(() => buildTreeLayout(members), [members]);
   const connectors = useMemo(() => computeConnectorPaths(positionedMembers), [positionedMembers]);
+  const selectedMember = useMemo(
+    () => positionedMembers.find((member) => member.id === selectedMemberId),
+    [positionedMembers, selectedMemberId]
+  );
+
+  useEffect(() => {
+    if (!selectedMember || !containerSize.width || !containerSize.height) {
+      return;
+    }
+
+    setView((prev) => {
+      const targetScale = Math.min(Math.max(prev.scale, 1.12), 1.45);
+      const nodeX = (selectedMember.x / 100) * containerSize.width;
+      const nodeY = (selectedMember.y / 100) * containerSize.height;
+      const translateX = containerSize.width / 2 - nodeX * targetScale;
+      const translateY = containerSize.height / 2 - nodeY * targetScale;
+      return { scale: targetScale, x: translateX, y: translateY };
+    });
+  }, [containerSize.height, containerSize.width, selectedMember]);
+
+  useEffect(() => {
+    return () => {
+      dragState.current.active = false;
+    };
+  }, []);
+
+  const clampScale = (value) => Math.min(Math.max(value, 0.75), 1.75);
+
+  const handlePointerDown = (event) => {
+    if (event.button !== 0) return;
+    const nodeTarget = event.target.closest('[data-member-node]');
+    if (nodeTarget) {
+      return;
+    }
+
+    dragState.current = {
+      active: true,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: view.x,
+      originY: view.y
+    };
+    setIsDragging(true);
+    canvasRef.current?.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event) => {
+    if (!dragState.current.active) {
+      return;
+    }
+
+    const deltaX = event.clientX - dragState.current.startX;
+    const deltaY = event.clientY - dragState.current.startY;
+
+    setView((prev) => ({ ...prev, x: dragState.current.originX + deltaX, y: dragState.current.originY + deltaY }));
+  };
+
+  const handlePointerUp = (event) => {
+    if (!dragState.current.active) {
+      return;
+    }
+
+    dragState.current.active = false;
+    setIsDragging(false);
+    canvasRef.current?.releasePointerCapture(event.pointerId);
+  };
+
+  const handleWheel = (event) => {
+    event.preventDefault();
+    if (!containerRef.current) {
+      return;
+    }
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const offsetY = event.clientY - rect.top;
+
+    setView((prev) => {
+      const wheelDirection = event.deltaY < 0 ? 1 : -1;
+      const nextScale = clampScale(prev.scale + wheelDirection * 0.08);
+      const preZoomX = (offsetX - prev.x) / prev.scale;
+      const preZoomY = (offsetY - prev.y) / prev.scale;
+      const nextX = offsetX - preZoomX * nextScale;
+      const nextY = offsetY - preZoomY * nextScale;
+      return { scale: nextScale, x: nextX, y: nextY };
+    });
+  };
 
   return (
     <Fade in={isMounted} timeout={600}>
@@ -236,24 +348,50 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
         sx={{
           position: 'relative',
           borderRadius: { xs: 4, md: 5 },
-          minHeight: { xs: 520, md: 640 },
+          minHeight: { xs: 440, md: 560 },
           overflow: 'hidden',
           bgcolor: 'rgba(255, 255, 255, 0.78)',
           backgroundImage:
             'radial-gradient(circle at 20% 20%, rgba(240, 192, 96, 0.18), transparent 55%), radial-gradient(circle at 80% 10%, rgba(155, 29, 63, 0.12), transparent 55%), linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255, 250, 245, 0.9))',
-          boxShadow: '0 40px 90px rgba(15, 23, 42, 0.16)',
-          p: { xs: 3, md: 6 }
+          boxShadow: '0 32px 70px rgba(15, 23, 42, 0.12)',
+          p: 0,
+          userSelect: 'none'
         }}
+        onWheel={handleWheel}
       >
-        <ConnectorLayer lines={connectors} />
-        {positionedMembers.map((member) => (
-          <MemoizedFamilyNode
-            key={member.id}
-            member={member}
-            selected={member.id === selectedMemberId}
-            onSelect={onSelectMember}
-          />
-        ))}
+        <Box
+          ref={canvasRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            touchAction: 'none',
+            cursor: isDragging ? 'grabbing' : 'grab'
+          }}
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              transformOrigin: 'center center',
+              transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)'
+            }}
+            style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
+          >
+            <ConnectorLayer lines={connectors} />
+            {positionedMembers.map((member) => (
+              <MemoizedFamilyNode
+                key={member.id}
+                member={member}
+                selected={member.id === selectedMemberId}
+                onSelect={onSelectMember}
+              />
+            ))}
+          </Box>
+        </Box>
       </Box>
     </Fade>
   );
