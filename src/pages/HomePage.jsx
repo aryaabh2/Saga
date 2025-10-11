@@ -7,38 +7,33 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
-  Chip,
-  Divider,
   Grid,
   Skeleton,
   Stack,
   Typography
 } from '@mui/material';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
-import SouthRoundedIcon from '@mui/icons-material/SouthRounded';
 import FamilyTreeCanvas from '../components/FamilyTreeCanvas.jsx';
 import { fetchFamilySnapshot } from '../data/mockFamilyService.js';
 
 const quickActions = [
   {
-    label: 'Add a new memory',
-    description: 'Upload photos, letters or videos to weave into your next saga.',
+    label: 'Add memory',
     icon: <FavoriteBorderIcon fontSize="small" />,
     action: 'createMemory'
   }
 ];
 
-function MemoryCard({ memory, onNavigateToMember }) {
+function MemoryCard({ memory }) {
   return (
     <Card
-      variant="outlined"
       sx={{
         borderRadius: 3,
         overflow: 'hidden',
-        boxShadow: '0 18px 40px rgba(15, 23, 42, 0.12)',
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255, 250, 245, 0.9))'
+        border: '1px solid',
+        borderColor: 'divider',
+        boxShadow: 'none',
+        bgcolor: 'background.paper'
       }}
     >
       <CardActionArea
@@ -60,42 +55,15 @@ function MemoryCard({ memory, onNavigateToMember }) {
         />
         <CardContent sx={{ flexGrow: 1, p: { xs: 2.5, sm: 3 } }}>
           <Stack spacing={1.25}>
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Chip label={memory.mediaType} color="secondary" size="small" sx={{ fontWeight: 600 }} />
-              <Typography variant="body2" color="text.secondary">
-                {memory.date}
-              </Typography>
-            </Stack>
+            <Typography variant="subtitle2" color="text.secondary">
+              {memory.date}
+            </Typography>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>
               {memory.title}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {memory.description}
             </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-              {memory.tags.map((tag) => (
-                <Chip key={tag} label={tag} variant="outlined" color="secondary" size="small" />
-              ))}
-            </Stack>
-            <Divider sx={{ my: 1 }} />
-            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
-                Featuring:
-              </Typography>
-              {memory.people.map((personId) => (
-                <Chip
-                  key={`${memory.id}-${personId}`}
-                  label={onNavigateToMember.getLabel(personId)}
-                  onClick={() => onNavigateToMember.handle(personId)}
-                  size="small"
-                  sx={{
-                    bgcolor: 'rgba(155, 29, 63, 0.08)',
-                    borderRadius: 999,
-                    fontWeight: 600
-                  }}
-                />
-              ))}
-            </Stack>
           </Stack>
         </CardContent>
       </CardActionArea>
@@ -108,18 +76,16 @@ function MemberSpotlight({ member }) {
     return (
       <Box
         sx={{
-          borderRadius: 4,
-          p: { xs: 2.5, md: 3 },
-          border: '1px dashed rgba(240, 192, 96, 0.5)',
-          bgcolor: 'rgba(255,255,255,0.8)',
+          borderRadius: 3,
+          p: { xs: 2, md: 2.5 },
+          border: '1px dashed',
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
           textAlign: 'center'
         }}
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-          Choose someone in the tree to view their spotlight
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Highlights and shared memories will appear here.
+          Choose a person to see their details
         </Typography>
       </Box>
     );
@@ -128,56 +94,42 @@ function MemberSpotlight({ member }) {
   return (
     <Box
       sx={{
-        borderRadius: 4,
-        p: { xs: 2.5, md: 3 },
-        bgcolor: 'rgba(255,255,255,0.95)',
-        border: '1px solid rgba(240, 192, 96, 0.25)',
-        boxShadow: '0 18px 42px rgba(15, 23, 42, 0.12)',
-        backdropFilter: 'blur(12px)'
+        borderRadius: 3,
+        p: { xs: 2, md: 2.5 },
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        boxShadow: 'none'
       }}
     >
-      <Stack spacing={2.5}>
-        <Stack direction="row" spacing={2} alignItems="center">
+      <Stack spacing={2}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
           <Avatar
             src={member.avatarUrl}
             alt={member.name}
-            sx={{ width: 68, height: 68, border: '4px solid rgba(240,192,96,0.35)' }}
+            sx={{ width: 64, height: 64 }}
           />
           <Box>
-            <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1 }}>
-              Currently exploring
+            <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+              {member.relation}
             </Typography>
             <Typography variant="h5" sx={{ fontWeight: 700, lineHeight: 1.15 }}>
               {member.name}
             </Typography>
-            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-              <Chip
-                label={member.relation}
-                size="small"
-                color="secondary"
-                sx={{ fontWeight: 600 }}
-              />
-              {member.location ? (
-                <Typography variant="body2" color="text.secondary">
-                  {member.location}
-                </Typography>
-              ) : null}
-            </Stack>
+            {member.location ? (
+              <Typography variant="body2" color="text.secondary">
+                {member.location}
+              </Typography>
+            ) : null}
           </Box>
         </Stack>
         {member.highlights?.length ? (
-          <Stack spacing={1.25}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Favorite highlights
-            </Typography>
-            <Stack spacing={1}>
-              {member.highlights.map((highlight) => (
-                <Stack key={highlight} direction="row" spacing={1.5} alignItems="center">
-                  <PeopleAltRoundedIcon color="secondary" fontSize="small" />
-                  <Typography variant="body2">{highlight}</Typography>
-                </Stack>
-              ))}
-            </Stack>
+          <Stack spacing={0.75}>
+            {member.highlights.map((highlight) => (
+              <Typography key={highlight} variant="body2">
+                {highlight}
+              </Typography>
+            ))}
           </Stack>
         ) : null}
       </Stack>
@@ -231,99 +183,73 @@ export default function HomePage({ onCreateMemory }) {
     createMemory: onCreateMemory
   };
 
-  const navigateHelper = useMemo(
-    () => ({
-      handle: handleSelectMember,
-      getLabel: (memberId) => memberMap.get(memberId)?.name?.split(' ')[0] ?? 'Family member'
-    }),
-    [memberMap]
-  );
-
   return (
-    <Stack spacing={{ xs: 4, md: 5.5 }}>
-      <Card
+    <Stack spacing={{ xs: 3, md: 4 }}>
+      <Box
         sx={{
-          borderRadius: { xs: 4, md: 5 },
+          borderRadius: 3,
           px: { xs: 3, md: 4 },
           py: { xs: 3, md: 4 },
-          backgroundImage:
-            'linear-gradient(135deg, rgba(240, 192, 96, 0.12), rgba(155, 29, 63, 0.08)), linear-gradient(0deg, rgba(255,255,255,0.94), rgba(255,255,255,0.94))',
-          boxShadow: '0 22px 48px rgba(15, 23, 42, 0.12)'
+          border: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper'
         }}
       >
         <Stack
           direction={{ xs: 'column', md: 'row' }}
-          spacing={{ xs: 3, md: 4 }}
+          spacing={{ xs: 2.5, md: 3 }}
           alignItems={{ xs: 'flex-start', md: 'center' }}
         >
           <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
               Welcome back
             </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.15 }}>
-              Your family story, ready to explore together
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5, maxWidth: 540 }}>
-              Glide across the tree to open a spotlight, then scroll to relive the memories you built together.
+            <Typography variant="body1" color="text.secondary" sx={{ mt: 0.75 }}>
+              Pick someone in the tree and open a memory when you are ready.
             </Typography>
           </Box>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={1.5}
-            width={{ xs: '100%', md: 'auto' }}
-            flexWrap="wrap"
-            useFlexGap
-          >
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} width={{ xs: '100%', md: 'auto' }}>
             {quickActions.map((action) => (
               <Button
                 key={action.action}
-                variant={action.action === 'createMemory' ? 'contained' : 'outlined'}
+                variant="contained"
                 color="primary"
-                size="large"
+                size="medium"
                 startIcon={action.icon}
-                endIcon={action.action === 'createMemory' ? <ArrowForwardIcon /> : undefined}
                 onClick={() => actionHandlers[action.action]?.()}
-                sx={{ borderRadius: 999, px: 3, py: 1.5, width: { xs: '100%', sm: 'auto' } }}
+                sx={{ borderRadius: 2, px: 2.5, py: 1, width: { xs: '100%', sm: 'auto' } }}
               >
                 {action.label}
               </Button>
             ))}
           </Stack>
         </Stack>
-      </Card>
+      </Box>
 
-      <Card
-        variant="outlined"
+      <Box
         sx={{
-          borderRadius: { xs: 4, md: 5 },
-          px: { xs: 2.5, md: 3.5 },
+          borderRadius: 3,
+          px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          backgroundImage:
-            'linear-gradient(135deg, rgba(255,255,255,0.96), rgba(255, 250, 245, 0.9)), radial-gradient(circle at top right, rgba(240,192,96,0.18), transparent 55%)',
-          boxShadow: '0 26px 56px rgba(15, 23, 42, 0.12)'
+          border: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper'
         }}
       >
         <Grid container spacing={{ xs: 3, lg: 4 }} alignItems="stretch">
           <Grid item xs={12} lg={8}>
-            <Stack spacing={2.5} sx={{ height: '100%' }}>
+            <Stack spacing={2} sx={{ height: '100%' }}>
               <Box>
-                <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 700 }}>
                   Family tree
                 </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                  Zoom out, pan around, and tap a branch to pivot
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75, maxWidth: 520 }}>
-                  The spotlight on the right updates instantly when you select someone new.
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                  Tap anyone to update the spotlight on the right.
                 </Typography>
               </Box>
               <Box sx={{ width: '100%' }}>
                 {loading ? (
-                  <Skeleton
-                    variant="rounded"
-                    height={420}
-                    sx={{ borderRadius: { xs: 4, md: 5 }, bgcolor: 'rgba(255,255,255,0.65)' }}
-                  />
+                  <Skeleton variant="rounded" height={400} sx={{ borderRadius: 3 }} />
                 ) : (
                   <FamilyTreeCanvas
                     members={members}
@@ -332,98 +258,58 @@ export default function HomePage({ onCreateMemory }) {
                   />
                 )}
               </Box>
-              <Stack
-                direction="row"
-                spacing={1.5}
-                alignItems="center"
-                justifyContent={{ xs: 'flex-start', lg: 'center' }}
-                sx={{
-                  bgcolor: 'rgba(240, 192, 96, 0.14)',
-                  borderRadius: 999,
-                  px: 2.5,
-                  py: 1,
-                  alignSelf: { xs: 'stretch', lg: 'center' }
-                }}
-              >
-                <SouthRoundedIcon color="secondary" />
-                <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
-                  Memories continue right below
-                </Typography>
-              </Stack>
             </Stack>
           </Grid>
           <Grid item xs={12} lg={4} sx={{ display: 'flex' }}>
-            <Stack spacing={3} sx={{ width: '100%' }}>
+            <Stack spacing={2.5} sx={{ width: '100%' }}>
               <MemberSpotlight member={selectedMember} />
-              <Divider flexItem sx={{ opacity: 0.4 }} />
-              <Stack spacing={1.5}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Shared moments nearby
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  {selectedMemories.length} saved moments
                 </Typography>
-                <Chip
-                  label={`${selectedMemories.length} memories feature ${
-                    selectedMember?.name?.split(' ')[0] ?? 'your family'
-                  }`}
-                  color="secondary"
-                  sx={{ fontWeight: 600, width: 'fit-content' }}
-                />
-                <Typography variant="body2" color="text.secondary">
-                  Scroll below to browse each moment, or start a new one and invite others to co-create.
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {selectedMember?.name?.split(' ')[0] ?? 'Your family'} is tagged in these memories.
                 </Typography>
-              </Stack>
-              <Stack spacing={1.5}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Quick action
-                </Typography>
-                {quickActions.map((action) => (
-                  <Button
-                    key={`sidebar-${action.action}`}
-                    variant={action.action === 'createMemory' ? 'contained' : 'outlined'}
-                    color="primary"
-                    size="large"
-                    startIcon={action.icon}
-                    endIcon={action.action === 'createMemory' ? <ArrowForwardIcon /> : undefined}
-                    onClick={() => actionHandlers[action.action]?.()}
-                    sx={{ borderRadius: 3 }}
-                    fullWidth
-                  >
-                    {action.label}
-                  </Button>
-                ))}
-              </Stack>
+              </Box>
+              {quickActions.map((action) => (
+                <Button
+                  key={`sidebar-${action.action}`}
+                  variant="outlined"
+                  color="primary"
+                  size="medium"
+                  startIcon={action.icon}
+                  onClick={() => actionHandlers[action.action]?.()}
+                  sx={{ borderRadius: 2 }}
+                  fullWidth
+                >
+                  {action.label}
+                </Button>
+              ))}
             </Stack>
           </Grid>
         </Grid>
-      </Card>
+      </Box>
 
-      <Stack spacing={3.25}>
+      <Stack spacing={2.5}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
-          spacing={2.5}
+          spacing={1.5}
           justifyContent="space-between"
           alignItems={{ xs: 'flex-start', md: 'center' }}
         >
-          <Box>
-            <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1 }}>
-              Memory library
-            </Typography>
-            <Typography variant="h5" sx={{ fontWeight: 700 }}>
-              Featuring {selectedMember?.name?.split(' ')[0] ?? 'our family'}
-            </Typography>
-          </Box>
-          <Chip
-            label={`${selectedMemories.length} shared moments`}
-            size="small"
-            color="secondary"
-            sx={{ fontWeight: 600 }}
-          />
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Memories
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {selectedMemories.length} items
+          </Typography>
         </Stack>
 
         {loading ? (
           <Grid container spacing={2.5}>
             {Array.from({ length: 3 }).map((_, index) => (
               <Grid key={index} item xs={12}>
-                <Skeleton variant="rounded" height={220} sx={{ borderRadius: 4 }} />
+                <Skeleton variant="rounded" height={200} sx={{ borderRadius: 3 }} />
               </Grid>
             ))}
           </Grid>
@@ -431,40 +317,40 @@ export default function HomePage({ onCreateMemory }) {
           <Grid container spacing={{ xs: 2.5, md: 3 }}>
             {selectedMemories.map((memory) => (
               <Grid item xs={12} key={memory.id}>
-                <MemoryCard memory={memory} onNavigateToMember={navigateHelper} />
+                <MemoryCard memory={memory} />
               </Grid>
             ))}
           </Grid>
         ) : (
-          <Card
-            variant="outlined"
+          <Box
             sx={{
-              borderRadius: 4,
+              borderRadius: 3,
               py: { xs: 4, md: 5 },
               px: { xs: 3, md: 4 },
               textAlign: 'center',
-              background:
-                'linear-gradient(135deg, rgba(240, 192, 96, 0.12), rgba(255,255,255,0.94))'
+              border: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'background.paper'
             }}
           >
-            <Stack spacing={1.75} alignItems="center">
+            <Stack spacing={1.5} alignItems="center">
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Invite someone to start a new memory with {selectedMember?.name?.split(' ')[0] ?? 'them'}
+                No memories yet
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 420 }}>
-                Tag loved ones in the creation flow so everyone featured can revisit and add to the story when it
-                arrives.
+              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
+                Start a simple collection for {selectedMember?.name?.split(' ')[0] ?? 'your family'}.
               </Typography>
               <Button
                 variant="contained"
-                size="large"
+                size="medium"
                 onClick={() => onCreateMemory?.()}
                 startIcon={<FavoriteBorderIcon />}
+                sx={{ borderRadius: 2 }}
               >
-                Add a new memory
+                Add memory
               </Button>
             </Stack>
-          </Card>
+          </Box>
         )}
       </Stack>
     </Stack>
