@@ -215,15 +215,11 @@ export default function HomePage({ onCreateMemory, onBrowseMemories }) {
     <Stack spacing={{ xs: 4, md: 6 }}>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems={{ xs: 'flex-start', md: 'center' }}>
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 2, color: 'text.secondary' }}>
-            Welcome back
+          <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.15 }}>
+            Your family story, all together in one warm place
           </Typography>
-          <Typography variant="h3" sx={{ fontWeight: 800, lineHeight: 1.1, mt: 1 }}>
-            Your family’s living story, all in one warm place
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mt: 2, maxWidth: 560 }}>
-            Start where you left off, revisit keepsakes, and invite loved ones to add their voices. Tap through
-            the tree to visit each memory lane.
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5, maxWidth: 540 }}>
+            Pick up a memory, invite loved ones, and tap through the tree to relive each shared moment.
           </Typography>
         </Box>
         <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>

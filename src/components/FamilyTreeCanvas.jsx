@@ -17,7 +17,9 @@ function buildTreeLayout(members) {
 
   const maxGeneration = Math.max(...members.map((member) => member.generation ?? 0), 0);
   const verticalMargin = 8; // percentage
+  const horizontalMargin = 10; // percentage
   const verticalRange = 100 - verticalMargin * 2;
+  const horizontalRange = 100 - horizontalMargin * 2;
 
   return members.map((member) => {
     const generation = member.generation ?? 0;
@@ -27,7 +29,8 @@ function buildTreeLayout(members) {
       .sort((a, b) => (a.name > b.name ? 1 : -1));
     const index = sortedGroup.findIndex((item) => item.id === member.id);
     const denominator = sortedGroup.length + 1;
-    const x = denominator > 0 ? ((index + 1) / denominator) * 100 : 50;
+    const positionInGroup = denominator > 0 ? (index + 1) / denominator : 0.5;
+    const x = horizontalMargin + positionInGroup * horizontalRange;
     const normalizedGeneration = maxGeneration > 0 ? generation / maxGeneration : 0;
     const y = verticalMargin + normalizedGeneration * verticalRange;
 
