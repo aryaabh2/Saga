@@ -259,10 +259,10 @@ export default function HomePage({ onCreateMemory }) {
         >
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              Winter stories for {familyGroupLabelWithArticle}
+              Family sagas for {familyGroupLabelWithArticle}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.75 }}>
-              Choose someone below to spotlight their cozy-season highlights and open a shared memory when you are ready.
+              Choose someone on the tree to spotlight their highlights and open shared memories whenever you're ready.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} width={{ xs: '100%', md: 'auto' }}>
