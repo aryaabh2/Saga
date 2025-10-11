@@ -8,8 +8,8 @@ function buildTreeLayout(members) {
       metrics: {
         generationCount: 0,
         maxGenerationSize: 0,
-        horizontalMargin: 12,
-        verticalMargin: 14
+        horizontalMargin: 10,
+        verticalMargin: 12
       }
     };
   }
@@ -31,13 +31,13 @@ function buildTreeLayout(members) {
     0
   );
 
-  const verticalMargin = 14; // percentage
-  const horizontalMargin = 12; // percentage
+  const verticalMargin = 12; // percentage
+  const horizontalMargin = 10; // percentage
   const verticalRange = 100 - verticalMargin * 2;
   const horizontalRange = 100 - horizontalMargin * 2;
 
-  const baseColumnSlots = maxGenerationSize + 2;
-  const rowDenominator = generationOrder.length > 1 ? generationOrder.length - 1 : 1;
+  const baseRowSlots = maxGenerationSize + 1;
+  const columnDenominator = generationOrder.length > 1 ? generationOrder.length - 1 : 1;
 
   const nodes = members.map((member) => {
     const generation = member.generation ?? 0;
@@ -48,8 +48,8 @@ function buildTreeLayout(members) {
     const rowIndex = generationIndexMap.get(generation) ?? 0;
 
     const offset = (maxGenerationSize - columnCount) / 2;
-    const normalizedColumn = baseColumnSlots > 0 ? (offset + safeColumnIndex + 1) / baseColumnSlots : 0.5;
-    const normalizedRow = generationOrder.length > 1 ? rowIndex / rowDenominator : 0.5;
+    const normalizedRow = baseRowSlots > 0 ? (offset + safeColumnIndex + 0.5) / baseRowSlots : 0.5;
+    const normalizedColumn = generationOrder.length > 1 ? rowIndex / columnDenominator : 0.5;
 
     const x = horizontalMargin + normalizedColumn * horizontalRange;
     const y = verticalMargin + normalizedRow * verticalRange;
@@ -136,7 +136,7 @@ function FamilyNode({ member, selected, onSelect }) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: { xs: 118, md: 140 },
+          width: { xs: 92, md: 108 },
           cursor: 'pointer',
           outline: 'none',
           transition: 'transform 0.25s ease, opacity 0.3s ease',
@@ -146,15 +146,15 @@ function FamilyNode({ member, selected, onSelect }) {
         <Box
           sx={{
             width: '100%',
-            borderRadius: 3,
-            px: 1.5,
-            py: 1.1,
-            bgcolor: selected ? 'rgba(255, 247, 225, 0.95)' : 'rgba(255, 255, 255, 0.85)',
+            borderRadius: 2,
+            px: 1.25,
+            py: 1,
+            bgcolor: selected ? 'rgba(255, 226, 226, 0.95)' : 'rgba(246, 246, 246, 0.9)',
             boxShadow: selected
-              ? '0 10px 24px rgba(185, 94, 130, 0.35)'
-              : '0 6px 16px rgba(60, 28, 33, 0.15)',
+              ? '0 12px 28px rgba(170, 170, 170, 0.3)'
+              : '0 6px 18px rgba(170, 170, 170, 0.22)',
             border: (theme) =>
-              `1px solid ${selected ? theme.palette.primary.main : 'rgba(185, 94, 130, 0.25)'}`,
+              `1px solid ${selected ? theme.palette.primary.main : 'rgba(170, 170, 170, 0.35)'}`,
             textAlign: 'center',
             backdropFilter: 'blur(10px)'
           }}
@@ -190,8 +190,8 @@ function ConnectorLayer({ lines }) {
     >
       <defs>
         <linearGradient id="family-connector" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="rgba(185, 94, 130, 0.42)" />
-          <stop offset="100%" stopColor="rgba(243, 159, 159, 0.35)" />
+          <stop offset="0%" stopColor="rgba(255, 199, 199, 0.6)" />
+          <stop offset="100%" stopColor="rgba(170, 170, 170, 0.35)" />
         </linearGradient>
       </defs>
       {lines.map((line) => (
@@ -199,7 +199,7 @@ function ConnectorLayer({ lines }) {
           key={line.key}
           d={line.path}
           stroke="url(#family-connector)"
-          strokeWidth={line.emphasis ? 5 : 3.2}
+          strokeWidth={line.emphasis ? 4 : 2.6}
           fill="transparent"
           strokeLinecap="round"
         />
@@ -224,11 +224,11 @@ function computeConnectorPaths(positionedMembers) {
       const startY = from.y * 10;
       const endX = to.x * 10;
       const endY = to.y * 10;
-      const midpointY = (startY + endY) / 2;
+      const midpointX = (startX + endX) / 2;
 
       return {
         key: `${edge.from}-${edge.to}`,
-        path: `M ${startX} ${startY} C ${startX} ${midpointY}, ${endX} ${midpointY}, ${endX} ${endY}`,
+        path: `M ${startX} ${startY} C ${midpointX} ${startY}, ${midpointX} ${endY}, ${endX} ${endY}`,
         emphasis: from.generation === 2 || to.generation === 2
       };
     })
@@ -442,28 +442,36 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
   };
 
   const handleWheel = (event) => {
-    if (!event.ctrlKey && !event.metaKey) {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      if (!containerRef.current) {
+        return;
+      }
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const offsetX = event.clientX - rect.left;
+      const offsetY = event.clientY - rect.top;
+
+      setView((prev) => {
+        const wheelDirection = event.deltaY < 0 ? 1 : -1;
+        const nextScale = clampScale(prev.scale + wheelDirection * 0.08);
+        const preZoomX = (offsetX - prev.x) / prev.scale;
+        const preZoomY = (offsetY - prev.y) / prev.scale;
+        const nextX = offsetX - preZoomX * nextScale;
+        const nextY = offsetY - preZoomY * nextScale;
+        return applyViewConstraints({ scale: nextScale, x: nextX, y: nextY });
+      });
       return;
     }
 
     event.preventDefault();
-    if (!containerRef.current) {
-      return;
-    }
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const offsetX = event.clientX - rect.left;
-    const offsetY = event.clientY - rect.top;
-
-    setView((prev) => {
-      const wheelDirection = event.deltaY < 0 ? 1 : -1;
-      const nextScale = clampScale(prev.scale + wheelDirection * 0.08);
-      const preZoomX = (offsetX - prev.x) / prev.scale;
-      const preZoomY = (offsetY - prev.y) / prev.scale;
-      const nextX = offsetX - preZoomX * nextScale;
-      const nextY = offsetY - preZoomY * nextScale;
-      return applyViewConstraints({ scale: nextScale, x: nextX, y: nextY });
-    });
+    setView((prev) =>
+      applyViewConstraints({
+        ...prev,
+        x: prev.x - event.deltaX * 0.5,
+        y: prev.y - event.deltaY * 0.6
+      })
+    );
   };
 
   return (
@@ -472,15 +480,15 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
         ref={containerRef}
         sx={{
           position: 'relative',
-          borderRadius: { xs: 4, md: 5 },
-          minHeight: { xs: 360, md: 440 },
-          maxHeight: { xs: 520, md: 600 },
+          borderRadius: { xs: 3, md: 4 },
+          minHeight: { xs: 380, md: 480 },
+          maxHeight: { xs: 560, md: 680 },
           overflow: 'hidden',
-          bgcolor: 'rgba(255, 247, 225, 0.9)',
+          bgcolor: 'rgba(255, 226, 226, 0.92)',
           backgroundImage:
-            'radial-gradient(circle at 18% 18%, rgba(255, 194, 155, 0.25), transparent 55%), radial-gradient(circle at 82% 12%, rgba(185, 94, 130, 0.18), transparent 60%), linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 236, 192, 0.9))',
-          boxShadow: '0 18px 46px rgba(60, 28, 33, 0.16)',
-          p: { xs: 1.75, md: 2.25 },
+            'radial-gradient(circle at 18% 18%, rgba(255, 199, 199, 0.3), transparent 55%), radial-gradient(circle at 82% 12%, rgba(170, 170, 170, 0.25), transparent 60%), linear-gradient(135deg, rgba(246, 246, 246, 0.8), rgba(255, 226, 226, 0.95))',
+          boxShadow: '0 18px 40px rgba(170, 170, 170, 0.26)',
+          p: { xs: 1.6, md: 2.1 },
           userSelect: 'none'
         }}
         onWheel={handleWheel}

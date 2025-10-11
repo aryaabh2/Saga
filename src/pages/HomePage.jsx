@@ -30,9 +30,9 @@ function MemoryCard({ memory }) {
       sx={{
         borderRadius: 3,
         overflow: 'hidden',
-        border: '1px solid rgba(185, 94, 130, 0.2)',
-        boxShadow: '0 12px 26px rgba(60, 28, 33, 0.08)',
-        bgcolor: 'rgba(255, 247, 225, 0.92)'
+        border: '1px solid rgba(170, 170, 170, 0.28)',
+        boxShadow: '0 12px 26px rgba(170, 170, 170, 0.22)',
+        bgcolor: 'rgba(255, 226, 226, 0.92)'
       }}
     >
       <CardActionArea
@@ -77,8 +77,8 @@ function MemberSpotlight({ member }) {
         sx={{
           borderRadius: 3,
           p: { xs: 2, md: 2.5 },
-          border: '1px dashed rgba(185, 94, 130, 0.4)',
-          bgcolor: 'rgba(255, 247, 225, 0.8)',
+          border: '1px dashed rgba(170, 170, 170, 0.4)',
+          bgcolor: 'rgba(255, 226, 226, 0.8)',
           textAlign: 'center'
         }}
       >
@@ -106,9 +106,9 @@ function MemberSpotlight({ member }) {
       sx={{
         borderRadius: 3,
         p: { xs: 2, md: 2.5 },
-        bgcolor: 'rgba(255, 247, 225, 0.92)',
-        border: '1px solid rgba(185, 94, 130, 0.28)',
-        boxShadow: '0 12px 28px rgba(60, 28, 33, 0.18)'
+        bgcolor: 'rgba(255, 226, 226, 0.95)',
+        border: '1px solid rgba(170, 170, 170, 0.28)',
+        boxShadow: '0 12px 28px rgba(170, 170, 170, 0.24)'
       }}
     >
       <Stack spacing={2}>
@@ -125,8 +125,8 @@ function MemberSpotlight({ member }) {
             sx={{
               width: 64,
               height: 64,
-              border: '3px solid rgba(185, 94, 130, 0.3)',
-              bgcolor: 'rgba(255, 194, 155, 0.2)'
+              border: '3px solid rgba(255, 199, 199, 0.6)',
+              bgcolor: 'rgba(255, 226, 226, 0.6)'
             }}
           />
           <Box>
@@ -210,11 +210,11 @@ export default function HomePage({ onCreateMemory }) {
           borderRadius: 3,
           px: { xs: 3, md: 4 },
           py: { xs: 3, md: 4 },
-          border: '1px solid rgba(185, 94, 130, 0.28)',
-          bgcolor: 'rgba(255, 247, 225, 0.9)',
+          border: '1px solid rgba(170, 170, 170, 0.3)',
+          bgcolor: 'rgba(255, 226, 226, 0.92)',
           backgroundImage:
-            'linear-gradient(135deg, rgba(255, 236, 192, 0.6), rgba(255, 194, 155, 0.25))',
-          boxShadow: '0 16px 34px rgba(60, 28, 33, 0.12)'
+            'linear-gradient(135deg, rgba(255, 226, 226, 0.75), rgba(246, 246, 246, 0.6))',
+          boxShadow: '0 16px 34px rgba(170, 170, 170, 0.22)'
         }}
       >
         <Stack
@@ -244,7 +244,7 @@ export default function HomePage({ onCreateMemory }) {
                   px: 2.5,
                   py: 1,
                   width: { xs: '100%', sm: 'auto' },
-                  boxShadow: '0 12px 28px rgba(185, 94, 130, 0.28)'
+                  boxShadow: '0 12px 26px rgba(170, 170, 170, 0.24)'
                 }}
               >
                 {action.label}
@@ -259,9 +259,9 @@ export default function HomePage({ onCreateMemory }) {
           borderRadius: 3,
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          border: '1px solid rgba(185, 94, 130, 0.22)',
-          bgcolor: 'rgba(255, 247, 225, 0.88)',
-          boxShadow: '0 14px 30px rgba(60, 28, 33, 0.12)'
+          border: '1px solid rgba(170, 170, 170, 0.26)',
+          bgcolor: 'rgba(255, 226, 226, 0.9)',
+          boxShadow: '0 14px 30px rgba(170, 170, 170, 0.22)'
         }}
       >
         <Grid container spacing={{ xs: 3, lg: 4 }} alignItems="stretch">
@@ -312,11 +312,11 @@ export default function HomePage({ onCreateMemory }) {
                   onClick={() => actionHandlers[action.action]?.()}
                   sx={{
                     borderRadius: 2,
-                    borderColor: 'rgba(185, 94, 130, 0.4)',
-                    bgcolor: 'rgba(255, 247, 225, 0.6)',
+                    borderColor: 'rgba(170, 170, 170, 0.45)',
+                    bgcolor: 'rgba(246, 246, 246, 0.7)',
                     '&:hover': {
                       borderColor: 'primary.main',
-                      bgcolor: 'rgba(255, 194, 155, 0.25)'
+                      bgcolor: 'rgba(255, 226, 226, 0.6)'
                     }
                   }}
                   fullWidth
@@ -367,9 +367,9 @@ export default function HomePage({ onCreateMemory }) {
               py: { xs: 4, md: 5 },
               px: { xs: 3, md: 4 },
               textAlign: 'center',
-              border: '1px solid rgba(185, 94, 130, 0.24)',
-              bgcolor: 'rgba(255, 247, 225, 0.88)',
-              boxShadow: '0 16px 30px rgba(60, 28, 33, 0.12)'
+              border: '1px solid rgba(170, 170, 170, 0.28)',
+              bgcolor: 'rgba(255, 226, 226, 0.92)',
+              boxShadow: '0 16px 30px rgba(170, 170, 170, 0.22)'
             }}
           >
             <Stack spacing={1.5} alignItems="center">
