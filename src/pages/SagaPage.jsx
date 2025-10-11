@@ -76,14 +76,14 @@ export default function SagaPage({ saga }) {
             borderRadius: 3,
             overflow: 'hidden',
             minHeight: { xs: 140, md: 180 },
-            backgroundImage: `linear-gradient(135deg, rgba(255, 199, 199, 0.72), rgba(170, 170, 170, 0.75)), url(${heroImage})`,
+            backgroundImage: `linear-gradient(135deg, rgba(180, 67, 75, 0.74), rgba(44, 95, 45, 0.62)), url(${heroImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             color: 'common.white',
             boxShadow: (theme) => theme.shadows[8]
           }}
         >
-          <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(170, 170, 170, 0.25)' }} />
+          <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(36, 51, 72, 0.18)' }} />
           <Stack
             spacing={2.5}
             sx={{ position: 'relative', p: { xs: 4, md: 5 }, maxWidth: { xs: '100%', md: 720 } }}

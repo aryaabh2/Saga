@@ -9,6 +9,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { useDropzone } from 'react-dropzone';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
@@ -104,9 +105,13 @@ export default function UploadPage({ onSubmit }) {
               {...getRootProps()}
               sx={{
                 border: '2px dashed',
-                borderColor: isDragActive ? 'primary.main' : 'grey.400',
+                borderColor: (theme) =>
+                  isDragActive ? theme.palette.primary.main : alpha(theme.palette.primary.main, 0.35),
                 borderRadius: 2,
-                bgcolor: isDragActive ? 'primary.50' : 'grey.50',
+                bgcolor: (theme) =>
+                  isDragActive
+                    ? alpha(theme.palette.primary.light, 0.35)
+                    : alpha(theme.palette.background.paper, 0.7),
                 p: { xs: 4, md: 5 },
                 textAlign: 'center',
                 cursor: 'pointer'

@@ -17,6 +17,7 @@ import {
   Toolbar,
   Typography
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -70,8 +71,12 @@ function SagaLayout({ children }) {
         color="default"
         sx={{
           bgcolor: 'background.paper',
-          borderBottom: '1px solid rgba(170, 170, 170, 0.28)',
-          backgroundImage: 'linear-gradient(90deg, rgba(255, 226, 226, 0.75), rgba(246, 246, 246, 0.95))'
+          borderBottom: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
+          backgroundImage: (theme) =>
+            `linear-gradient(90deg, ${alpha(theme.palette.primary.light, 0.55)}, ${alpha(
+              theme.palette.background.default,
+              0.9
+            )})`
         }}
       >
         <Toolbar
@@ -89,10 +94,10 @@ function SagaLayout({ children }) {
             onClick={() => setMenuOpen(true)}
             aria-label="Open navigation menu"
             sx={{
-              border: '1px solid rgba(170, 170, 170, 0.35)',
-              bgcolor: 'rgba(255, 226, 226, 0.8)',
+              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
+              bgcolor: (theme) => alpha(theme.palette.background.paper, 0.85),
               '&:hover': {
-                bgcolor: 'rgba(255, 199, 199, 0.45)'
+                bgcolor: (theme) => alpha(theme.palette.primary.light, 0.45)
               }
             }}
           >
@@ -114,7 +119,7 @@ function SagaLayout({ children }) {
             display: 'flex',
             flexDirection: 'column',
             minHeight: '100%',
-            bgcolor: 'rgba(255, 226, 226, 0.95)'
+            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.96)
           }}
           role="presentation"
         >
@@ -135,7 +140,7 @@ function SagaLayout({ children }) {
                   borderRadius: 2,
                   mx: 1,
                   '&:hover': {
-                    bgcolor: 'rgba(255, 199, 199, 0.25)'
+                    bgcolor: (theme) => alpha(theme.palette.primary.light, 0.35)
                   }
                 }}
               >
