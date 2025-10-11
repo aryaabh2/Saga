@@ -1,47 +1,78 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Avatar, Box, Fade, Tooltip, Typography } from '@mui/material';
 
 function buildTreeLayout(members) {
   if (!members.length) {
-    return [];
+    return {
+      nodes: [],
+      metrics: {
+        generationCount: 0,
+        maxGenerationSize: 0,
+        horizontalMargin: 14,
+        verticalMargin: 12
+      }
+    };
   }
 
-  const generationGroups = members.reduce((groups, member) => {
-    const generation = member.generation ?? 0;
-    if (!groups[generation]) {
-      groups[generation] = [];
-    }
-    groups[generation].push(member);
-    return groups;
-  }, {});
+  const generationGroups = new Map();
 
-  const maxGeneration = Math.max(...members.map((member) => member.generation ?? 0), 0);
-  const verticalMargin = 8; // percentage
-  const horizontalMargin = 10; // percentage
+  members.forEach((member) => {
+    const generation = member.generation ?? 0;
+    if (!generationGroups.has(generation)) {
+      generationGroups.set(generation, []);
+    }
+    generationGroups.get(generation).push(member);
+  });
+
+  const generationOrder = Array.from(generationGroups.keys()).sort((a, b) => a - b);
+  const generationIndexMap = new Map(generationOrder.map((generation, index) => [generation, index]));
+  const maxGenerationSize = Math.max(
+    ...generationOrder.map((generation) => generationGroups.get(generation)?.length ?? 0),
+    0
+  );
+
+  const verticalMargin = 12; // percentage
+  const horizontalMargin = 14; // percentage
   const verticalRange = 100 - verticalMargin * 2;
   const horizontalRange = 100 - horizontalMargin * 2;
 
-  return members.map((member) => {
+  const baseColumnSlots = maxGenerationSize + 1;
+  const rowDenominator = generationOrder.length > 1 ? generationOrder.length - 1 : 1;
+
+  const nodes = members.map((member) => {
     const generation = member.generation ?? 0;
-    const group = generationGroups[generation] || [];
-    const sortedGroup = group
-      .slice()
-      .sort((a, b) => (a.name > b.name ? 1 : -1));
-    const index = sortedGroup.findIndex((item) => item.id === member.id);
-    const denominator = sortedGroup.length + 1;
-    const positionInGroup = denominator > 0 ? (index + 1) / denominator : 0.5;
-    const x = horizontalMargin + positionInGroup * horizontalRange;
-    const normalizedGeneration = maxGeneration > 0 ? generation / maxGeneration : 0;
-    const y = verticalMargin + normalizedGeneration * verticalRange;
+    const group = generationGroups.get(generation) ?? [];
+    const columnIndex = group.findIndex((item) => item.id === member.id);
+    const safeColumnIndex = columnIndex >= 0 ? columnIndex : 0;
+    const columnCount = group.length || 1;
+    const rowIndex = generationIndexMap.get(generation) ?? 0;
+
+    const offset = (maxGenerationSize - columnCount) / 2;
+    const normalizedColumn = baseColumnSlots > 0 ? (offset + safeColumnIndex + 1) / baseColumnSlots : 0.5;
+    const normalizedRow = generationOrder.length > 1 ? rowIndex / rowDenominator : 0.5;
+
+    const x = horizontalMargin + normalizedColumn * horizontalRange;
+    const y = verticalMargin + normalizedRow * verticalRange;
 
     return {
       ...member,
       x,
       y,
       generation,
-      orderInGeneration: index
+      orderInGeneration: safeColumnIndex,
+      generationIndex: rowIndex
     };
   });
+
+  return {
+    nodes,
+    metrics: {
+      generationCount: generationOrder.length,
+      maxGenerationSize,
+      horizontalMargin,
+      verticalMargin
+    }
+  };
 }
 
 function buildConnectors(members) {
@@ -251,35 +282,82 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
     return () => observer.disconnect();
   }, []);
 
-  const positionedMembers = useMemo(() => buildTreeLayout(members), [members]);
-  const connectors = useMemo(() => computeConnectorPaths(positionedMembers), [positionedMembers]);
-  const selectedMember = useMemo(
-    () => positionedMembers.find((member) => member.id === selectedMemberId),
-    [positionedMembers, selectedMemberId]
+  const { nodes: positionedMembers, metrics: layoutMetrics } = useMemo(
+    () => buildTreeLayout(members),
+    [members]
   );
+  const connectors = useMemo(() => computeConnectorPaths(positionedMembers), [positionedMembers]);
+
+  const clampScale = useCallback((value) => Math.min(Math.max(value, 0.75), 1.75), []);
+  const hasAutoCentered = useRef(false);
 
   useEffect(() => {
-    if (!selectedMember || !containerSize.width || !containerSize.height) {
+    hasAutoCentered.current = false;
+  }, [members]);
+
+  useEffect(() => {
+    hasAutoCentered.current = false;
+  }, [containerSize.height, containerSize.width]);
+
+  useEffect(() => {
+    if (!positionedMembers.length || !containerSize.width || !containerSize.height) {
       return;
     }
 
-    setView((prev) => {
-      const targetScale = Math.min(Math.max(prev.scale, 1.12), 1.45);
-      const nodeX = (selectedMember.x / 100) * containerSize.width;
-      const nodeY = (selectedMember.y / 100) * containerSize.height;
-      const translateX = containerSize.width / 2 - nodeX * targetScale;
-      const translateY = containerSize.height / 2 - nodeY * targetScale;
-      return { scale: targetScale, x: translateX, y: translateY };
+    if (hasAutoCentered.current) {
+      return;
+    }
+
+    const xs = positionedMembers.map((member) => member.x);
+    const ys = positionedMembers.map((member) => member.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+
+    const widthPercent = Math.max(
+      maxX - minX,
+      Math.max(36, (100 - layoutMetrics.horizontalMargin * 2) * 0.85)
+    );
+    const heightPercent = Math.max(
+      maxY - minY,
+      Math.max(36, (100 - layoutMetrics.verticalMargin * 2) * 0.85)
+    );
+
+    const widthPx = (widthPercent / 100) * containerSize.width;
+    const heightPx = (heightPercent / 100) * containerSize.height;
+
+    const fittedScale = clampScale(
+      Math.min(
+        containerSize.width / (widthPx || 1),
+        containerSize.height / (heightPx || 1)
+      ) * 0.9
+    );
+
+    const centerX = ((minX + maxX) / 2 / 100) * containerSize.width;
+    const centerY = ((minY + maxY) / 2 / 100) * containerSize.height;
+
+    setView({
+      scale: fittedScale,
+      x: containerSize.width / 2 - centerX * fittedScale,
+      y: containerSize.height / 2 - centerY * fittedScale
     });
-  }, [containerSize.height, containerSize.width, selectedMember]);
+
+    hasAutoCentered.current = true;
+  }, [
+    clampScale,
+    containerSize.height,
+    containerSize.width,
+    layoutMetrics.horizontalMargin,
+    layoutMetrics.verticalMargin,
+    positionedMembers
+  ]);
 
   useEffect(() => {
     return () => {
       dragState.current.active = false;
     };
   }, []);
-
-  const clampScale = (value) => Math.min(Math.max(value, 0.75), 1.75);
 
   const handlePointerDown = (event) => {
     if (event.button !== 0) return;
@@ -321,6 +399,10 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
   };
 
   const handleWheel = (event) => {
+    if (!event.ctrlKey && !event.metaKey) {
+      return;
+    }
+
     event.preventDefault();
     if (!containerRef.current) {
       return;
@@ -349,12 +431,13 @@ function FamilyTreeCanvas({ members, selectedMemberId, onSelectMember }) {
           position: 'relative',
           borderRadius: { xs: 4, md: 5 },
           minHeight: { xs: 440, md: 560 },
+          maxHeight: { xs: 540, md: 640 },
           overflow: 'hidden',
-          bgcolor: 'rgba(255, 255, 255, 0.78)',
+          bgcolor: 'rgba(255, 255, 255, 0.82)',
           backgroundImage:
             'radial-gradient(circle at 20% 20%, rgba(240, 192, 96, 0.18), transparent 55%), radial-gradient(circle at 80% 10%, rgba(155, 29, 63, 0.12), transparent 55%), linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255, 250, 245, 0.9))',
           boxShadow: '0 32px 70px rgba(15, 23, 42, 0.12)',
-          p: 0,
+          p: { xs: 2.5, md: 3 },
           userSelect: 'none'
         }}
         onWheel={handleWheel}
