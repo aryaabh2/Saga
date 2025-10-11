@@ -464,7 +464,7 @@ export default function HomePage({ onCreateMemory }) {
           </Stack>
 
           {loading ? (
-            <Grid container spacing={{ xs: 2.5, md: 3 }}>
+            <Grid container spacing={{ xs: 2.5, md: 3 }} sx={{ pr: { xs: 0.5, md: 1 } }}>
               {Array.from({ length: 4 }).map((_, index) => (
                 <Grid key={index} item xs={12} md={6} sx={{ display: 'flex' }}>
                   <Skeleton
@@ -476,7 +476,7 @@ export default function HomePage({ onCreateMemory }) {
               ))}
             </Grid>
           ) : selectedMemories.length ? (
-            <Grid container spacing={{ xs: 2.5, md: 3 }}>
+            <Grid container spacing={{ xs: 2.5, md: 3 }} sx={{ pr: { xs: 0.5, md: 1 } }}>
               {selectedMemories.map((memory) => (
                 <Grid key={memory.id} item xs={12} md={6} sx={{ display: 'flex' }}>
                   <MemoryCard
