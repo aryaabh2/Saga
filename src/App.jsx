@@ -4,16 +4,19 @@ import { AppBar, Box, Container, Step, StepLabel, Stepper, Toolbar, Typography }
 import UploadPage from './pages/UploadPage.jsx';
 import ProcessingPage from './pages/ProcessingPage.jsx';
 import SagaPage from './pages/SagaPage.jsx';
+import HomePage from './pages/HomePage.jsx';
 
 const steps = ['Upload memories', 'Processing', 'Saga'];
 
 function SagaLayout({ children }) {
   const location = useLocation();
+  const inMemoryFlow = location.pathname.startsWith('/memories');
   const activeStep = useMemo(() => {
-    if (location.pathname.startsWith('/processing')) return 1;
-    if (location.pathname.startsWith('/saga')) return 2;
+    if (!inMemoryFlow) return 0;
+    if (location.pathname.startsWith('/memories/processing')) return 1;
+    if (location.pathname.startsWith('/memories/story')) return 2;
     return 0;
-  }, [location.pathname]);
+  }, [inMemoryFlow, location.pathname]);
 
   return (
     <Box
@@ -38,16 +41,18 @@ function SagaLayout({ children }) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="md" sx={{ py: { xs: 5, md: 7 } }}>
-        <Box sx={{ mb: { xs: 4, md: 6 } }}>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel sx={{ '& .MuiStepLabel-label': { fontWeight: 600 } }}>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Box>
+      <Container maxWidth={inMemoryFlow ? 'md' : 'xl'} sx={{ py: { xs: 5, md: 7 } }}>
+        {inMemoryFlow && (
+          <Box sx={{ mb: { xs: 4, md: 6 } }}>
+            <Stepper activeStep={activeStep} alternativeLabel>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel sx={{ '& .MuiStepLabel-label': { fontWeight: 600 } }}>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
+        )}
         {children}
       </Container>
     </Box>
@@ -62,12 +67,12 @@ function SagaRouter() {
   const handleUpload = (data) => {
     setUploadData(data);
     setSaga(null);
-    navigate('/processing');
+    navigate('/memories/processing');
   };
 
   const handleProcessingComplete = () => {
     if (!uploadData) {
-      navigate('/');
+      navigate('/memories/new');
       return;
     }
 
@@ -132,7 +137,19 @@ function SagaRouter() {
     };
 
     setSaga(generatedSaga);
-    navigate('/saga');
+    navigate('/memories/story');
+  };
+
+  const handleCreateMemory = () => {
+    navigate('/memories/new');
+  };
+
+  const handleBrowseMemories = () => {
+    if (saga) {
+      navigate('/memories/story');
+    } else {
+      navigate('/memories/new');
+    }
   };
 
   useEffect(() => {
@@ -147,16 +164,21 @@ function SagaRouter() {
 
   return (
     <Routes>
-      <Route path="/" element={<UploadPage onSubmit={handleUpload} />} />
       <Route
-        path="/processing"
+        path="/"
+        element={<HomePage onCreateMemory={handleCreateMemory} onBrowseMemories={handleBrowseMemories} />}
+      />
+      <Route
+        path="/memories/new"
+        element={<UploadPage onSubmit={handleUpload} />}
+      />
+      <Route
+        path="/memories/processing"
         element={<ProcessingPage uploadData={uploadData} onComplete={handleProcessingComplete} />}
       />
       <Route
-        path="/saga"
-        element={
-          saga ? <SagaPage saga={saga} /> : <Navigate to="/" replace />
-        }
+        path="/memories/story"
+        element={saga ? <SagaPage saga={saga} /> : <Navigate to="/memories/new" replace />}
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
