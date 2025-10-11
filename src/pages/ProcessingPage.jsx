@@ -41,18 +41,18 @@ export default function ProcessingPage({ uploadData, onComplete }) {
   }
 
   return (
-    <Stack spacing={4} alignItems="center">
+    <Stack spacing={{ xs: 3, md: 3.5 }} alignItems="center">
       <Box textAlign="center">
         <Typography variant="h3" gutterBottom>
           Creating your saga
         </Typography>
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant="body1" color="text.secondary">
           Please hold tight while we weave together your memories into something warm and memorable. This should only take a few moments.
         </Typography>
       </Box>
 
-      <Card variant="outlined" sx={{ width: '100%' }}>
-        <CardContent>
+      <Card variant="outlined" sx={{ width: '100%', borderRadius: 3 }}>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Stack spacing={3} alignItems="center">
             <HourglassBottomIcon color="primary" sx={{ fontSize: 56 }} />
             <LinearProgress variant="determinate" value={progress} sx={{ width: '100%', height: 12, borderRadius: 6 }} />

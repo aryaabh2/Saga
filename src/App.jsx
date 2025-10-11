@@ -72,7 +72,7 @@ function SagaLayout({ children }) {
         minHeight: '100vh',
         bgcolor: 'background.default',
         backgroundImage:
-          'radial-gradient(circle at top, rgba(234, 193, 124, 0.25), transparent 45%), radial-gradient(circle at bottom, rgba(166, 32, 64, 0.18), transparent 40%)'
+          'radial-gradient(circle at top, rgba(234, 193, 124, 0.18), transparent 45%), radial-gradient(circle at bottom, rgba(166, 32, 64, 0.14), transparent 40%)'
       }}
     >
       <AppBar
@@ -108,7 +108,7 @@ function SagaLayout({ children }) {
           <Typography
             variant="h5"
             component="div"
-            sx={{ fontWeight: 700, letterSpacing: 1, textAlign: 'center' }}
+            sx={{ fontWeight: 700, letterSpacing: 0.6, textAlign: 'center' }}
           >
             Saga
           </Typography>
@@ -160,10 +160,19 @@ function SagaLayout({ children }) {
           </Box>
         </Box>
       </Drawer>
-      <Container maxWidth={inMemoryFlow ? 'md' : 'xl'} sx={{ py: { xs: 5, md: 7 } }}>
+      <Container
+        maxWidth="lg"
+        sx={{
+          py: { xs: 4, md: 6 },
+          px: { xs: 2.5, sm: 4 },
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 3, md: 4 }
+        }}
+      >
         {inMemoryFlow && (
-          <Box sx={{ mb: { xs: 4, md: 6 } }}>
-            <Stepper activeStep={activeStep} alternativeLabel>
+          <Box sx={{ px: { xs: 0, sm: 2 }, py: { xs: 1, md: 1.5 } }}>
+            <Stepper activeStep={activeStep} alternativeLabel sx={{ pt: 1 }}>
               {steps.map((label) => (
                 <Step key={label}>
                   <StepLabel sx={{ '& .MuiStepLabel-label': { fontWeight: 600 } }}>{label}</StepLabel>
