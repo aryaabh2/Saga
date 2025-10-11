@@ -1,6 +1,26 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { AppBar, Box, Container, Step, StepLabel, Stepper, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Container,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Step,
+  StepLabel,
+  Stepper,
+  Toolbar,
+  Typography
+} from '@mui/material';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
 import UploadPage from './pages/UploadPage.jsx';
 import ProcessingPage from './pages/ProcessingPage.jsx';
 import SagaPage from './pages/SagaPage.jsx';
@@ -10,13 +30,41 @@ const steps = ['Upload memories', 'Processing', 'Saga'];
 
 function SagaLayout({ children }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const inMemoryFlow = location.pathname.startsWith('/memories');
+  const [menuOpen, setMenuOpen] = useState(false);
   const activeStep = useMemo(() => {
     if (!inMemoryFlow) return 0;
     if (location.pathname.startsWith('/memories/processing')) return 1;
     if (location.pathname.startsWith('/memories/story')) return 2;
     return 0;
   }, [inMemoryFlow, location.pathname]);
+
+  const navigationItems = [
+    {
+      label: 'Home',
+      description: 'Return to the family dashboard',
+      icon: <HomeRoundedIcon fontSize="medium" />,
+      path: '/'
+    },
+    {
+      label: 'Add a new memory',
+      description: 'Upload photos, letters or videos to start a saga',
+      icon: <FavoriteBorderIcon fontSize="medium" />,
+      path: '/memories/new'
+    },
+    {
+      label: 'Browse shared saga',
+      description: 'Revisit the story you are crafting together',
+      icon: <AutoStoriesRoundedIcon fontSize="medium" />,
+      path: '/memories/story'
+    }
+  ];
+
+  const handleNavigate = (path) => {
+    setMenuOpen(false);
+    navigate(path);
+  };
 
   return (
     <Box
@@ -35,12 +83,83 @@ function SagaLayout({ children }) {
             `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
         }}
       >
-        <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
-          <Typography variant="h5" component="div" sx={{ fontWeight: 700, letterSpacing: 1 }}>
+        <Toolbar
+          sx={{
+            py: 2,
+            px: { xs: 2, sm: 3 },
+            display: 'grid',
+            alignItems: 'center',
+            gridTemplateColumns: 'auto 1fr auto',
+            gap: 2
+          }}
+        >
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open navigation menu"
+            sx={{
+              bgcolor: 'rgba(255,255,255,0.12)',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }
+            }}
+          >
+            <MenuRoundedIcon />
+          </IconButton>
+          <Typography
+            variant="h5"
+            component="div"
+            sx={{ fontWeight: 700, letterSpacing: 1, textAlign: 'center' }}
+          >
             Saga
           </Typography>
+          <Box sx={{ width: 48, height: 48 }} />
         </Toolbar>
       </AppBar>
+      <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
+        <Box
+          sx={{
+            width: { xs: 280, sm: 320 },
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100%'
+          }}
+          role="presentation"
+        >
+          <Toolbar sx={{ px: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Navigate Saga
+            </Typography>
+          </Toolbar>
+          <Divider />
+          <List sx={{ flexGrow: 1 }}>
+            {navigationItems.map((item) => (
+              <ListItemButton
+                key={item.path}
+                onClick={() => handleNavigate(item.path)}
+                sx={{
+                  alignItems: 'flex-start',
+                  py: 1.5
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 44, color: 'secondary.main' }}>{item.icon}</ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  secondary={item.description}
+                  primaryTypographyProps={{ fontWeight: 700 }}
+                  secondaryTypographyProps={{ color: 'text.secondary' }}
+                />
+              </ListItemButton>
+            ))}
+          </List>
+          <Divider />
+          <Box sx={{ px: 3, py: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Use the menu to jump between capturing new memories and reliving the sagas you have created
+              together.
+            </Typography>
+          </Box>
+        </Box>
+      </Drawer>
       <Container maxWidth={inMemoryFlow ? 'md' : 'xl'} sx={{ py: { xs: 5, md: 7 } }}>
         {inMemoryFlow && (
           <Box sx={{ mb: { xs: 4, md: 6 } }}>
@@ -144,14 +263,6 @@ function SagaRouter() {
     navigate('/memories/new');
   };
 
-  const handleBrowseMemories = () => {
-    if (saga) {
-      navigate('/memories/story');
-    } else {
-      navigate('/memories/new');
-    }
-  };
-
   useEffect(() => {
     return () => {
       saga?.moments?.forEach((moment) => {
@@ -166,7 +277,7 @@ function SagaRouter() {
     <Routes>
       <Route
         path="/"
-        element={<HomePage onCreateMemory={handleCreateMemory} onBrowseMemories={handleBrowseMemories} />}
+        element={<HomePage onCreateMemory={handleCreateMemory} />}
       />
       <Route
         path="/memories/new"

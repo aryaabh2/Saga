@@ -17,7 +17,6 @@ import {
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
-import TravelExploreRoundedIcon from '@mui/icons-material/TravelExploreRounded';
 import FamilyTreeCanvas from '../components/FamilyTreeCanvas.jsx';
 import { fetchFamilySnapshot } from '../data/mockFamilyService.js';
 
@@ -27,12 +26,6 @@ const quickActions = [
     description: 'Upload photos, letters or videos to weave into your next saga.',
     icon: <FavoriteBorderIcon fontSize="small" />,
     action: 'createMemory'
-  },
-  {
-    label: 'Browse all memories',
-    description: 'Open the shared family journal and revisit keepsakes together.',
-    icon: <TravelExploreRoundedIcon fontSize="small" />,
-    action: 'browseMemories'
   }
 ];
 
@@ -156,7 +149,7 @@ function MemberSpotlight({ member }) {
   );
 }
 
-export default function HomePage({ onCreateMemory, onBrowseMemories }) {
+export default function HomePage({ onCreateMemory }) {
   const [members, setMembers] = useState([]);
   const [memories, setMemories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -199,8 +192,7 @@ export default function HomePage({ onCreateMemory, onBrowseMemories }) {
   };
 
   const actionHandlers = {
-    createMemory: onCreateMemory,
-    browseMemories: onBrowseMemories
+    createMemory: onCreateMemory
   };
 
   const navigateHelper = useMemo(
@@ -220,6 +212,9 @@ export default function HomePage({ onCreateMemory, onBrowseMemories }) {
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5, maxWidth: 540 }}>
             Pick up a memory, invite loved ones, and tap through the tree to relive each shared moment.
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Use the menu above to jump back into a saga or start weaving a new collection of memories.
           </Typography>
         </Box>
         <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
