@@ -30,8 +30,9 @@ function MemoryCard({ memory }) {
     <Card
       sx={{
         width: '100%',
-        maxWidth: { sm: 620, md: 700, lg: 760 },
-        mx: 'auto',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
         borderRadius: 3,
         overflow: 'hidden',
         border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
@@ -42,8 +43,9 @@ function MemoryCard({ memory }) {
       <CardActionArea
         sx={{
           display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
           alignItems: 'stretch',
-          flexDirection: { xs: 'column', sm: 'row' }
+          height: '100%'
         }}
       >
         <CardMedia
@@ -56,18 +58,24 @@ function MemoryCard({ memory }) {
             objectFit: 'cover'
           }}
         />
-        <CardContent sx={{ flexGrow: 1, p: { xs: 2.5, sm: 3 } }}>
-          <Stack spacing={1.25}>
-            <Typography variant="subtitle2" color="text.secondary">
-              {memory.date}
-            </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              {memory.title}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {memory.description}
-            </Typography>
-          </Stack>
+        <CardContent
+          sx={{
+            flexGrow: 1,
+            p: { xs: 2.5, sm: 3 },
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1.25
+          }}
+        >
+          <Typography variant="subtitle2" color="text.secondary">
+            {memory.date}
+          </Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            {memory.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {memory.description}
+          </Typography>
         </CardContent>
       </CardActionArea>
     </Card>
@@ -364,87 +372,89 @@ export default function HomePage({ onCreateMemory }) {
         </Grid>
       </Box>
 
-      <Stack spacing={2.5}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={1.5}
-          justifyContent="space-between"
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-        >
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            {memoriesHeading}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {selectedMemories.length} items
-          </Typography>
-        </Stack>
-
-        {loading ? (
-          <Grid container spacing={2.5}>
-            {Array.from({ length: 3 }).map((_, index) => (
-              <Grid
-                key={index}
-                item
-                xs={12}
-                sx={{ display: 'flex', justifyContent: 'center' }}
-              >
-                <Skeleton
-                  variant="rounded"
-                  height={200}
-                  sx={{
-                    borderRadius: 3,
-                    width: '100%',
-                    maxWidth: { sm: 620, md: 700, lg: 760 }
-                  }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        ) : selectedMemories.length ? (
-          <Grid container spacing={{ xs: 2.5, md: 3 }}>
-            {selectedMemories.map((memory) => (
-              <Grid
-                item
-                xs={12}
-                key={memory.id}
-                sx={{ display: 'flex', justifyContent: 'center' }}
-              >
-                <MemoryCard memory={memory} />
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <Box
-            sx={{
-              borderRadius: 3,
-              py: { xs: 4, md: 5 },
-              px: { xs: 3, md: 4 },
-              textAlign: 'center',
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-              bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
-              boxShadow: '0 18px 32px rgba(44, 95, 45, 0.18)'
-            }}
-          >
-            <Stack spacing={1.5} alignItems="center">
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                No memories yet
+      <Box
+        sx={{
+          borderRadius: 3,
+          px: { xs: 2.5, md: 3 },
+          py: { xs: 3, md: 3.5 },
+          border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+          boxShadow: '0 18px 34px rgba(44, 95, 45, 0.2)'
+        }}
+      >
+        <Stack spacing={{ xs: 2.5, md: 3 }}>
+          <Stack spacing={1}>
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              spacing={{ xs: 0.75, md: 1.5 }}
+              justifyContent="space-between"
+              alignItems={{ xs: 'flex-start', md: 'center' }}
+            >
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                {memoriesHeading}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
-                Start a simple collection for {selectedMember?.name?.split(' ')[0] ?? 'your family'}.
+              <Typography variant="body2" color="text.secondary">
+                {selectedMemories.length} saved {selectedMemories.length === 1 ? 'memory' : 'memories'}
               </Typography>
-              <Button
-                variant="contained"
-                size="medium"
-                onClick={() => onCreateMemory?.()}
-                startIcon={<FavoriteBorderIcon />}
-                sx={{ borderRadius: 2 }}
-              >
-                Add memory
-              </Button>
             </Stack>
-          </Box>
-        )}
-      </Stack>
+            <Typography variant="body2" color="text.secondary">
+              {selectedMember?.name?.split(' ')[0] ?? 'Your family'} is tagged in these shared keepsakes.
+            </Typography>
+          </Stack>
+
+          {loading ? (
+            <Grid container spacing={{ xs: 2.5, md: 3 }}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Grid key={index} item xs={12} md={6} sx={{ display: 'flex' }}>
+                  <Skeleton
+                    variant="rounded"
+                    height={220}
+                    sx={{ borderRadius: 3, width: '100%' }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          ) : selectedMemories.length ? (
+            <Grid container spacing={{ xs: 2.5, md: 3 }}>
+              {selectedMemories.map((memory) => (
+                <Grid key={memory.id} item xs={12} md={6} sx={{ display: 'flex' }}>
+                  <MemoryCard memory={memory} />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Box
+              sx={{
+                borderRadius: 3,
+                py: { xs: 4, md: 5 },
+                px: { xs: 3, md: 4 },
+                textAlign: 'center',
+                border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                bgcolor: (theme) => alpha(theme.palette.background.paper, 0.95),
+                boxShadow: '0 18px 32px rgba(44, 95, 45, 0.18)'
+              }}
+            >
+              <Stack spacing={1.5} alignItems="center">
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  No memories yet
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
+                  Start a simple collection for {selectedMember?.name?.split(' ')[0] ?? 'your family'}.
+                </Typography>
+                <Button
+                  variant="contained"
+                  size="medium"
+                  onClick={() => onCreateMemory?.()}
+                  startIcon={<FavoriteBorderIcon />}
+                  sx={{ borderRadius: 2 }}
+                >
+                  Add memory
+                </Button>
+              </Stack>
+            </Box>
+          )}
+        </Stack>
+      </Box>
     </Stack>
   );
 }
