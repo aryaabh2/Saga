@@ -15,7 +15,7 @@ function buildTreeLayout(members) {
         generationCount: 0,
         maxGenerationSize: 0,
         horizontalMargin: 14,
-        verticalMargin: 16
+        verticalMargin: 12
       }
     };
   }
@@ -37,12 +37,13 @@ function buildTreeLayout(members) {
     0
   );
 
-  const verticalMargin = 16; // percentage
+  const verticalMargin = 12; // percentage
   const horizontalMargin = 14; // percentage
   const verticalRange = 100 - verticalMargin * 2;
   const horizontalRange = 100 - horizontalMargin * 2;
 
-  const baseRowSlots = maxGenerationSize + 1;
+  const spacingBoost = Math.min(2, Math.max(0, (maxGenerationSize - 1) * 0.35));
+  const baseRowSlots = Math.max(maxGenerationSize + 1 - spacingBoost, 2);
   const columnDenominator = generationOrder.length > 1 ? generationOrder.length - 1 : 1;
 
   const nodes = members.map((member) => {
