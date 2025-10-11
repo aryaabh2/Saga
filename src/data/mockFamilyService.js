@@ -177,12 +177,65 @@ const familyMemories = [
   }
 ];
 
+const familyHighlights = [
+  {
+    id: 'stories-in-motion',
+    label: 'Stories in motion',
+    value: 18,
+    description: 'Threads with new replies this month keeping conversations lively.'
+  },
+  {
+    id: 'keepsakes-logged',
+    label: 'Keepsakes logged',
+    value: 42,
+    description: 'Photos, videos, and audio clips safely tucked into the family vault.'
+  },
+  {
+    id: 'reunions-planned',
+    label: 'Reunions planned',
+    value: 3,
+    description: 'Seasonal gatherings penciled in across the different branches.'
+  }
+];
+
+const upcomingTraditions = [
+  {
+    id: 'trad-001',
+    title: 'Recipe swap live bake',
+    description:
+      'Evelyn and Marcus stream their kitchen prep while Jordan collects everyone\'s handwritten notes into a shared booklet.',
+    date: 'January 6, 2024',
+    time: '5:30 PM PT',
+    hosts: ['evelyn', 'marcus']
+  },
+  {
+    id: 'trad-002',
+    title: 'Neighborhood lantern walk',
+    description:
+      'Amelia is leading the walk-through of the San Diego lantern displays while Rafael keeps the cocoa thermoses filled.',
+    date: 'January 18, 2024',
+    time: '7:00 PM PT',
+    hosts: ['amelia', 'rafael']
+  },
+  {
+    id: 'trad-003',
+    title: 'Grandparents audio lounge',
+    description:
+      'Ada and Leon spin vinyl favorites while Ruth and Samuel share postcard readings from the travel trunk.',
+    date: 'February 2, 2024',
+    time: '4:00 PM PT',
+    hosts: ['ada', 'leon', 'ruth', 'samuel']
+  }
+];
+
 export async function fetchFamilySnapshot() {
   await new Promise((resolve) => setTimeout(resolve, 200));
   return {
     members: familyMembers,
     memories: familyMemories,
-    defaultMemberId: 'jordan'
+    defaultMemberId: 'jordan',
+    highlights: familyHighlights,
+    upcomingTraditions
   };
 }
 

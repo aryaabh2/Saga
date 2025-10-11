@@ -7,12 +7,16 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Chip,
+  Divider,
   Grid,
   Skeleton,
   Stack,
   Typography
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import GroupsIcon from '@mui/icons-material/Groups';
 import FamilyTreeCanvas from '../components/FamilyTreeCanvas.jsx';
 import { fetchFamilySnapshot } from '../data/mockFamilyService.js';
 import { alpha } from '@mui/material/styles';
@@ -22,10 +26,29 @@ const quickActions = [
     label: 'Add memory',
     icon: <FavoriteBorderIcon fontSize="small" />,
     action: 'createMemory'
+  },
+  {
+    label: 'Start story circle',
+    icon: <GroupsIcon fontSize="small" />,
+    action: 'startStoryCircle'
   }
 ];
 
-function MemoryCard({ memory }) {
+function MemoryCard({ memory, memberMap, selectedMemberId }) {
+  const participantNames = useMemo(() => {
+    return memory.people
+      .map((personId) => memberMap.get(personId))
+      .filter(Boolean)
+      .map((member) => ({
+        id: member.id,
+        label: member.name.split(' ')[0],
+        fullLabel: member.name,
+        isSelected: member.id === selectedMemberId
+      }));
+  }, [memberMap, memory.people, selectedMemberId]);
+
+  const tagLabels = memory.tags ?? [];
+
   return (
     <Card
       sx={{
@@ -76,6 +99,48 @@ function MemoryCard({ memory }) {
           <Typography variant="body2" color="text.secondary">
             {memory.description}
           </Typography>
+          {tagLabels.length ? (
+            <Stack direction="row" flexWrap="wrap" gap={1} sx={{ pt: 1 }}>
+              {tagLabels.map((tag) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  size="small"
+                  sx={{
+                    fontWeight: 600,
+                    letterSpacing: 0.4,
+                    bgcolor: (theme) => alpha(theme.palette.primary.light, 0.1)
+                  }}
+                />
+              ))}
+            </Stack>
+          ) : null}
+          {participantNames.length ? (
+            <Stack
+              direction="row"
+              flexWrap="wrap"
+              gap={1}
+              sx={{ pt: tagLabels.length ? 1 : 2, mt: 'auto' }}
+            >
+              {participantNames.map((participant) => (
+                <Chip
+                  key={participant.id}
+                  label={participant.label}
+                  size="small"
+                  title={participant.fullLabel}
+                  color={participant.isSelected ? 'primary' : 'default'}
+                  sx={{
+                    fontWeight: 600,
+                    letterSpacing: 0.4,
+                    bgcolor: (theme) =>
+                      participant.isSelected
+                        ? alpha(theme.palette.primary.main, 0.18)
+                        : alpha(theme.palette.background.default, 0.8)
+                  }}
+                />
+              ))}
+            </Stack>
+          ) : null}
         </CardContent>
       </CardActionArea>
     </Card>
@@ -172,6 +237,8 @@ function MemberSpotlight({ member }) {
 export default function HomePage({ onCreateMemory }) {
   const [members, setMembers] = useState([]);
   const [memories, setMemories] = useState([]);
+  const [highlights, setHighlights] = useState([]);
+  const [traditions, setTraditions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMemberId, setSelectedMemberId] = useState('');
 
@@ -184,6 +251,8 @@ export default function HomePage({ onCreateMemory }) {
       if (!isMounted) return;
       setMembers(snapshot.members);
       setMemories(snapshot.memories);
+      setHighlights(snapshot.highlights ?? []);
+      setTraditions(snapshot.upcomingTraditions ?? []);
       setSelectedMemberId(snapshot.defaultMemberId || snapshot.members[0]?.id || '');
       setLoading(false);
     };
@@ -240,7 +309,13 @@ export default function HomePage({ onCreateMemory }) {
   };
 
   const actionHandlers = {
-    createMemory: onCreateMemory
+    createMemory: onCreateMemory,
+    startStoryCircle: () => {
+      // Placeholder action for the mock experience
+      if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+        window.alert('Story circle invitations sent to the family chat!');
+      }
+    }
   };
 
   return (
@@ -296,6 +371,57 @@ export default function HomePage({ onCreateMemory }) {
           </Stack>
         </Stack>
       </Box>
+
+      {highlights.length ? (
+        <Box
+          sx={{
+            borderRadius: 3,
+            px: { xs: 2.5, md: 3 },
+            py: { xs: 3, md: 3.5 },
+            border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+            boxShadow: '0 16px 32px rgba(44, 95, 45, 0.16)'
+          }}
+        >
+          <Stack spacing={2.5}>
+            <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 1, md: 1.5 }} alignItems={{ xs: 'flex-start', md: 'center' }} justifyContent="space-between">
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                Family pulse this season
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                A quick glance at what everyone has been building together.
+              </Typography>
+            </Stack>
+            <Grid container spacing={{ xs: 2, md: 2.5 }}>
+              {highlights.map((highlight) => (
+                <Grid key={highlight.id} item xs={12} md={4}>
+                  <Card
+                    sx={{
+                      height: '100%',
+                      borderRadius: 3,
+                      border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                      bgcolor: (theme) => alpha(theme.palette.background.default, 0.85),
+                      boxShadow: '0 12px 28px rgba(44, 95, 45, 0.18)'
+                    }}
+                  >
+                    <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                      <Typography variant="h3" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                        {highlight.value}
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                        {highlight.label}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {highlight.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Stack>
+        </Box>
+      ) : null}
 
       <Box
         sx={{
@@ -418,7 +544,11 @@ export default function HomePage({ onCreateMemory }) {
             <Grid container spacing={{ xs: 2.5, md: 3 }}>
               {selectedMemories.map((memory) => (
                 <Grid key={memory.id} item xs={12} md={6} sx={{ display: 'flex' }}>
-                  <MemoryCard memory={memory} />
+                  <MemoryCard
+                    memory={memory}
+                    memberMap={memberMap}
+                    selectedMemberId={selectedMemberId}
+                  />
                 </Grid>
               ))}
             </Grid>
@@ -455,6 +585,76 @@ export default function HomePage({ onCreateMemory }) {
           )}
         </Stack>
       </Box>
+
+      {traditions.length ? (
+        <Box
+          sx={{
+            borderRadius: 3,
+            px: { xs: 2.5, md: 3 },
+            py: { xs: 3, md: 3.5 },
+            border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.16)}`,
+            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+            boxShadow: '0 18px 34px rgba(44, 95, 45, 0.18)'
+          }}
+        >
+          <Stack spacing={{ xs: 2.5, md: 3 }}>
+            <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 0.75, md: 1.5 }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                Upcoming traditions
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
+                <CalendarMonthIcon fontSize="small" />
+                <Typography variant="body2">Save the dates for the next gatherings.</Typography>
+              </Stack>
+            </Stack>
+            <Stack spacing={2.5}>
+              {traditions.map((tradition, index) => (
+                <Box key={tradition.id}>
+                  <Stack spacing={1.25}>
+                    <Stack spacing={0.5}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                        {tradition.date} · {tradition.time}
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                        {tradition.title}
+                      </Typography>
+                    </Stack>
+                    <Typography variant="body2" color="text.secondary">
+                      {tradition.description}
+                    </Typography>
+                    {tradition.hosts?.length ? (
+                      <Stack direction="row" flexWrap="wrap" gap={1}>
+                        {tradition.hosts.map((hostId) => {
+                          const hostName = memberMap.get(hostId)?.name;
+                          if (!hostName) {
+                            return null;
+                          }
+                          return (
+                            <Chip
+                              key={`${tradition.id}-${hostId}`}
+                              label={hostName.split(' ')[0]}
+                              size="small"
+                              title={hostName}
+                              sx={{
+                                fontWeight: 600,
+                                letterSpacing: 0.4,
+                                bgcolor: (theme) => alpha(theme.palette.secondary.light, 0.18)
+                              }}
+                            />
+                          );
+                        })}
+                      </Stack>
+                    ) : null}
+                  </Stack>
+                  {index < traditions.length - 1 ? (
+                    <Divider sx={{ mt: 2.5, mb: 2.5, borderColor: (theme) => alpha(theme.palette.primary.main, 0.12) }} />
+                  ) : null}
+                </Box>
+              ))}
+            </Stack>
+          </Stack>
+        </Box>
+      ) : null}
     </Stack>
   );
 }

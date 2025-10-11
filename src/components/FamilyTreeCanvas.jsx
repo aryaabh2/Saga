@@ -6,6 +6,7 @@ const NODE_HORIZONTAL_PADDING = 8;
 const NODE_VERTICAL_PADDING = 10;
 const MIN_SCALE = 0.6;
 const MAX_SCALE = 1.6;
+const ROW_SPACING_RELAX_FACTOR = 0.82;
 
 function buildTreeLayout(members) {
   if (!members.length) {
@@ -44,6 +45,7 @@ function buildTreeLayout(members) {
 
   const spacingBoost = Math.min(2, Math.max(0, (maxGenerationSize - 1) * 0.35));
   const baseRowSlots = Math.max(maxGenerationSize + 1 - spacingBoost, 2);
+  const relaxedRowSlots = Math.max(baseRowSlots * ROW_SPACING_RELAX_FACTOR, (maxGenerationSize + 1) / 2);
   const columnDenominator = generationOrder.length > 1 ? generationOrder.length - 1 : 1;
 
   const nodes = members.map((member) => {
@@ -55,7 +57,7 @@ function buildTreeLayout(members) {
     const rowIndex = generationIndexMap.get(generation) ?? 0;
 
     const offset = (maxGenerationSize - columnCount) / 2;
-    const normalizedRow = baseRowSlots > 0 ? (offset + safeColumnIndex + 0.5) / baseRowSlots : 0.5;
+    const normalizedRow = relaxedRowSlots > 0 ? (offset + safeColumnIndex + 0.5) / relaxedRowSlots : 0.5;
     const normalizedColumn = generationOrder.length > 1 ? rowIndex / columnDenominator : 0.5;
 
     const x = horizontalMargin + normalizedColumn * horizontalRange;
