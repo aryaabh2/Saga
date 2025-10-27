@@ -87,7 +87,12 @@ export default function UploadPage({ onSubmit }) {
   }, [files.length, showValidation, summary, title]);
 
   return (
-    <Stack spacing={3} component="form" onSubmit={handleSubmit}>
+    <Stack
+      spacing={3}
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ width: '100%', maxWidth: { xs: '100%', lg: 1120 }, mx: 'auto' }}
+    >
       <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
         <Typography variant="h3" gutterBottom sx={{ fontWeight: 700 }}>
           Welcome to Saga

@@ -70,7 +70,11 @@ export default function SagaPage({ saga }) {
   const sectionContainerSx = { width: '100%', maxWidth: { xs: '100%', md: 880 } };
 
   return (
-    <Stack spacing={{ xs: 3, md: 4 }} alignItems="center">
+    <Stack
+      spacing={{ xs: 3, md: 4 }}
+      alignItems="center"
+      sx={{ width: '100%', maxWidth: { xs: '100%', lg: 1120 }, mx: 'auto' }}
+    >
       <Box sx={sectionContainerSx}>
         <Box
           sx={{
@@ -115,7 +119,14 @@ export default function SagaPage({ saga }) {
         {totalMoments > 0 ? (
           <Card
             variant="outlined"
-            sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: 3 }}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              borderRadius: 3,
+              bgcolor: 'common.white',
+              boxShadow: '0 16px 32px rgba(44, 95, 45, 0.12)'
+            }}
           >
             <CardMedia
               component="img"
@@ -170,7 +181,10 @@ export default function SagaPage({ saga }) {
             />
           </Card>
         ) : (
-          <Card variant="outlined" sx={{ borderRadius: 3 }}>
+          <Card
+            variant="outlined"
+            sx={{ borderRadius: 3, bgcolor: 'common.white', boxShadow: '0 14px 30px rgba(44, 95, 45, 0.12)' }}
+          >
             <CardContent sx={{ p: { xs: 2.75, sm: 3 } }}>
               <Typography color="text.secondary">
                 Your saga moments will appear here once memories are added.
@@ -181,7 +195,10 @@ export default function SagaPage({ saga }) {
       </Box>
 
       <Box sx={sectionContainerSx}>
-        <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <Card
+          variant="outlined"
+          sx={{ borderRadius: 3, bgcolor: 'common.white', boxShadow: '0 14px 30px rgba(44, 95, 45, 0.12)' }}
+        >
           <CardContent sx={{ p: { xs: 2.75, sm: 3.25 } }}>
             <Stack spacing={2.25}>
               <Typography variant="h5" component="h2" color="primary">
