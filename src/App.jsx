@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate
+} from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -21,17 +29,26 @@ import { alpha } from '@mui/material/styles';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import UploadPage from './pages/UploadPage.jsx';
 import ProcessingPage from './pages/ProcessingPage.jsx';
 import SagaPage from './pages/SagaPage.jsx';
 import HomePage from './pages/HomePage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import AccountPage from './pages/AccountPage.jsx';
+import ConnectionsPage from './pages/ConnectionsPage.jsx';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 
 const steps = ['Upload memories', 'Processing', 'Saga'];
 
 function SagaLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const inMemoryFlow = location.pathname.startsWith('/memories');
+  const isLoginPage = location.pathname === '/login';
   const [menuOpen, setMenuOpen] = useState(false);
   const activeStep = useMemo(() => {
     if (!inMemoryFlow) return 0;
@@ -40,18 +57,40 @@ function SagaLayout({ children }) {
     return 0;
   }, [inMemoryFlow, location.pathname]);
 
-  const navigationItems = [
-    {
-      label: 'Home',
-      icon: <HomeRoundedIcon fontSize="medium" />,
-      path: '/'
-    },
-    {
-      label: 'Add memory',
-      icon: <FavoriteBorderIcon fontSize="medium" />,
-      path: '/memories/new'
+  const navigationItems = useMemo(() => {
+    if (!user) {
+      return [
+        {
+          label: 'Log in',
+          icon: <LockOpenIcon fontSize="medium" />,
+          path: '/login'
+        }
+      ];
     }
-  ];
+
+    return [
+      {
+        label: 'Home',
+        icon: <HomeRoundedIcon fontSize="medium" />,
+        path: '/'
+      },
+      {
+        label: 'Account',
+        icon: <AccountCircleIcon fontSize="medium" />,
+        path: '/account'
+      },
+      {
+        label: 'Connections',
+        icon: <AccountTreeIcon fontSize="medium" />,
+        path: '/connections'
+      },
+      {
+        label: 'Add memory',
+        icon: <FavoriteBorderIcon fontSize="medium" />,
+        path: '/memories/new'
+      }
+    ];
+  }, [user]);
 
   const handleNavigate = (path) => {
     setMenuOpen(false);
@@ -67,15 +106,14 @@ function SagaLayout({ children }) {
     >
       <AppBar
         position="static"
-        elevation={0}
+        elevation={isLoginPage ? 0 : 1}
         color="default"
         sx={{
           bgcolor: 'background.paper',
-          borderBottom: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
           backgroundImage: (theme) =>
-            `linear-gradient(90deg, ${alpha(theme.palette.primary.light, 0.55)}, ${alpha(
+            `linear-gradient(90deg, ${alpha(theme.palette.primary.light, 0.42)}, ${alpha(
               theme.palette.background.default,
-              0.9
+              0.92
             )})`
         }}
       >
@@ -88,21 +126,23 @@ function SagaLayout({ children }) {
             gap: 2
           }}
         >
-          <IconButton
-            color="default"
-            edge="start"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open navigation menu"
-            sx={{
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
-              bgcolor: (theme) => alpha(theme.palette.background.paper, 0.85),
-              '&:hover': {
-                bgcolor: (theme) => alpha(theme.palette.primary.light, 0.45)
-              }
-            }}
-          >
-            <MenuRoundedIcon />
-          </IconButton>
+          {user && !isLoginPage ? (
+            <IconButton
+              color="default"
+              edge="start"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open navigation menu"
+              sx={{
+                border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                bgcolor: (theme) => alpha(theme.palette.background.paper, 0.85),
+                '&:hover': {
+                  bgcolor: (theme) => alpha(theme.palette.primary.light, 0.4)
+                }
+              }}
+            >
+              <MenuRoundedIcon />
+            </IconButton>
+          ) : null}
           <Typography
             variant="h5"
             component="div"
@@ -112,59 +152,62 @@ function SagaLayout({ children }) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <Box
-          sx={{
-            width: { xs: 260, sm: 300 },
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100%',
-            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.96)
-          }}
-          role="presentation"
-        >
-          <Toolbar sx={{ px: 3 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-              Menu
-            </Typography>
-          </Toolbar>
-          <Divider />
-          <List sx={{ flexGrow: 1 }}>
-            {navigationItems.map((item) => (
-              <ListItemButton
-                key={item.path}
-                onClick={() => handleNavigate(item.path)}
-                sx={{
-                  alignItems: 'flex-start',
-                  py: 1.5,
-                  borderRadius: 2,
-                  mx: 1,
-                  '&:hover': {
-                    bgcolor: (theme) => alpha(theme.palette.primary.light, 0.35)
-                  }
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>{item.icon}</ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  primaryTypographyProps={{ fontWeight: 600 }}
-                />
-              </ListItemButton>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
+      {user && !isLoginPage ? (
+        <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
+          <Box
+            sx={{
+              width: { xs: 260, sm: 300 },
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '100%',
+              bgcolor: (theme) => alpha(theme.palette.background.paper, 0.96)
+            }}
+            role="presentation"
+          >
+            <Toolbar sx={{ px: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Menu
+              </Typography>
+            </Toolbar>
+            <Divider />
+            <List sx={{ flexGrow: 1 }}>
+              {navigationItems.map((item) => (
+                <ListItemButton
+                  key={item.path}
+                  onClick={() => handleNavigate(item.path)}
+                  sx={{
+                    alignItems: 'flex-start',
+                    py: 1.5,
+                    borderRadius: 2,
+                    mx: 1,
+                    '&:hover': {
+                      bgcolor: (theme) => alpha(theme.palette.primary.light, 0.35)
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>{item.icon}</ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{ fontWeight: 600 }}
+                  />
+                </ListItemButton>
+              ))}
+            </List>
+          </Box>
+        </Drawer>
+      ) : null}
       <Container
         maxWidth="lg"
         sx={{
-          py: { xs: 3, md: 5 },
+          py: isLoginPage ? { xs: 4, md: 6 } : { xs: 3, md: 5 },
           px: { xs: 2, sm: 3 },
           display: 'flex',
           flexDirection: 'column',
+          alignItems: isLoginPage ? 'center' : 'stretch',
           gap: { xs: 2.5, md: 4 }
         }}
       >
-        {inMemoryFlow && (
+        {inMemoryFlow && user && (
           <Box sx={{ px: { xs: 0, sm: 2 }, py: { xs: 1, md: 1.5 } }}>
             <Stepper activeStep={activeStep} alternativeLabel sx={{ pt: 1 }}>
               {steps.map((label) => (
@@ -181,10 +224,22 @@ function SagaLayout({ children }) {
   );
 }
 
+function ProtectedRoute() {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  if (!user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  return <Outlet />;
+}
+
 function SagaRouter() {
   const [uploadData, setUploadData] = useState(null);
   const [saga, setSaga] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleUpload = (data) => {
     setUploadData(data);
@@ -279,22 +334,24 @@ function SagaRouter() {
   return (
     <Routes>
       <Route
-        path="/"
-        element={<HomePage onCreateMemory={handleCreateMemory} />}
+        path="/login"
+        element={user ? <Navigate to="/account" replace /> : <LoginPage />}
       />
-      <Route
-        path="/memories/new"
-        element={<UploadPage onSubmit={handleUpload} />}
-      />
-      <Route
-        path="/memories/processing"
-        element={<ProcessingPage uploadData={uploadData} onComplete={handleProcessingComplete} />}
-      />
-      <Route
-        path="/memories/story"
-        element={saga ? <SagaPage saga={saga} /> : <Navigate to="/memories/new" replace />}
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<HomePage onCreateMemory={handleCreateMemory} />} />
+        <Route path="/account" element={<AccountPage />} />
+        <Route path="/connections" element={<ConnectionsPage />} />
+        <Route path="/memories/new" element={<UploadPage onSubmit={handleUpload} />} />
+        <Route
+          path="/memories/processing"
+          element={<ProcessingPage uploadData={uploadData} onComplete={handleProcessingComplete} />}
+        />
+        <Route
+          path="/memories/story"
+          element={saga ? <SagaPage saga={saga} /> : <Navigate to="/memories/new" replace />}
+        />
+      </Route>
+      <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />
     </Routes>
   );
 }
@@ -304,9 +361,11 @@ export default function App() {
 
   return (
     <BrowserRouter basename={baseUrl || undefined}>
-      <SagaLayout>
-        <SagaRouter />
-      </SagaLayout>
+      <AuthProvider>
+        <SagaLayout>
+          <SagaRouter />
+        </SagaLayout>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

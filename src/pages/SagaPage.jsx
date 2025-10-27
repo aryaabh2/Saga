@@ -16,6 +16,7 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 
 function downloadSaga(saga) {
   const documentContent = {
@@ -43,6 +44,7 @@ export default function SagaPage({ saga }) {
   const navigate = useNavigate();
   const fallbackHeroImage =
     'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80';
+  const { user } = useAuth();
 
   const moments = useMemo(() => saga.moments ?? [], [saga.moments]);
   const [activeMomentIndex, setActiveMomentIndex] = useState(0);
@@ -91,6 +93,11 @@ export default function SagaPage({ saga }) {
             <Typography variant="overline" sx={{ letterSpacing: 1.4, lineHeight: 1.1, color: 'secondary.light' }}>
               Saga keepsake
             </Typography>
+            {user?.name ? (
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'secondary.light' }}>
+                Curated for {user.name.split(' ')[0]}'s circle
+              </Typography>
+            ) : null}
             <Typography variant="h3" component="h1" sx={{ fontWeight: 700 }}>
               {saga.title}
             </Typography>

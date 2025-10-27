@@ -88,17 +88,23 @@ export default function UploadPage({ onSubmit }) {
 
   return (
     <Stack spacing={3} component="form" onSubmit={handleSubmit}>
-      <Box>
+      <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
         <Typography variant="h3" gutterBottom sx={{ fontWeight: 700 }}>
           Welcome to Saga
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600 }}>
-          Gather photos and notes from loved ones and let Saga weave a memorable keepsake that is easy to share
-          with family and friends.
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{ maxWidth: 600, mx: { xs: 'auto', md: 0 } }}
+        >
+          Gather photos and notes from loved ones and let Saga weave a memorable keepsake that is easy to share with family and friends.
         </Typography>
       </Box>
 
-      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+      <Card
+        elevation={6}
+        sx={{ borderRadius: 3, bgcolor: 'common.white', boxShadow: '0 16px 32px rgba(44, 95, 45, 0.14)' }}
+      >
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Stack spacing={2.5}>
             <Box
@@ -159,7 +165,10 @@ export default function UploadPage({ onSubmit }) {
         </CardContent>
       </Card>
 
-      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+      <Card
+        elevation={6}
+        sx={{ borderRadius: 3, bgcolor: 'common.white', boxShadow: '0 16px 32px rgba(44, 95, 45, 0.14)' }}
+      >
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Stack spacing={2.5}>
             <TextField
@@ -198,7 +207,7 @@ export default function UploadPage({ onSubmit }) {
 
       {error && <Alert severity="warning">{error}</Alert>}
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
         <Button type="submit" variant="contained" size="large" sx={{ px: 4, borderRadius: 999 }}>
           Create my saga
         </Button>

@@ -19,6 +19,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FamilyTreeCanvas from '../components/FamilyTreeCanvas.jsx';
 import { fetchFamilySnapshot } from '../data/mockFamilyService.js';
 import { alpha } from '@mui/material/styles';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const quickActions = [
   {
@@ -52,9 +53,8 @@ function MemoryCard({ memory, memberMap, selectedMemberId }) {
         flexDirection: 'column',
         borderRadius: 3,
         overflow: 'hidden',
-        border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
         boxShadow: '0 14px 30px rgba(125, 46, 50, 0.18)',
-        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92)
+        bgcolor: 'common.white'
       }}
     >
       <CardActionArea
@@ -78,7 +78,7 @@ function MemoryCard({ memory, memberMap, selectedMemberId }) {
         <CardContent
           sx={{
             flexGrow: 1,
-            p: { xs: 2.5, sm: 3 },
+            p: { xs: 2.25, sm: 3 },
             display: 'flex',
             flexDirection: 'column',
             gap: 1.25
@@ -148,8 +148,8 @@ function MemberSpotlight({ member }) {
         sx={{
           borderRadius: 3,
           p: { xs: 2, md: 2.5 },
-          border: (theme) => `1px dashed ${alpha(theme.palette.primary.main, 0.4)}`,
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.8),
+          bgcolor: 'common.white',
+          boxShadow: '0 12px 24px rgba(44, 95, 45, 0.12)',
           textAlign: 'center'
         }}
       >
@@ -177,8 +177,7 @@ function MemberSpotlight({ member }) {
       sx={{
         borderRadius: 3,
         p: { xs: 2, md: 2.5 },
-        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.95),
-        border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
+        bgcolor: 'common.white',
         boxShadow: '0 16px 32px rgba(125, 46, 50, 0.22)'
       }}
     >
@@ -234,6 +233,7 @@ export default function HomePage({ onCreateMemory }) {
   const [traditions, setTraditions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMemberId, setSelectedMemberId] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -296,6 +296,16 @@ export default function HomePage({ onCreateMemory }) {
     return memories.filter((memory) => memory.people.includes(selectedMemberId));
   }, [memories, selectedMemberId]);
 
+  const greetingName = useMemo(() => {
+    if (user?.name) {
+      return user.name.split(' ')[0];
+    }
+    if (referenceMember?.name) {
+      return referenceMember.name.split(' ')[0];
+    }
+    return 'there';
+  }, [referenceMember?.name, user?.name]);
+
   const handleSelectMember = (memberId) => {
     setSelectedMemberId(memberId);
   };
@@ -308,30 +318,33 @@ export default function HomePage({ onCreateMemory }) {
     <Stack spacing={{ xs: 3, md: 4 }}>
       <Box
         sx={{
-          borderRadius: 3,
+          borderRadius: 4,
           px: { xs: 3, md: 4 },
           py: { xs: 3, md: 4 },
-          border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
-          backgroundImage: (theme) =>
-            `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.65)}, ${alpha(
-              theme.palette.background.default,
-              0.85
-            )})`,
-          boxShadow: '0 18px 36px rgba(44, 95, 45, 0.16)'
+          bgcolor: 'common.white',
+          boxShadow: '0 18px 32px rgba(44, 95, 45, 0.14)',
+          textAlign: { xs: 'center', md: 'left' }
         }}
       >
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           spacing={{ xs: 2.5, md: 3 }}
-          alignItems={{ xs: 'flex-start', md: 'center' }}
+          alignItems={{ xs: 'center', md: 'center' }}
         >
           <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              Family sagas for {familyGroupLabelWithArticle}
+            <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1.6, color: 'primary.main' }}>
+              Welcome, {greetingName}
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mt: 0.75 }}>
-              Choose someone on the tree to spotlight their highlights and open shared memories whenever you're ready.
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              Your family hub is ready to explore
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mt: 0.75, maxWidth: 620, mx: { xs: 'auto', md: 0 } }}
+            >
+              Tap a loved one on the tree to refresh their highlights, check traditions coming up, or add a new shared memory
+              whenever the moment strikes.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} width={{ xs: '100%', md: 'auto' }}>
@@ -360,11 +373,10 @@ export default function HomePage({ onCreateMemory }) {
 
       <Box
         sx={{
-          borderRadius: 3,
+          borderRadius: 4,
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+          bgcolor: 'common.white',
           boxShadow: '0 16px 34px rgba(44, 95, 45, 0.18)'
         }}
       >
@@ -435,32 +447,42 @@ export default function HomePage({ onCreateMemory }) {
 
       <Box
         sx={{
-          borderRadius: 3,
+          borderRadius: 4,
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+          bgcolor: 'common.white',
           boxShadow: '0 18px 34px rgba(44, 95, 45, 0.2)'
         }}
       >
         <Stack spacing={{ xs: 2.5, md: 3 }}>
           <Stack spacing={1}>
-            <Stack
-              direction={{ xs: 'column', md: 'row' }}
-              spacing={{ xs: 0.75, md: 1.5 }}
-              justifyContent="space-between"
-              alignItems={{ xs: 'flex-start', md: 'center' }}
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={{ xs: 0.75, md: 1.5 }}
+            justifyContent="space-between"
+            alignItems={{ xs: 'center', md: 'center' }}
+          >
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 700, textAlign: { xs: 'center', md: 'left' } }}
             >
-              <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                {memoriesHeading}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {selectedMemories.length} saved {selectedMemories.length === 1 ? 'memory' : 'memories'}
-              </Typography>
-            </Stack>
-            <Typography variant="body2" color="text.secondary">
-              {selectedMember?.name?.split(' ')[0] ?? 'Your family'} is tagged in these shared keepsakes.
+              {memoriesHeading}
             </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textAlign: { xs: 'center', md: 'right' } }}
+            >
+              {selectedMemories.length} saved {selectedMemories.length === 1 ? 'memory' : 'memories'}
+            </Typography>
+          </Stack>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ textAlign: { xs: 'center', md: 'left' } }}
+          >
+            {selectedMember?.name?.split(' ')[0] ?? 'Your family'} is tagged in these shared keepsakes.
+          </Typography>
           </Stack>
 
           {loading ? (
@@ -494,8 +516,7 @@ export default function HomePage({ onCreateMemory }) {
                 py: { xs: 4, md: 5 },
                 px: { xs: 3, md: 4 },
                 textAlign: 'center',
-                border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-                bgcolor: (theme) => alpha(theme.palette.background.paper, 0.95),
+                bgcolor: 'common.white',
                 boxShadow: '0 18px 32px rgba(44, 95, 45, 0.18)'
               }}
             >
@@ -524,22 +545,34 @@ export default function HomePage({ onCreateMemory }) {
       {traditions.length ? (
         <Box
           sx={{
-            borderRadius: 3,
+            borderRadius: 4,
             px: { xs: 2.5, md: 3 },
             py: { xs: 3, md: 3.5 },
-            border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.16)}`,
-            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+            bgcolor: 'common.white',
             boxShadow: '0 18px 34px rgba(44, 95, 45, 0.18)'
           }}
         >
           <Stack spacing={{ xs: 2.5, md: 3 }}>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 0.75, md: 1.5 }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
-              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              spacing={{ xs: 0.75, md: 1.5 }}
+              justifyContent="space-between"
+              alignItems={{ xs: 'center', md: 'center' }}
+            >
+              <Typography variant="h5" sx={{ fontWeight: 700, textAlign: { xs: 'center', md: 'left' } }}>
                 Upcoming traditions
               </Typography>
-              <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                color="text.secondary"
+                sx={{ justifyContent: { xs: 'center', md: 'flex-end' } }}
+              >
                 <CalendarMonthIcon fontSize="small" />
-                <Typography variant="body2">Save the dates for the next gatherings.</Typography>
+                <Typography variant="body2" sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                  Save the dates for the next gatherings.
+                </Typography>
               </Stack>
             </Stack>
             <Stack spacing={2.5}>
