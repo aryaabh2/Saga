@@ -48,7 +48,7 @@ export default function ConnectionsPage() {
   };
 
   return (
-    <Stack spacing={{ xs: 3, md: 4 }}>
+    <Stack spacing={{ xs: 3, md: 4 }} sx={{ width: '100%', maxWidth: { xs: '100%', lg: 1120 }, mx: 'auto' }}>
       <Card
         sx={{
           borderRadius: 4,
@@ -78,7 +78,7 @@ export default function ConnectionsPage() {
 
       <Grid container spacing={{ xs: 3, md: 4 }} alignItems="stretch">
         <Grid item xs={12} md={5}>
-          <Card sx={{ height: '100%', borderRadius: 3 }}>
+          <Card sx={{ height: '100%', borderRadius: 3, bgcolor: 'common.white', boxShadow: '0 16px 32px rgba(44, 95, 45, 0.12)' }}>
             <CardContent component="form" onSubmit={handleSubmit} sx={{ p: { xs: 2.5, md: 3.25 } }}>
               <Stack spacing={2.5}>
                 <Stack direction="row" alignItems="center" spacing={1}>
@@ -155,7 +155,9 @@ export default function ConnectionsPage() {
           </Card>
         </Grid>
         <Grid item xs={12} md={7}>
-          <Card sx={{ height: '100%', borderRadius: 3, display: 'flex', flexDirection: 'column' }}>
+          <Card
+            sx={{ height: '100%', borderRadius: 3, display: 'flex', flexDirection: 'column', bgcolor: 'common.white', boxShadow: '0 16px 32px rgba(44, 95, 45, 0.12)' }}
+          >
             <CardContent sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
               <Stack spacing={1.5} sx={{ height: '100%' }}>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
@@ -177,7 +179,7 @@ export default function ConnectionsPage() {
         </Grid>
       </Grid>
 
-      <Card sx={{ borderRadius: 3 }}>
+      <Card sx={{ borderRadius: 3, bgcolor: 'common.white', boxShadow: '0 14px 30px rgba(44, 95, 45, 0.12)' }}>
         <CardContent sx={{ p: { xs: 2.25, md: 3 } }}>
           <Stack spacing={2}>
             <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>

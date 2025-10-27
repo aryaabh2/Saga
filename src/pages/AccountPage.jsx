@@ -23,8 +23,8 @@ function StatCard({ icon, label, value, description }) {
       sx={{
         borderRadius: 3,
         height: '100%',
-        background: (theme) => alpha(theme.palette.background.paper, 0.96),
-        boxShadow: '0 16px 28px rgba(35, 74, 65, 0.18)'
+        bgcolor: 'common.white',
+        boxShadow: '0 18px 32px rgba(44, 95, 45, 0.16)'
       }}
     >
       <CardContent sx={{ p: { xs: 2.5, md: 3.25 } }}>
@@ -87,7 +87,7 @@ export default function AccountPage() {
   }
 
   return (
-    <Stack spacing={{ xs: 3, md: 4 }}>
+    <Stack spacing={{ xs: 3, md: 4 }} sx={{ width: '100%', maxWidth: { xs: '100%', lg: 1120 }, mx: 'auto' }}>
       <Card
         sx={{
           borderRadius: 4,
@@ -152,7 +152,7 @@ export default function AccountPage() {
         </Stack>
       </Card>
 
-      <Grid container spacing={{ xs: 2.5, md: 3 }}>
+      <Grid container spacing={{ xs: 2.5, md: 3 }} sx={{ px: { xs: 0.5, md: 1 } }}>
         <Grid item xs={12} md={4}>
           <StatCard
             icon={<FamilyRestroomIcon fontSize="small" />}
@@ -179,7 +179,7 @@ export default function AccountPage() {
         </Grid>
       </Grid>
 
-      <Card sx={{ borderRadius: 3, boxShadow: '0 12px 28px rgba(35, 74, 65, 0.18)' }}>
+      <Card sx={{ borderRadius: 3, boxShadow: '0 16px 32px rgba(44, 95, 45, 0.14)', bgcolor: 'common.white' }}>
         <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
           <Stack spacing={2.5}>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>

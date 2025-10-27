@@ -43,7 +43,11 @@ export default function ProcessingPage({ uploadData, onComplete }) {
   }
 
   return (
-    <Stack spacing={{ xs: 3, md: 3.5 }} alignItems="center">
+    <Stack
+      spacing={{ xs: 3, md: 3.5 }}
+      alignItems="center"
+      sx={{ width: '100%', maxWidth: { xs: '100%', lg: 1120 }, mx: 'auto' }}
+    >
       <Box textAlign="center">
         <Typography variant="h3" gutterBottom>
           Creating your saga{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
@@ -53,7 +57,10 @@ export default function ProcessingPage({ uploadData, onComplete }) {
         </Typography>
       </Box>
 
-      <Card variant="outlined" sx={{ width: '100%', borderRadius: 3 }}>
+      <Card
+        variant="outlined"
+        sx={{ width: '100%', borderRadius: 3, bgcolor: 'common.white', boxShadow: '0 16px 32px rgba(44, 95, 45, 0.12)' }}
+      >
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Stack spacing={3} alignItems="center">
             <HourglassBottomIcon color="primary" sx={{ fontSize: 56 }} />

@@ -43,6 +43,17 @@ const theme = createTheme({
     }
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: '#F4F6FA',
+          backgroundImage:
+            'radial-gradient(circle at 20% 20%, rgba(242, 214, 207, 0.35), transparent 55%), radial-gradient(circle at 80% 0%, rgba(217, 178, 114, 0.22), transparent 60%), linear-gradient(180deg, rgba(255, 249, 245, 0.82), rgba(244, 246, 250, 1))',
+          backgroundAttachment: 'fixed',
+          minHeight: '100%'
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
