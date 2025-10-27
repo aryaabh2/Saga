@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { Box, Button, Card, CardContent, LinearProgress, Stack, Typography } from '@mui/material';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const PROCESS_DURATION = 5000;
 
 export default function ProcessingPage({ uploadData, onComplete }) {
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!uploadData) {
@@ -44,7 +46,7 @@ export default function ProcessingPage({ uploadData, onComplete }) {
     <Stack spacing={{ xs: 3, md: 3.5 }} alignItems="center">
       <Box textAlign="center">
         <Typography variant="h3" gutterBottom>
-          Creating your saga
+          Creating your saga{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Please hold tight while we weave together your memories into something warm and memorable. This should only take a few moments.
