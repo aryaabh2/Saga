@@ -11,6 +11,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
+import { keyframes } from '@mui/system';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
@@ -19,6 +20,36 @@ import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
 import TagRoundedIcon from '@mui/icons-material/LocalOfferRounded';
 import { useNavigate } from 'react-router-dom';
 import { getMemberById, listFamilyMemories } from '../data/mockFamilyService.js';
+
+const flipForward = keyframes`
+  0% {
+    transform: rotateY(0deg) translateZ(0);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.18);
+  }
+  45% {
+    transform: rotateY(-90deg) translateZ(18px);
+    box-shadow: 0 28px 52px rgba(0, 0, 0, 0.28);
+  }
+  100% {
+    transform: rotateY(-170deg) translateZ(26px);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.25);
+  }
+`;
+
+const flipBackward = keyframes`
+  0% {
+    transform: rotateY(0deg) translateZ(0);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.18);
+  }
+  45% {
+    transform: rotateY(90deg) translateZ(18px);
+    box-shadow: 0 28px 52px rgba(0, 0, 0, 0.28);
+  }
+  100% {
+    transform: rotateY(170deg) translateZ(26px);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.25);
+  }
+`;
 
 function MemoryLeaf({ memory, flipped }) {
   const participants = memory.people.map((personId) => getMemberById(personId)?.name).filter(Boolean);
@@ -33,10 +64,12 @@ function MemoryLeaf({ memory, flipped }) {
         overflow: 'hidden',
         backgroundImage: `linear-gradient(180deg, ${alpha('#fffaf3', 0.95)}, ${alpha('#f4ddbf', 0.98)})`,
         boxShadow: flipped
-          ? '0 26px 48px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.52)'
+          ? '0 28px 52px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.52)'
           : '0 18px 32px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.45)',
-        transformOrigin: 'left center',
-        backfaceVisibility: 'hidden'
+        transformOrigin: 'center',
+        backfaceVisibility: 'hidden',
+        transition: 'transform 0.6s ease, box-shadow 0.6s ease',
+        transform: flipped ? 'rotateY(-10deg) translateZ(10px)' : 'rotateY(0deg) translateZ(0)'
       }}
     >
       <Box
@@ -109,22 +142,24 @@ export default function HomePage() {
   }, [memories]);
   const [activeSpread, setActiveSpread] = useState(0);
   const [turning, setTurning] = useState(null);
+  const canGoPrev = activeSpread > 0 && !turning;
+  const canGoNext = activeSpread < spreads.length - 1 && !turning;
 
   const handleTurn = (direction) => {
     if (turning) return;
-    if (direction === 'next' && activeSpread < spreads.length - 1) {
+    if (direction === 'next' && canGoNext) {
       setTurning('next');
       setTimeout(() => {
         setActiveSpread((prev) => prev + 1);
         setTurning(null);
-      }, 420);
+      }, 650);
     }
-    if (direction === 'prev' && activeSpread > 0) {
+    if (direction === 'prev' && canGoPrev) {
       setTurning('prev');
       setTimeout(() => {
         setActiveSpread((prev) => prev - 1);
         setTurning(null);
-      }, 420);
+      }, 650);
     }
   };
 
@@ -166,9 +201,10 @@ export default function HomePage() {
       <Box
         sx={{
           position: 'relative',
-          perspective: 2000,
+          perspective: 2200,
           px: { xs: 0, sm: 2 },
-          pb: 2
+          pb: 2,
+          mt: 1
         }}
       >
         <Box
@@ -185,63 +221,121 @@ export default function HomePage() {
             zIndex: 0
           }}
         />
+        <IconButton
+          onClick={() => handleTurn('prev')}
+          disabled={!canGoPrev}
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: { xs: 6, md: 14 },
+            transform: 'translateY(-50%)',
+            width: 56,
+            height: 56,
+            borderRadius: '50%',
+            bgcolor: 'common.white',
+            boxShadow: '0 18px 32px rgba(0,0,0,0.22)',
+            border: '1px solid',
+            borderColor: alpha('#b5122f', 0.35),
+            color: 'text.primary',
+            zIndex: 2,
+            '&:hover': { bgcolor: 'primary.main', color: '#fff' },
+            '&:disabled': { opacity: 0.4, boxShadow: 'none' }
+          }}
+        >
+          <ChevronLeftRoundedIcon />
+        </IconButton>
+        <IconButton
+          onClick={() => handleTurn('next')}
+          disabled={!canGoNext}
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            right: { xs: 6, md: 14 },
+            transform: 'translateY(-50%)',
+            width: 56,
+            height: 56,
+            borderRadius: '50%',
+            bgcolor: 'common.white',
+            boxShadow: '0 18px 32px rgba(0,0,0,0.22)',
+            border: '1px solid',
+            borderColor: alpha('#b5122f', 0.35),
+            color: 'text.primary',
+            zIndex: 2,
+            '&:hover': { bgcolor: 'primary.main', color: '#fff' },
+            '&:disabled': { opacity: 0.4, boxShadow: 'none' }
+          }}
+        >
+          <ChevronRightRoundedIcon />
+        </IconButton>
         <Box
           sx={{
             position: 'relative',
             zIndex: 1,
             display: 'grid',
             gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-            gap: { xs: 2, md: 0 },
-            minHeight: { xs: 780, md: 520 },
+            gap: { xs: 2, md: 1.5 },
+            minHeight: { xs: 780, md: 560 },
             transformStyle: 'preserve-3d',
             transition: 'transform 0.45s ease',
-            transform: turning === 'next' ? 'rotateY(-6deg)' : turning === 'prev' ? 'rotateY(6deg)' : 'rotateY(0deg)'
+            transform:
+              turning === 'next'
+                ? 'rotateY(-5deg) translateZ(12px)'
+                : turning === 'prev'
+                ? 'rotateY(5deg) translateZ(12px)'
+                : 'rotateY(0deg)'
           }}
         >
-          {spreads[activeSpread]?.map((memory, index) => (
-            <Box
-              key={memory.id}
-              sx={{
-                height: '100%',
-                perspective: 1600,
-                transformStyle: 'preserve-3d',
-                px: { xs: 1, md: index === 0 ? 0 : 2 },
-                position: 'relative'
-              }}
-            >
+          {spreads[activeSpread]?.map((memory, index) => {
+            const isLeftPage = index === 0;
+            const isFlippingForward = turning === 'next' && isLeftPage;
+            const isFlippingBackward = turning === 'prev' && !isLeftPage;
+            const isPrimaryTurningPage = isFlippingForward || isFlippingBackward;
+            const restingTilt = turning ? 'rotateY(0deg)' : `rotateY(${isLeftPage ? -2.5 : 2.5}deg)`;
+            const pageAnimation = isFlippingForward
+              ? `${flipForward} 0.7s cubic-bezier(0.32, 0.72, 0, 1)`
+              : isFlippingBackward
+              ? `${flipBackward} 0.7s cubic-bezier(0.32, 0.72, 0, 1)`
+              : 'none';
+
+            return (
               <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  width: 12,
-                  left: index === 0 ? '100%' : -12,
-                  background: `linear-gradient(180deg, ${alpha('#7a0820', 0.3)}, ${alpha('#d4af37', 0.2)})`,
-                  filter: 'blur(14px)',
-                  opacity: 0.5
-                }}
-              />
-              <Box
+                key={memory.id}
                 sx={{
                   height: '100%',
+                  perspective: 1600,
                   transformStyle: 'preserve-3d',
-                  transition: 'transform 0.45s ease, box-shadow 0.45s ease',
-                  transform:
-                    turning === 'next'
-                      ? index === 0
-                        ? 'rotateY(-12deg)'
-                        : 'rotateY(-6deg)'
-                      : turning === 'prev'
-                      ? index === 0
-                        ? 'rotateY(12deg)'
-                        : 'rotateY(6deg)'
-                      : 'rotateY(0deg)'
+                  px: { xs: 1, md: isLeftPage ? 0 : 2 },
+                  position: 'relative'
                 }}
               >
-                <MemoryLeaf memory={memory} flipped={turning === 'next'} />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    width: 14,
+                    left: isLeftPage ? '100%' : -14,
+                    background: `linear-gradient(180deg, ${alpha('#7a0820', 0.3)}, ${alpha('#d4af37', 0.2)})`,
+                    filter: 'blur(16px)',
+                    opacity: 0.5
+                  }}
+                />
+                <Box
+                  sx={{
+                    height: '100%',
+                    transformStyle: 'preserve-3d',
+                    transformOrigin: isLeftPage ? 'right center' : 'left center',
+                    transition: 'transform 0.5s ease, box-shadow 0.5s ease',
+                    animation: pageAnimation,
+                    transform: pageAnimation === 'none' ? `${restingTilt} translateZ(0)` : undefined,
+                    boxShadow: '0 18px 32px rgba(0,0,0,0.18)'
+                  }}
+                >
+                  <MemoryLeaf memory={memory} flipped={isPrimaryTurningPage || turning !== null} />
+                </Box>
               </Box>
-            </Box>
-          ))}
+            );
+          })}
         </Box>
         <Stack
           direction="row"
@@ -249,11 +343,20 @@ export default function HomePage() {
           alignItems="center"
           justifyContent="center"
           mt={3}
-          sx={{ position: 'relative', zIndex: 2 }}
+          sx={{
+            position: 'relative',
+            zIndex: 2,
+            bgcolor: alpha('#fff', 0.8),
+            borderRadius: 999,
+            px: 1.5,
+            py: 0.75,
+            boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
+            backdropFilter: 'blur(10px)'
+          }}
         >
           <IconButton
             onClick={() => handleTurn('prev')}
-            disabled={activeSpread === 0 || turning !== null}
+            disabled={!canGoPrev}
             sx={{ border: '1px solid', borderColor: alpha('#b5122f', 0.4) }}
           >
             <ChevronLeftRoundedIcon />
@@ -263,7 +366,7 @@ export default function HomePage() {
           </Typography>
           <IconButton
             onClick={() => handleTurn('next')}
-            disabled={activeSpread === spreads.length - 1 || turning !== null}
+            disabled={!canGoNext}
             sx={{ border: '1px solid', borderColor: alpha('#b5122f', 0.4) }}
           >
             <ChevronRightRoundedIcon />
