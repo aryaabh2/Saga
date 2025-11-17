@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import {
   Avatar,
   Box,
@@ -8,219 +8,163 @@ import {
   Chip,
   Grid,
   Stack,
+  TextField,
   Typography
 } from '@mui/material';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
-import Diversity2Icon from '@mui/icons-material/Diversity2';
-import { useNavigate } from 'react-router-dom';
-import { alpha } from '@mui/material/styles';
+import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
+import MailRoundedIcon from '@mui/icons-material/MailRounded';
+import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
+import CakeRoundedIcon from '@mui/icons-material/CakeRounded';
+import { alpha, useTheme } from '@mui/material/styles';
 import { useAuth } from '../context/AuthContext.jsx';
 
-function StatCard({ icon, label, value, description }) {
-  return (
-    <Card
-      sx={{
-        borderRadius: 3,
-        height: '100%',
-        bgcolor: 'common.white',
-        boxShadow: '0 18px 32px rgba(44, 95, 45, 0.16)'
-      }}
-    >
-      <CardContent sx={{ p: { xs: 2.5, md: 3.25 } }}>
-        <Stack spacing={2} alignItems="flex-start">
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '50%',
-              bgcolor: (theme) => alpha(theme.palette.primary.light, 0.18),
-              color: 'primary.main',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {icon}
-          </Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            {value}
-          </Typography>
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            {label}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {description}
-          </Typography>
-        </Stack>
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function AccountPage() {
-  const navigate = useNavigate();
-  const { user, connections, familyMembers } = useAuth();
+  const { user } = useAuth();
+  const theme = useTheme();
+  const [photoPreview, setPhotoPreview] = useState('');
 
-  const groupedConnections = useMemo(() => {
-    const groups = connections.reduce((accumulator, connection) => {
-      const key = connection.relation;
-      accumulator[key] = accumulator[key] ? accumulator[key] + 1 : 1;
-      return accumulator;
-    }, {});
+  const handleUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => setPhotoPreview(e.target?.result?.toString() || '');
+    reader.readAsDataURL(file);
+  };
 
-    return Object.entries(groups).map(([relation, count]) => ({ relation, count }));
-  }, [connections]);
-
-  const highlightedMembers = useMemo(() => {
-    const map = new Map(familyMembers.map((member) => [member.id, member]));
-    return connections
-      .map((connection) => ({
-        ...connection,
-        member: map.get(connection.memberId)
-      }))
-      .filter((item) => Boolean(item.member));
-  }, [connections, familyMembers]);
-
-  if (!user) {
-    return null;
-  }
+  const profileImage = photoPreview || user?.avatarUrl || '';
 
   return (
-    <Stack spacing={{ xs: 3, md: 4 }} sx={{ width: '100%', maxWidth: { xs: '100%', lg: 1120 }, mx: 'auto' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Card
         sx={{
-          borderRadius: 4,
-          px: { xs: 3, md: 5 },
-          py: { xs: 3.5, md: 4.5 },
-          background: (theme) =>
-            `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.16)}, ${alpha(
-              theme.palette.background.default,
-              0.92
-            )})`,
-          boxShadow: '0 20px 38px rgba(35, 74, 65, 0.22)'
+          p: { xs: 3, md: 4 },
+          backgroundImage:
+            'radial-gradient(circle at 22% 20%, rgba(212, 175, 55, 0.15), transparent 28%), linear-gradient(145deg, rgba(255, 248, 242, 0.98), rgba(245, 224, 197, 0.95))'
         }}
       >
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={{ xs: 2.5, md: 4 }}
-          alignItems={{ xs: 'center', md: 'flex-start' }}
-        >
-          <Avatar
+        <Stack spacing={3} alignItems="center" textAlign="center">
+          <Box
             sx={{
-              width: 96,
-              height: 96,
-              fontSize: 36,
-              fontWeight: 700,
-              bgcolor: (theme) => alpha(theme.palette.primary.dark, 0.9)
+              position: 'relative',
+              width: 200,
+              height: 200,
+              borderRadius: '50%',
+              background: `radial-gradient(circle at 30% 30%, ${alpha(theme.palette.primary.light, 0.25)}, ${alpha(
+                theme.palette.background.paper,
+                0.9
+              )})`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: `0 24px 44px rgba(0,0,0,0.18), 0 0 0 10px ${alpha(theme.palette.secondary.light, 0.32)}`
             }}
           >
-            {user.name
-              .split(' ')
-              .map((part) => part[0])
-              .join('')}
-          </Avatar>
-          <Stack spacing={1.5} textAlign={{ xs: 'center', md: 'left' }}>
-            <Typography variant="overline" sx={{ letterSpacing: 1.8, color: 'primary.dark' }}>
-              Account overview
-            </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              {user.name}
-            </Typography>
-            <Typography color="text.secondary">{user.email}</Typography>
-            <Typography color="text.secondary">{user.location}</Typography>
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={1}
-              justifyContent={{ xs: 'center', md: 'flex-start' }}
+            <Avatar
+              src={profileImage}
+              alt={user?.name || 'Profile avatar'}
+              sx={{
+                width: 170,
+                height: 170,
+                bgcolor: alpha(theme.palette.text.secondary, 0.08),
+                color: theme.palette.text.primary,
+                fontWeight: 700,
+                fontSize: '2rem'
+              }}
             >
-              <Chip label={`Member since ${user.memberSince}`} color="primary" sx={{ borderRadius: 2 }} />
-              <Chip label={user.tagline} variant="outlined" sx={{ borderRadius: 2 }} />
-            </Stack>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} pt={1.5}>
-              <Button
-                variant="contained"
-                startIcon={<ManageAccountsIcon />}
-                onClick={() => navigate('/connections')}
-                sx={{ borderRadius: 3 }}
-              >
-                Manage connections
-              </Button>
-              <Button variant="text" onClick={() => navigate('/')}>Go to family home</Button>
-            </Stack>
+              {(user?.name || 'Saga User')
+                .split(' ')
+                .map((piece) => piece[0])
+                .join('')}
+            </Avatar>
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<PhotoCameraRoundedIcon />}
+              sx={{ position: 'absolute', bottom: 10 }}
+            >
+              Update portrait
+              <input hidden accept="image/*" type="file" onChange={handleUpload} />
+            </Button>
+          </Box>
+          <Stack spacing={1}>
+            <Typography variant="overline" color="secondary.dark">
+              Account
+            </Typography>
+            <Typography variant="h4" sx={{ fontWeight: 800 }}>
+              {user?.name || 'Saga member'}
+            </Typography>
+            <Typography color="text.secondary">
+              {user?.tagline || 'Keepers of stories, memories, and traditions.'}
+            </Typography>
           </Stack>
         </Stack>
       </Card>
 
-      <Grid container spacing={{ xs: 2.5, md: 3 }} sx={{ px: { xs: 0.5, md: 1 } }}>
-        <Grid item xs={12} md={4}>
-          <StatCard
-            icon={<FamilyRestroomIcon fontSize="small" />}
-            label="Connections logged"
-            value={connections.length}
-            description="Direct relationships mapped to your immediate story circle."
-          />
+      <Grid container spacing={2.5}>
+        <Grid item xs={12} md={6}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent>
+              <Stack spacing={2}>
+                <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <MailRoundedIcon color="primary" />
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                      Email
+                    </Typography>
+                    <Typography color="text.secondary">{user?.email || 'jordan@saga.demo'}</Typography>
+                  </Box>
+                </Stack>
+                <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <LocationOnRoundedIcon color="secondary" />
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                      Home base
+                    </Typography>
+                    <Typography color="text.secondary">{user?.location || 'Portland, Oregon'}</Typography>
+                  </Box>
+                </Stack>
+                <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <CakeRoundedIcon color="primary" />
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                      Member since
+                    </Typography>
+                    <Typography color="text.secondary">{user?.memberSince || 2021}</Typography>
+                  </Box>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <StatCard
-            icon={<Diversity2Icon fontSize="small" />}
-            label="Relationship types"
-            value={groupedConnections.length}
-            description="Unique connection types across your family tree."
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <StatCard
-            icon={<ManageAccountsIcon fontSize="small" />}
-            label="Tree members"
-            value={familyMembers.length}
-            description="Family members currently represented in your demo tree."
-          />
+        <Grid item xs={12} md={6}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700 }} gutterBottom>
+                Share your story in a sentence
+              </Typography>
+              <Typography color="text.secondary" gutterBottom>
+                Update your one-liner so your family knows what you are up to these days.
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                minRows={3}
+                value={user?.tagline || 'Curator of family stories and host of the winter cocoa chats.'}
+                sx={{
+                  mt: 1.5,
+                  background: alpha(theme.palette.background.paper, 0.8),
+                  '& .MuiOutlinedInput-root': { borderRadius: 3 }
+                }}
+              />
+              <Stack direction="row" spacing={1} mt={2} flexWrap="wrap">
+                <Chip label="Family archivist" color="primary" variant="outlined" />
+                <Chip label="Memory weaver" color="secondary" variant="outlined" />
+                <Chip label="Tradition host" variant="outlined" />
+              </Stack>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
-
-      <Card sx={{ borderRadius: 3, boxShadow: '0 16px 32px rgba(44, 95, 45, 0.14)', bgcolor: 'common.white' }}>
-        <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
-          <Stack spacing={2.5}>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Spotlighted connections
-            </Typography>
-            <Stack spacing={2}>
-              {highlightedMembers.map((item) => (
-                <Stack
-                  key={item.id}
-                  direction={{ xs: 'column', md: 'row' }}
-                  spacing={1.5}
-                  alignItems={{ xs: 'flex-start', md: 'center' }}
-                  sx={{
-                    borderRadius: 2,
-                    p: { xs: 1.5, md: 2 },
-                    bgcolor: (theme) => alpha(theme.palette.background.default, 0.9)
-                  }}
-                >
-                  <Box sx={{ minWidth: 120 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      {item.member.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.relation}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {item.story}
-                  </Typography>
-                  <Chip label={item.connectionLevel} size="small" sx={{ ml: { md: 'auto' } }} />
-                </Stack>
-              ))}
-              {!highlightedMembers.length && (
-                <Typography variant="body2" color="text.secondary">
-                  Add a connection to see it highlighted here.
-                </Typography>
-              )}
-            </Stack>
-          </Stack>
-        </CardContent>
-      </Card>
-    </Stack>
+    </Box>
   );
 }
