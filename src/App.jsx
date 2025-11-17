@@ -150,9 +150,6 @@ function SagaLayout({ children }) {
             sx={{ fontWeight: 700, letterSpacing: 1.4, display: 'flex', alignItems: 'center', gap: 1 }}
           >
             Saga
-            <Typography component="span" variant="subtitle2" sx={{ fontWeight: 600, opacity: 0.9 }}>
-              Royal Archives
-            </Typography>
           </Typography>
         </Toolbar>
       </AppBar>
