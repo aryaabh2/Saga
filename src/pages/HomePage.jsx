@@ -73,9 +73,10 @@ function MemoryCard({ memory, memberMap, selectedMemberId, onOpen }) {
       <CardActionArea
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
+          flexDirection: { xs: 'column', lg: 'row' },
           alignItems: 'stretch',
-          height: '100%'
+          height: '100%',
+          width: '100%'
         }}
         onClick={() => onOpen?.(memory)}
       >
@@ -84,8 +85,8 @@ function MemoryCard({ memory, memberMap, selectedMemberId, onOpen }) {
           src={`${memory.coverUrl}`}
           alt={memory.title}
           sx={{
-            width: { xs: '100%', sm: 220 },
-            height: { xs: 200, sm: '100%' },
+            width: { xs: '100%', lg: 220 },
+            height: { xs: 200, lg: '100%' },
             objectFit: 'cover'
           }}
         />
@@ -95,7 +96,8 @@ function MemoryCard({ memory, memberMap, selectedMemberId, onOpen }) {
             p: { xs: 2.25, sm: 3 },
             display: 'flex',
             flexDirection: 'column',
-            gap: 1.25
+            gap: 1.25,
+            minWidth: 0
           }}
         >
           <Typography variant="subtitle2" color="text.secondary">
