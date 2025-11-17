@@ -103,7 +103,7 @@ function SagaLayout({ children }) {
         minHeight: '100vh',
         bgcolor: (theme) => theme.palette.background.default,
         backgroundImage:
-          'radial-gradient(circle at 12% 18%, rgba(122, 31, 29, 0.12), transparent 26%), radial-gradient(circle at 82% 6%, rgba(198, 163, 92, 0.18), transparent 30%)'
+          'radial-gradient(circle at 12% 18%, rgba(181, 18, 47, 0.14), transparent 26%), radial-gradient(circle at 82% 6%, rgba(212, 175, 55, 0.2), transparent 32%)'
       }}
     >
       <AppBar
@@ -111,7 +111,7 @@ function SagaLayout({ children }) {
         elevation={isLoginPage ? 0 : 8}
         color="default"
         sx={{
-          backgroundImage: 'linear-gradient(110deg, rgba(60, 15, 18, 0.94), rgba(27, 11, 7, 0.94))',
+          backgroundImage: 'linear-gradient(110deg, rgba(140, 13, 38, 0.96), rgba(62, 6, 26, 0.96))',
           borderBottom: '3px solid',
           borderColor: 'secondary.main'
         }}
@@ -163,9 +163,9 @@ function SagaLayout({ children }) {
               minHeight: '100%',
               bgcolor: (theme) => alpha(theme.palette.background.paper, 0.98),
               backgroundImage:
-                'linear-gradient(180deg, rgba(233, 217, 190, 0.96), rgba(217, 192, 155, 0.96)), radial-gradient(circle at 16% 12%, rgba(122, 31, 29, 0.12), transparent 24%)',
+                'linear-gradient(180deg, rgba(255, 244, 227, 0.98), rgba(246, 223, 191, 0.98)), radial-gradient(circle at 16% 12%, rgba(181, 18, 47, 0.14), transparent 24%)',
               borderRight: (theme) => `2px solid ${alpha(theme.palette.secondary.dark, 0.65)}`,
-              boxShadow: '12px 0 28px rgba(31, 11, 7, 0.35)'
+              boxShadow: '12px 0 28px rgba(122, 8, 32, 0.32)'
             }}
             role="presentation"
           >
