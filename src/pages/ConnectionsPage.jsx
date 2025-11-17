@@ -76,7 +76,13 @@ export default function ConnectionsPage() {
         </Stack>
       </Card>
 
-      <Grid container spacing={{ xs: 3, md: 4 }} alignItems="stretch">
+      <Grid
+        container
+        spacing={{ xs: 3, md: 4 }}
+        alignItems="stretch"
+        justifyContent="center"
+        sx={{ mx: 'auto', width: '100%' }}
+      >
         <Grid item xs={12} md={5}>
           <Card sx={{ height: '100%', borderRadius: 3, bgcolor: 'common.white', boxShadow: '0 16px 32px rgba(44, 95, 45, 0.12)' }}>
             <CardContent component="form" onSubmit={handleSubmit} sx={{ p: { xs: 2.5, md: 3.25 } }}>
