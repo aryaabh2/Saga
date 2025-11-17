@@ -21,7 +21,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 function TreeNode({ member, position, strength, onClick }) {
   const theme = useTheme();
   const shadowColor = strength > 0 ? theme.palette.primary.main : theme.palette.secondary.main;
-  const glow = `0 0 14px ${alpha(shadowColor, 0.6)}, 0 0 32px ${alpha(shadowColor, 0.35)}`;
+  const glow = `0 0 12px ${alpha(shadowColor, 0.52)}, 0 0 26px ${alpha(shadowColor, 0.28)}`;
 
   return (
     <Box
@@ -41,10 +41,10 @@ function TreeNode({ member, position, strength, onClick }) {
     >
       <Box
         sx={{
-          width: 104,
-          height: 104,
+          width: 86,
+          height: 86,
           borderRadius: '50%',
-          border: `2px solid ${alpha(theme.palette.secondary.dark, 0.72)}`,
+          border: `1.5px solid ${alpha(theme.palette.secondary.dark, 0.72)}`,
           background: `radial-gradient(circle at 30% 30%, ${alpha(theme.palette.secondary.light, 0.55)}, ${alpha(
             theme.palette.background.paper,
             0.95
@@ -53,13 +53,14 @@ function TreeNode({ member, position, strength, onClick }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          transition: 'transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease',
+          transform: 'translateZ(0) scale(1)',
+          transition: 'transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease',
           '&:hover': {
-            transform: 'translate(-50%, -50%) scale(1.04)',
+            transform: 'translateZ(0) scale(1.02)',
             borderColor: theme.palette.primary.main,
-            boxShadow: `0 0 16px ${alpha(theme.palette.primary.main, 0.75)}, 0 0 42px ${alpha(
+            boxShadow: `0 0 14px ${alpha(theme.palette.primary.main, 0.68)}, 0 0 34px ${alpha(
               theme.palette.primary.main,
-              0.45
+              0.36
             )}`
           }
         }}
@@ -68,12 +69,12 @@ function TreeNode({ member, position, strength, onClick }) {
           src={member.avatarUrl || ''}
           alt={member.name}
           sx={{
-            width: 86,
-            height: 86,
+            width: 64,
+            height: 64,
             bgcolor: alpha(theme.palette.text.secondary, 0.12),
             color: theme.palette.text.primary,
             fontWeight: 700,
-            border: `2px solid ${alpha(theme.palette.primary.main, 0.35)}`
+            border: `1.5px solid ${alpha(theme.palette.primary.main, 0.35)}`
           }}
         >
           {member.name
@@ -130,12 +131,13 @@ export default function FamilyTreePage() {
   const orbitMembers = members.filter((member) => member.id !== userId);
 
   const positions = useMemo(() => {
-    const total = orbitMembers.length;
-    const radiusSteps = [28, 40, 52];
+    const total = orbitMembers.length || 1;
+    const radiusSteps = [26, 36, 48];
     const assigned = {};
     orbitMembers.forEach((member, index) => {
-      const angle = (2 * Math.PI * index) / total;
-      const ring = radiusSteps[index % radiusSteps.length];
+      const baseAngle = (2 * Math.PI * index) / total;
+      const angle = baseAngle + (index % 2 === 0 ? 0 : Math.PI / total);
+      const ring = radiusSteps[(index * 2) % radiusSteps.length];
       assigned[member.id] = {
         x: 50 + ring * Math.cos(angle),
         y: 50 + ring * Math.sin(angle)
@@ -233,11 +235,11 @@ export default function FamilyTreePage() {
                   x2={pos.x}
                   y2={pos.y}
                   stroke={theme.palette.primary.main}
-                  strokeWidth={2 + intensity * 0.8}
+                  strokeWidth={1.4 + intensity * 0.35}
                   strokeLinecap="round"
                   style={{
-                    filter: `drop-shadow(0 0 4px ${alpha(theme.palette.primary.main, 0.55)})`,
-                    opacity: 0.85
+                    filter: `drop-shadow(0 0 3px ${alpha(theme.palette.primary.main, 0.45)})`,
+                    opacity: 0.75
                   }}
                 />
               );

@@ -13,9 +13,7 @@ import {
 } from '@mui/material';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
-import BookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
 import TagRoundedIcon from '@mui/icons-material/LocalOfferRounded';
@@ -153,9 +151,6 @@ export default function HomePage() {
             </Typography>
           </Stack>
           <Stack direction="row" spacing={1}>
-            <Button variant="outlined" startIcon={<BookRoundedIcon />} onClick={() => handleTurn('prev')} disabled={activeSpread === 0 || turning !== null}>
-              Previous page
-            </Button>
             <Button
               variant="contained"
               startIcon={<AddCircleRoundedIcon />}
@@ -275,22 +270,6 @@ export default function HomePage() {
           </IconButton>
         </Stack>
       </Box>
-
-      <Card sx={{ p: { xs: 2.5, md: 3.5 } }}>
-        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" spacing={2} alignItems={{ xs: 'flex-start', md: 'center' }}>
-          <Stack spacing={0.5}>
-            <Typography variant="h6" sx={{ fontWeight: 800 }}>
-              Start a fresh page
-            </Typography>
-            <Typography color="text.secondary">
-              Adding a memory takes you through the guided Saga flow—upload, processing shimmer, then your story.
-            </Typography>
-          </Stack>
-          <Button variant="contained" startIcon={<AutoStoriesIcon />} onClick={() => navigate('/memories/new')}>
-            Begin the memory flow
-          </Button>
-        </Stack>
-      </Card>
     </Box>
   );
 }
