@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -28,21 +28,21 @@ function TreeNode({ member, position, strength, onClick }) {
       onClick={onClick}
       sx={{
         position: 'absolute',
-        left: `${position.x}%`,
-        top: `${position.y}%`,
+        left: position.x,
+        top: position.y,
         transform: 'translate(-50%, -50%)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 1,
+        gap: 0.75,
         cursor: 'pointer',
         textAlign: 'center'
       }}
     >
       <Box
         sx={{
-          width: 86,
-          height: 86,
+          width: 72,
+          height: 72,
           borderRadius: '50%',
           border: `1.5px solid ${alpha(theme.palette.secondary.dark, 0.72)}`,
           background: `radial-gradient(circle at 30% 30%, ${alpha(theme.palette.secondary.light, 0.55)}, ${alpha(
@@ -56,7 +56,7 @@ function TreeNode({ member, position, strength, onClick }) {
           transform: 'translateZ(0) scale(1)',
           transition: 'transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease',
           '&:hover': {
-            transform: 'translateZ(0) scale(1.02)',
+            transform: 'translateZ(0) scale(1.04)',
             borderColor: theme.palette.primary.main,
             boxShadow: `0 0 14px ${alpha(theme.palette.primary.main, 0.68)}, 0 0 34px ${alpha(
               theme.palette.primary.main,
@@ -69,8 +69,8 @@ function TreeNode({ member, position, strength, onClick }) {
           src={member.avatarUrl || ''}
           alt={member.name}
           sx={{
-            width: 64,
-            height: 64,
+            width: 54,
+            height: 54,
             bgcolor: alpha(theme.palette.text.secondary, 0.12),
             color: theme.palette.text.primary,
             fontWeight: 700,
@@ -116,6 +116,23 @@ export default function FamilyTreePage() {
   const userId = user?.id || 'jordan';
   const [newMember, setNewMember] = useState({ name: '', relation: '' });
   const [spotlightId, setSpotlightId] = useState(userId);
+  const treeRef = useRef(null);
+  const [canvasSize, setCanvasSize] = useState({ width: 1200, height: 640 });
+
+  useEffect(() => {
+    if (!treeRef.current) return undefined;
+
+    const updateSize = () => {
+      const { clientWidth, clientHeight } = treeRef.current;
+      setCanvasSize({ width: clientWidth, height: clientHeight });
+    };
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(treeRef.current);
+    updateSize();
+
+    return () => observer.disconnect();
+  }, []);
 
   const connectionStrengths = useMemo(() => {
     const counts = {};
@@ -132,7 +149,7 @@ export default function FamilyTreePage() {
 
   const positions = useMemo(() => {
     const total = orbitMembers.length || 1;
-    const radiusSteps = [26, 36, 48];
+    const radiusSteps = [22, 32, 42];
     const assigned = {};
     orbitMembers.forEach((member, index) => {
       const baseAngle = (2 * Math.PI * index) / total;
@@ -209,8 +226,8 @@ export default function FamilyTreePage() {
             position: 'relative',
             mt: 4,
             borderRadius: 4,
-            overflow: 'hidden',
-            minHeight: { xs: 460, md: 520 },
+            overflow: 'auto',
+            minHeight: { xs: 520, md: 620 },
             background: `radial-gradient(circle at 20% 28%, ${alpha(
               theme.palette.primary.main,
               0.12
@@ -219,56 +236,92 @@ export default function FamilyTreePage() {
               0.92
             )})`,
             border: `1px solid ${alpha(theme.palette.secondary.dark, 0.45)}`,
-            boxShadow: '0 24px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.45)'
+            boxShadow: '0 24px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.45)',
+            p: { xs: 2.25, md: 3 }
           }}
         >
-          <Box component="svg" viewBox="0 0 100 100" preserveAspectRatio="none" sx={{ position: 'absolute', inset: 0 }}>
-            {orbitMembers.map((member) => {
-              const pos = positions[member.id];
-              const center = positions[userId];
-              const intensity = connectionStrengths[member.id] || 1;
+          <Box
+            ref={treeRef}
+            sx={{
+              position: 'relative',
+              minHeight: { xs: 520, md: 640 },
+              minWidth: { xs: '100%', md: 920 },
+              mx: 'auto'
+            }}
+          >
+            <Box
+              component="svg"
+              viewBox={`0 0 ${canvasSize.width} ${canvasSize.height}`}
+              preserveAspectRatio="xMidYMid meet"
+              sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+            >
+              {orbitMembers.map((member) => {
+                const pos = positions[member.id];
+                const center = positions[userId];
+                const intensity = connectionStrengths[member.id] || 1;
+                const startPoint = center
+                  ? {
+                      x: (center.x / 100) * canvasSize.width,
+                      y: (center.y / 100) * canvasSize.height
+                    }
+                  : { x: canvasSize.width / 2, y: canvasSize.height / 2 };
+                const endPoint = pos
+                  ? {
+                      x: (pos.x / 100) * canvasSize.width,
+                      y: (pos.y / 100) * canvasSize.height
+                    }
+                  : startPoint;
+
+                return (
+                  <line
+                    key={member.id}
+                    x1={startPoint.x}
+                    y1={startPoint.y}
+                    x2={endPoint.x}
+                    y2={endPoint.y}
+                    stroke={theme.palette.primary.main}
+                    strokeWidth={1.4 + intensity * 0.35}
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                    style={{
+                      filter: `drop-shadow(0 0 3px ${alpha(theme.palette.primary.main, 0.45)})`,
+                      opacity: 0.78
+                    }}
+                  />
+                );
+              })}
+            </Box>
+
+            {members.map((member) => {
+              const position = positions[member.id] || { x: 50, y: 50 };
               return (
-                <line
+                <TreeNode
                   key={member.id}
-                  x1={center.x}
-                  y1={center.y}
-                  x2={pos.x}
-                  y2={pos.y}
-                  stroke={theme.palette.primary.main}
-                  strokeWidth={1.4 + intensity * 0.35}
-                  strokeLinecap="round"
-                  style={{
-                    filter: `drop-shadow(0 0 3px ${alpha(theme.palette.primary.main, 0.45)})`,
-                    opacity: 0.75
+                  member={member}
+                  position={{
+                    x: (position.x / 100) * canvasSize.width,
+                    y: (position.y / 100) * canvasSize.height
                   }}
+                  strength={connectionStrengths[member.id] || 0}
+                  onClick={() => setSpotlightId(member.id)}
                 />
               );
             })}
-          </Box>
 
-          {members.map((member) => (
-            <TreeNode
-              key={member.id}
-              member={member}
-              position={positions[member.id] || { x: 50, y: 50 }}
-              strength={connectionStrengths[member.id] || 0}
-              onClick={() => setSpotlightId(member.id)}
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                background: spotlightId
+                  ? `radial-gradient(circle at ${positions[spotlightId]?.x || 50}% ${positions[spotlightId]?.y || 50}%, ${alpha(
+                      theme.palette.primary.light,
+                      0.22
+                    )}, transparent 40%)`
+                  : 'transparent',
+                pointerEvents: 'none'
+              }}
             />
-          ))}
-
-          <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              background: spotlightId
-                ? `radial-gradient(circle at ${positions[spotlightId]?.x || 50}% ${positions[spotlightId]?.y || 50}%, ${alpha(
-                    theme.palette.primary.light,
-                    0.22
-                  )}, transparent 40%)`
-                : 'transparent',
-              pointerEvents: 'none'
-            }}
-          />
+          </Box>
         </Box>
       </Card>
 
