@@ -1,378 +1,199 @@
-import { useEffect, useMemo, useState } from 'react';
-import {
-  BrowserRouter,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate
-} from 'react-router-dom';
+import { useState } from 'react';
 import {
   AppBar,
   Box,
+  Button,
   Container,
   Divider,
   Drawer,
   IconButton,
   List,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
-  Step,
-  StepLabel,
-  Stepper,
+  Stack,
   Toolbar,
   Typography
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
+import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
+import FamilyRestroomRoundedIcon from '@mui/icons-material/FamilyRestroomRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx';
+import HomePage from './pages/HomePage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
 import UploadPage from './pages/UploadPage.jsx';
 import ProcessingPage from './pages/ProcessingPage.jsx';
 import SagaPage from './pages/SagaPage.jsx';
-import HomePage from './pages/HomePage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
 import AccountPage from './pages/AccountPage.jsx';
-import ConnectionsPage from './pages/ConnectionsPage.jsx';
-import { AuthProvider, useAuth } from './context/AuthContext.jsx';
+import FamilyTreePage from './pages/FamilyTreePage.jsx';
 
-const steps = ['Upload memories', 'Processing', 'Saga'];
+const navItems = [
+  { label: 'Memories', path: '/', icon: <AutoStoriesRoundedIcon /> },
+  { label: 'Family tree', path: '/family-tree', icon: <FamilyRestroomRoundedIcon /> },
+  { label: 'Account', path: '/account', icon: <PersonRoundedIcon /> }
+];
 
-function SagaLayout({ children }) {
-  const location = useLocation();
+function ProtectedLayout() {
+  const theme = useTheme();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const inMemoryFlow = location.pathname.startsWith('/memories');
-  const isLoginPage = location.pathname === '/login';
-  const [menuOpen, setMenuOpen] = useState(false);
-  const activeStep = useMemo(() => {
-    if (!inMemoryFlow) return 0;
-    if (location.pathname.startsWith('/memories/processing')) return 1;
-    if (location.pathname.startsWith('/memories/story')) return 2;
-    return 0;
-  }, [inMemoryFlow, location.pathname]);
+  const location = useLocation();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const navigationItems = useMemo(() => {
-    if (!user) {
-      return [
-        {
-          label: 'Log in',
-          icon: <LockOpenIcon fontSize="medium" />,
-          path: '/login'
-        }
-      ];
-    }
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-    return [
-      {
-        label: 'Home',
-        icon: <HomeRoundedIcon fontSize="medium" />,
-        path: '/'
-      },
-      {
-        label: 'Account',
-        icon: <AccountCircleIcon fontSize="medium" />,
-        path: '/account'
-      },
-      {
-        label: 'Connections',
-        icon: <AccountTreeIcon fontSize="medium" />,
-        path: '/connections'
-      },
-      {
-        label: 'Add memory',
-        icon: <FavoriteBorderIcon fontSize="medium" />,
-        path: '/memories/new'
-      }
-    ];
-  }, [user]);
-
-  const handleNavigate = (path) => {
-    setMenuOpen(false);
+  const handleNav = (path) => {
+    setDrawerOpen(false);
     navigate(path);
   };
+
+  const showBackToBook =
+    location.pathname.startsWith('/memories/') &&
+    !['/memories', '/'].includes(location.pathname);
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: (theme) => theme.palette.background.default,
+        bgcolor: theme.palette.background.default,
         backgroundImage:
-          'radial-gradient(circle at 12% 18%, rgba(181, 18, 47, 0.14), transparent 26%), radial-gradient(circle at 82% 6%, rgba(212, 175, 55, 0.2), transparent 32%)'
+          'radial-gradient(circle at 12% 18%, rgba(181, 18, 47, 0.12), transparent 30%), radial-gradient(circle at 82% 6%, rgba(212, 175, 55, 0.18), transparent 32%)'
       }}
     >
-      <AppBar
-        position="static"
-        elevation={isLoginPage ? 0 : 8}
-        color="default"
-        sx={{
-          backgroundImage: 'linear-gradient(110deg, rgba(140, 13, 38, 0.96), rgba(62, 6, 26, 0.96))',
-          borderBottom: '3px solid',
-          borderColor: 'secondary.main'
-        }}
-      >
-        <Toolbar
-          sx={{
-            py: 1.75,
-            px: { xs: 2, sm: 3.5 },
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2.5
-          }}
-        >
-          {user && !isLoginPage ? (
+      <AppBar position="sticky" elevation={8}>
+        <Toolbar sx={{ py: 1.5, px: { xs: 2, sm: 3 } }}>
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ flexGrow: 1 }}>
             <IconButton
-              color="inherit"
               edge="start"
-              onClick={() => setMenuOpen(true)}
-              aria-label="Open navigation menu"
+              color="inherit"
+              onClick={() => setDrawerOpen(true)}
               sx={{
-                border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.6)}`,
-                bgcolor: (theme) => alpha(theme.palette.common.white, 0.12),
-                borderRadius: 1,
-                boxShadow: '0 6px 14px rgba(0,0,0,0.35)',
-                '&:hover': {
-                  bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.35)
-                }
+                border: `1px solid ${alpha(theme.palette.secondary.main, 0.6)}`,
+                bgcolor: alpha(theme.palette.common.white, 0.08),
+                display: { xs: 'flex', md: 'none' }
               }}
+              aria-label="Open navigation menu"
             >
               <MenuRoundedIcon />
             </IconButton>
-          ) : null}
-          <Typography
-            variant="h4"
-            component="div"
-            sx={{ fontWeight: 700, letterSpacing: 1.4, display: 'flex', alignItems: 'center', gap: 1 }}
-          >
-            Saga
-          </Typography>
+            <Stack spacing={0}>
+              <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: 1.2 }}>
+                Saga
+              </Typography>
+              <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                A keepsake hub for your family stories
+              </Typography>
+            </Stack>
+          </Stack>
+
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
+            {navItems.map((item) => (
+              <Button
+                key={item.path}
+                color="inherit"
+                startIcon={item.icon}
+                onClick={() => handleNav(item.path)}
+                sx={{
+                  border: `1px solid ${alpha(theme.palette.secondary.main, 0.5)}`,
+                  bgcolor: alpha(theme.palette.common.white, 0.08)
+                }}
+              >
+                {item.label}
+              </Button>
+            ))}
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<AddCircleRoundedIcon />}
+              onClick={() => handleNav('/memories/new')}
+              sx={{ boxShadow: '0 14px 28px rgba(0,0,0,0.25)' }}
+            >
+              Add memory
+            </Button>
+            <IconButton color="inherit" onClick={logout}>
+              <LogoutRoundedIcon />
+            </IconButton>
+          </Stack>
         </Toolbar>
       </AppBar>
-      {user && !isLoginPage ? (
-        <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
-          <Box
-            sx={{
-              width: { xs: 260, sm: 300 },
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: '100%',
-              bgcolor: (theme) => alpha(theme.palette.background.paper, 0.98),
-              backgroundImage:
-                'linear-gradient(180deg, rgba(255, 244, 227, 0.98), rgba(246, 223, 191, 0.98)), radial-gradient(circle at 16% 12%, rgba(181, 18, 47, 0.14), transparent 24%)',
-              borderRight: (theme) => `2px solid ${alpha(theme.palette.secondary.dark, 0.65)}`,
-              boxShadow: '12px 0 28px rgba(122, 8, 32, 0.32)'
-            }}
-            role="presentation"
-          >
-            <Toolbar sx={{ px: 3 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, letterSpacing: 1 }}>
-                Royal Menu
-              </Typography>
-            </Toolbar>
-            <Divider />
-            <List sx={{ flexGrow: 1 }}>
-              {navigationItems.map((item) => (
-                <ListItemButton
-                  key={item.path}
-                  onClick={() => handleNavigate(item.path)}
-                  sx={{
-                    alignItems: 'center',
-                    py: 1.25,
-                    borderRadius: 1,
-                    mx: 1,
-                    border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.45)}`,
-                    boxShadow: '0 6px 14px rgba(0,0,0,0.12)',
-                    '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.secondary.light, 0.25)
-                    }
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 40, color: 'secondary.dark' }}>{item.icon}</ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{ fontWeight: 700, letterSpacing: 0.6 }}
-                  />
-                </ListItemButton>
-              ))}
-            </List>
-          </Box>
-        </Drawer>
+
+      <Drawer anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+        <Box
+          sx={{ width: 280, p: 2, display: 'flex', flexDirection: 'column', gap: 1, minHeight: '100%' }}
+          role="presentation"
+        >
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, px: 1 }}>
+            Navigate
+          </Typography>
+          <Divider />
+          <List>
+            {navItems.map((item) => (
+              <ListItemButton key={item.path} onClick={() => handleNav(item.path)}>
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            ))}
+          </List>
+          <Button startIcon={<AddCircleRoundedIcon />} variant="contained" onClick={() => handleNav('/memories/new')} sx={{ mb: 2 }}>
+            Add memory
+          </Button>
+          <Button startIcon={<LogoutRoundedIcon />} onClick={logout} color="inherit">
+            Logout
+          </Button>
+        </Box>
+      </Drawer>
+
+      {showBackToBook ? (
+        <Box sx={{ textAlign: 'center', py: 1.5, bgcolor: alpha(theme.palette.primary.light, 0.08), borderBottom: `1px solid ${alpha(theme.palette.secondary.main, 0.45)}` }}>
+          <Button color="primary" onClick={() => handleNav('/')} startIcon={<AutoStoriesRoundedIcon />}>
+            Return to the book of memories
+          </Button>
+        </Box>
       ) : null}
-      <Container
-        maxWidth="lg"
-        sx={{
-          py: isLoginPage ? { xs: 4, md: 6 } : { xs: 3, md: 5 },
-          px: { xs: 2, sm: 3 },
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: isLoginPage ? 'center' : 'stretch',
-          gap: { xs: 2.5, md: 4 }
-        }}
-      >
-        {inMemoryFlow && user && (
-          <Box sx={{ px: { xs: 0, sm: 2 }, py: { xs: 1, md: 1.5 } }}>
-            <Stepper
-              activeStep={activeStep}
-              alternativeLabel
-              sx={{
-                pt: 1,
-                '& .MuiStepLabel-label': { fontWeight: 700, letterSpacing: 0.6 },
-                '& .MuiStepConnector-line': { borderColor: (theme) => alpha(theme.palette.secondary.dark, 0.4) }
-              }}
-            >
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel
-                    sx={{
-                      '& .MuiStepLabel-label': { fontWeight: 700, color: 'text.primary' },
-                      '& .MuiStepIcon-root': { color: 'secondary.main' },
-                      '& .Mui-active': { color: 'primary.main' }
-                    }}
-                  >
-                    {label}
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Box>
-        )}
-        {children}
+
+      <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
+        <Outlet />
       </Container>
     </Box>
   );
 }
 
-function ProtectedRoute() {
-  const { user } = useAuth();
-  const location = useLocation();
-
-  if (!user) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  return <Outlet />;
+function PublicLayout() {
+  return (
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <AppBar position="static">
+        <Toolbar sx={{ py: 1.5, px: { xs: 2, sm: 3 } }}>
+          <Typography variant="h5" sx={{ fontWeight: 800 }}>
+            Saga
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
+        <LoginPage />
+      </Container>
+    </Box>
+  );
 }
 
-function SagaRouter() {
-  const [uploadData, setUploadData] = useState(null);
-  const [saga, setSaga] = useState(null);
-  const navigate = useNavigate();
+function AppRoutes() {
   const { user } = useAuth();
-
-  const handleUpload = (data) => {
-    setUploadData(data);
-    setSaga(null);
-    navigate('/memories/processing');
-  };
-
-  const handleProcessingComplete = () => {
-    if (!uploadData) {
-      navigate('/memories/new');
-      return;
-    }
-
-    const generateMomentTitle = (fileName, index) => {
-      if (!fileName) {
-        return `Moment ${index + 1}`;
-      }
-
-      const baseName = fileName.replace(/\.[^/.]+$/, '').replace(/[-_]+/g, ' ');
-      const formatted = baseName.charAt(0).toUpperCase() + baseName.slice(1);
-      return formatted || `Moment ${index + 1}`;
-    };
-
-    const summaryText = uploadData.summary?.trim();
-
-    const storyMoments = uploadData.files.map((file, index) => {
-      const objectUrl = URL.createObjectURL(file);
-      return {
-        id: index + 1,
-        title: generateMomentTitle(file.name, index),
-        description:
-          summaryText
-            ? `${summaryText} — lovingly remembered through ${file.name}`
-            : 'A treasured memory shared together, filled with love and warmth.',
-        imageName: file.name,
-        imageUrl: objectUrl,
-        isObjectUrl: true
-      };
-    });
-
-    const stockImageUrls = [
-      'https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1544207240-4f2a2825f10f?auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1482517967863-00e15c9b44be?auto=format&fit=crop&w=1000&q=80'
-    ];
-
-    const generatedSaga = {
-      title: uploadData.title?.trim() || 'Our Holiday Saga',
-      summary:
-        summaryText ||
-        'A heartfelt recollection of treasured memories, lovingly gathered for family and friends to revisit together.',
-      moments:
-        storyMoments.length > 0
-          ? storyMoments
-          : stockImageUrls.map((imageUrl, index) => {
-              const defaultDescriptions = [
-                summaryText ||
-                  'Imagine the story beginning with everyone arriving, arms full of hugs, ready to remember together.',
-                'Loved ones lean in close, sharing stories, laughter, and the glow of being together in one place.',
-                'The closing moment celebrates the wisdom and love that continue to guide the family forward.'
-              ];
-
-              return {
-                id: index + 1,
-                title: ['A cherished beginning', 'Shared laughter', 'Legacy of love'][index] ||
-                  `Moment ${index + 1}`,
-                description: defaultDescriptions[index] || 'A treasured family memory.',
-                imageName: 'Family memory photo',
-                imageUrl
-              };
-            })
-    };
-
-    setSaga(generatedSaga);
-    navigate('/memories/story');
-  };
-
-  const handleCreateMemory = () => {
-    navigate('/memories/new');
-  };
-
-  useEffect(() => {
-    return () => {
-      saga?.moments?.forEach((moment) => {
-        if (moment.isObjectUrl && moment.imageUrl) {
-          URL.revokeObjectURL(moment.imageUrl);
-        }
-      });
-    };
-  }, [saga]);
 
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={user ? <Navigate to="/account" replace /> : <LoginPage />}
-      />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<HomePage onCreateMemory={handleCreateMemory} />} />
-        <Route path="/account" element={<AccountPage />} />
-        <Route path="/connections" element={<ConnectionsPage />} />
-        <Route path="/memories/new" element={<UploadPage onSubmit={handleUpload} />} />
-        <Route
-          path="/memories/processing"
-          element={<ProcessingPage uploadData={uploadData} onComplete={handleProcessingComplete} />}
-        />
-        <Route
-          path="/memories/story"
-          element={saga ? <SagaPage saga={saga} /> : <Navigate to="/memories/new" replace />}
-        />
+      <Route path="/login" element={<PublicLayout />} />
+      <Route element={<ProtectedLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="memories" element={<HomePage />} />
+        <Route path="memories/new" element={<UploadPage />} />
+        <Route path="memories/processing" element={<ProcessingPage />} />
+        <Route path="memories/story" element={<SagaPage />} />
+        <Route path="family-tree" element={<FamilyTreePage />} />
+        <Route path="account" element={<AccountPage />} />
       </Route>
       <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />
     </Routes>
@@ -380,15 +201,11 @@ function SagaRouter() {
 }
 
 export default function App() {
-  const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-
   return (
-    <BrowserRouter basename={baseUrl || undefined}>
-      <AuthProvider>
-        <SagaLayout>
-          <SagaRouter />
-        </SagaLayout>
-      </AuthProvider>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
