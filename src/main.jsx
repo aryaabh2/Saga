@@ -96,7 +96,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 6,
-          boxShadow: '0 12px 28px rgba(122, 8, 32, 0.28)'
+          boxShadow: '0 10px 26px rgba(122, 8, 32, 0.22)'
         },
         containedPrimary: {
           backgroundImage: 'linear-gradient(135deg, #b5122f, #d4af37)',
@@ -119,30 +119,32 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          border: '1px solid rgba(212, 175, 55, 0.7)',
-          backgroundImage: 'linear-gradient(180deg, rgba(255, 250, 241, 0.96), rgba(248, 232, 205, 0.96))',
-          boxShadow: '0 18px 36px rgba(73, 7, 24, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+          borderRadius: 12,
+          border: 'none',
+          backgroundImage:
+            'linear-gradient(180deg, rgba(255, 250, 241, 0.95), rgba(249, 231, 205, 0.9)), radial-gradient(circle at 22% 16%, rgba(212, 175, 55, 0.12), transparent 40%)',
+          boxShadow: '0 16px 36px rgba(73, 7, 24, 0.14)'
         }
       }
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          border: '1px solid rgba(212, 175, 55, 0.7)',
-          backgroundImage: 'linear-gradient(180deg, rgba(255, 250, 241, 0.97), rgba(246, 226, 196, 0.97))',
-          boxShadow: '0 12px 28px rgba(73, 7, 24, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.35)'
+          borderRadius: 12,
+          border: 'none',
+          backgroundImage:
+            'linear-gradient(180deg, rgba(255, 248, 236, 0.96), rgba(246, 226, 196, 0.9)), radial-gradient(circle at 12% 10%, rgba(181, 18, 47, 0.08), transparent 30%)',
+          boxShadow: '0 14px 28px rgba(73, 7, 24, 0.12)'
         }
       }
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundImage: 'linear-gradient(105deg, #8c0d26, #5e061a 58%, #32000d)',
+          backgroundImage: 'linear-gradient(105deg, rgba(140, 13, 38, 0.98), rgba(62, 6, 26, 0.9) 58%, rgba(28, 0, 10, 0.92))',
           color: '#fff7eb',
-          borderBottom: '2px solid #d4af37',
-          boxShadow: '0 18px 28px rgba(122, 8, 32, 0.45)'
+          borderBottom: 'none',
+          boxShadow: '0 10px 20px rgba(122, 8, 32, 0.28)'
         }
       }
     },
@@ -152,8 +154,9 @@ const theme = createTheme({
           backgroundColor: '#fff4e3',
           backgroundImage:
             'linear-gradient(180deg, rgba(255, 244, 227, 0.96), rgba(247, 223, 187, 0.96)), radial-gradient(circle at 14% 18%, rgba(181, 18, 47, 0.18), transparent 30%)',
-          borderRight: '2px solid rgba(212, 175, 55, 0.82)',
-          color: '#3d0a14'
+          borderRight: 'none',
+          color: '#3d0a14',
+          boxShadow: '8px 0 28px rgba(73, 7, 24, 0.24)'
         }
       }
     }

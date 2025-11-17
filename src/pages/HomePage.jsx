@@ -65,9 +65,8 @@ function MemoryCard({ memory, memberMap, selectedMemberId, onOpen }) {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.45)}`,
-        boxShadow: '0 18px 32px rgba(36, 13, 8, 0.18)',
-        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.98)
+        boxShadow: '0 16px 30px rgba(36, 13, 8, 0.14)',
+        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.96)
       }}
     >
       <CardActionArea
@@ -178,17 +177,8 @@ function MemoryScrollDialog({ memory, open, onClose, memberMap }) {
           px: { xs: 2.5, sm: 3 },
           py: { xs: 2, sm: 2.5 },
           backgroundImage:
-            'linear-gradient(180deg, rgba(251, 243, 231, 0.98), rgba(233, 213, 180, 0.98)), radial-gradient(circle at 18% 10%, rgba(122, 31, 29, 0.16), transparent 30%)',
-          border: (theme) => `2px solid ${alpha(theme.palette.secondary.dark, 0.7)}`,
-          boxShadow: '0 28px 60px rgba(36, 13, 8, 0.45)',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            inset: 10,
-            border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.45)}`,
-            pointerEvents: 'none',
-            boxShadow: 'inset 0 8px 18px rgba(0,0,0,0.08)'
-          }
+            'linear-gradient(180deg, rgba(251, 243, 231, 0.98), rgba(233, 213, 180, 0.94)), radial-gradient(circle at 18% 10%, rgba(122, 31, 29, 0.12), transparent 34%)',
+          boxShadow: '0 22px 48px rgba(36, 13, 8, 0.3)'
         }
       }}
     >
@@ -222,8 +212,7 @@ function MemoryScrollDialog({ memory, open, onClose, memberMap }) {
               width: '100%',
               maxHeight: 360,
               objectFit: 'cover',
-              border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
-              boxShadow: '0 12px 24px rgba(0,0,0,0.2)'
+              boxShadow: '0 12px 24px rgba(0,0,0,0.18)'
             }}
           />
           <Typography variant="body1" sx={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
@@ -465,9 +454,8 @@ export default function HomePage({ onCreateMemory }) {
           borderRadius: 2,
           px: { xs: 3, md: 4 },
           py: { xs: 3, md: 4 },
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
-          border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
-          boxShadow: '0 18px 32px rgba(36, 13, 8, 0.18)',
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.88),
+          boxShadow: '0 16px 30px rgba(36, 13, 8, 0.14)',
           textAlign: { xs: 'center', md: 'left' }
         }}
       >
@@ -520,9 +508,8 @@ export default function HomePage({ onCreateMemory }) {
           borderRadius: 2,
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
-          border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
-          boxShadow: '0 16px 34px rgba(36, 13, 8, 0.2)'
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+          boxShadow: '0 14px 30px rgba(36, 13, 8, 0.16)'
         }}
       >
         <Grid container spacing={{ xs: 3, lg: 4 }} alignItems="stretch">
@@ -566,18 +553,18 @@ export default function HomePage({ onCreateMemory }) {
               {quickActions.map((action) => (
                 <Button
                   key={`sidebar-${action.action}`}
-                  variant="outlined"
+                  variant="contained"
                   color="primary"
                   size="medium"
                   startIcon={action.icon}
                   onClick={() => actionHandlers[action.action]?.()}
                   sx={{
-                    borderRadius: 1,
-                    borderColor: (theme) => alpha(theme.palette.secondary.dark, 0.45),
-                    bgcolor: (theme) => alpha(theme.palette.background.default, 0.7),
+                    borderRadius: 1.5,
+                    boxShadow: '0 12px 22px rgba(0,0,0,0.12)',
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.9),
                     '&:hover': {
-                      borderColor: 'secondary.dark',
-                      bgcolor: (theme) => alpha(theme.palette.secondary.light, 0.3)
+                      boxShadow: '0 16px 28px rgba(0,0,0,0.16)',
+                      bgcolor: (theme) => alpha(theme.palette.primary.dark, 0.95)
                     }
                   }}
                   fullWidth
@@ -596,8 +583,7 @@ export default function HomePage({ onCreateMemory }) {
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
           bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
-          border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
-          boxShadow: '0 18px 34px rgba(36, 13, 8, 0.22)'
+          boxShadow: '0 16px 32px rgba(36, 13, 8, 0.18)'
         }}
       >
         <Stack spacing={{ xs: 2.5, md: 3 }}>
@@ -674,8 +660,7 @@ export default function HomePage({ onCreateMemory }) {
                   px: { xs: 3, md: 4 },
                   textAlign: 'center',
                   bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
-                  border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.45)}`,
-                  boxShadow: '0 18px 32px rgba(36, 13, 8, 0.2)'
+                  boxShadow: '0 16px 30px rgba(36, 13, 8, 0.16)'
                 }}
               >
                 <Stack spacing={1.5} alignItems="center">
@@ -707,8 +692,7 @@ export default function HomePage({ onCreateMemory }) {
             px: { xs: 2.5, md: 3 },
             py: { xs: 3, md: 3.5 },
             bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
-            border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
-            boxShadow: '0 18px 34px rgba(36, 13, 8, 0.2)'
+            boxShadow: '0 16px 32px rgba(36, 13, 8, 0.18)'
           }}
         >
           <Stack spacing={{ xs: 2.5, md: 3 }}>
