@@ -101,42 +101,43 @@ function SagaLayout({ children }) {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: (theme) => theme.palette.background.default
+        bgcolor: (theme) => theme.palette.background.default,
+        backgroundImage:
+          'radial-gradient(circle at 12% 18%, rgba(122, 31, 29, 0.12), transparent 26%), radial-gradient(circle at 82% 6%, rgba(198, 163, 92, 0.18), transparent 30%)'
       }}
     >
       <AppBar
         position="static"
-        elevation={isLoginPage ? 0 : 1}
+        elevation={isLoginPage ? 0 : 8}
         color="default"
         sx={{
-          bgcolor: 'background.paper',
-          backgroundImage: (theme) =>
-            `linear-gradient(90deg, ${alpha(theme.palette.primary.light, 0.42)}, ${alpha(
-              theme.palette.background.default,
-              0.92
-            )})`
+          backgroundImage: 'linear-gradient(110deg, rgba(60, 15, 18, 0.94), rgba(27, 11, 7, 0.94))',
+          borderBottom: '3px solid',
+          borderColor: 'secondary.main'
         }}
       >
         <Toolbar
           sx={{
-            py: 1.5,
-            px: { xs: 2, sm: 3 },
+            py: 1.75,
+            px: { xs: 2, sm: 3.5 },
             display: 'flex',
             alignItems: 'center',
-            gap: 2
+            gap: 2.5
           }}
         >
           {user && !isLoginPage ? (
             <IconButton
-              color="default"
+              color="inherit"
               edge="start"
               onClick={() => setMenuOpen(true)}
               aria-label="Open navigation menu"
               sx={{
-                border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-                bgcolor: (theme) => alpha(theme.palette.background.paper, 0.85),
+                border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.6)}`,
+                bgcolor: (theme) => alpha(theme.palette.common.white, 0.12),
+                borderRadius: 1,
+                boxShadow: '0 6px 14px rgba(0,0,0,0.35)',
                 '&:hover': {
-                  bgcolor: (theme) => alpha(theme.palette.primary.light, 0.4)
+                  bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.35)
                 }
               }}
             >
@@ -144,11 +145,14 @@ function SagaLayout({ children }) {
             </IconButton>
           ) : null}
           <Typography
-            variant="h5"
+            variant="h4"
             component="div"
-            sx={{ fontWeight: 700, letterSpacing: 0.4 }}
+            sx={{ fontWeight: 700, letterSpacing: 1.4, display: 'flex', alignItems: 'center', gap: 1 }}
           >
             Saga
+            <Typography component="span" variant="subtitle2" sx={{ fontWeight: 600, opacity: 0.9 }}>
+              Royal Archives
+            </Typography>
           </Typography>
         </Toolbar>
       </AppBar>
@@ -160,13 +164,17 @@ function SagaLayout({ children }) {
               display: 'flex',
               flexDirection: 'column',
               minHeight: '100%',
-              bgcolor: (theme) => alpha(theme.palette.background.paper, 0.96)
+              bgcolor: (theme) => alpha(theme.palette.background.paper, 0.98),
+              backgroundImage:
+                'linear-gradient(180deg, rgba(233, 217, 190, 0.96), rgba(217, 192, 155, 0.96)), radial-gradient(circle at 16% 12%, rgba(122, 31, 29, 0.12), transparent 24%)',
+              borderRight: (theme) => `2px solid ${alpha(theme.palette.secondary.dark, 0.65)}`,
+              boxShadow: '12px 0 28px rgba(31, 11, 7, 0.35)'
             }}
             role="presentation"
           >
             <Toolbar sx={{ px: 3 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                Menu
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, letterSpacing: 1 }}>
+                Royal Menu
               </Typography>
             </Toolbar>
             <Divider />
@@ -176,19 +184,21 @@ function SagaLayout({ children }) {
                   key={item.path}
                   onClick={() => handleNavigate(item.path)}
                   sx={{
-                    alignItems: 'flex-start',
-                    py: 1.5,
-                    borderRadius: 2,
+                    alignItems: 'center',
+                    py: 1.25,
+                    borderRadius: 1,
                     mx: 1,
+                    border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.45)}`,
+                    boxShadow: '0 6px 14px rgba(0,0,0,0.12)',
                     '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.primary.light, 0.35)
+                      bgcolor: (theme) => alpha(theme.palette.secondary.light, 0.25)
                     }
                   }}
                 >
-                  <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>{item.icon}</ListItemIcon>
+                  <ListItemIcon sx={{ minWidth: 40, color: 'secondary.dark' }}>{item.icon}</ListItemIcon>
                   <ListItemText
                     primary={item.label}
-                    primaryTypographyProps={{ fontWeight: 600 }}
+                    primaryTypographyProps={{ fontWeight: 700, letterSpacing: 0.6 }}
                   />
                 </ListItemButton>
               ))}
@@ -209,10 +219,26 @@ function SagaLayout({ children }) {
       >
         {inMemoryFlow && user && (
           <Box sx={{ px: { xs: 0, sm: 2 }, py: { xs: 1, md: 1.5 } }}>
-            <Stepper activeStep={activeStep} alternativeLabel sx={{ pt: 1 }}>
+            <Stepper
+              activeStep={activeStep}
+              alternativeLabel
+              sx={{
+                pt: 1,
+                '& .MuiStepLabel-label': { fontWeight: 700, letterSpacing: 0.6 },
+                '& .MuiStepConnector-line': { borderColor: (theme) => alpha(theme.palette.secondary.dark, 0.4) }
+              }}
+            >
               {steps.map((label) => (
                 <Step key={label}>
-                  <StepLabel sx={{ '& .MuiStepLabel-label': { fontWeight: 600 } }}>{label}</StepLabel>
+                  <StepLabel
+                    sx={{
+                      '& .MuiStepLabel-label': { fontWeight: 700, color: 'text.primary' },
+                      '& .MuiStepIcon-root': { color: 'secondary.main' },
+                      '& .Mui-active': { color: 'primary.main' }
+                    }}
+                  >
+                    {label}
+                  </StepLabel>
                 </Step>
               ))}
             </Stepper>
