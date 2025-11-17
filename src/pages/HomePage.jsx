@@ -8,6 +8,11 @@ import {
   CardContent,
   CardMedia,
   Chip,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Grid,
   Skeleton,
@@ -16,6 +21,7 @@ import {
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CloseIcon from '@mui/icons-material/Close';
 import FamilyTreeCanvas from '../components/FamilyTreeCanvas.jsx';
 import { fetchFamilySnapshot } from '../data/mockFamilyService.js';
 import { alpha } from '@mui/material/styles';
@@ -29,7 +35,7 @@ const quickActions = [
   }
 ];
 
-function MemoryCard({ memory, memberMap, selectedMemberId }) {
+function MemoryCard({ memory, memberMap, selectedMemberId, onOpen }) {
   const participantNames = useMemo(() => {
     return memory.people
       .map((personId) => memberMap.get(personId))
@@ -43,6 +49,13 @@ function MemoryCard({ memory, memberMap, selectedMemberId }) {
   }, [memberMap, memory.people, selectedMemberId]);
 
   const tagLabels = memory.tags ?? [];
+  const conciseDescription = useMemo(() => {
+    const text = memory.description || '';
+    if (text.length > 180) {
+      return `${text.slice(0, 177)}...`;
+    }
+    return text;
+  }, [memory.description]);
 
   return (
     <Card
@@ -51,10 +64,10 @@ function MemoryCard({ memory, memberMap, selectedMemberId }) {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: 3,
         overflow: 'hidden',
-        boxShadow: '0 14px 30px rgba(125, 46, 50, 0.18)',
-        bgcolor: 'common.white'
+        border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.45)}`,
+        boxShadow: '0 18px 32px rgba(36, 13, 8, 0.18)',
+        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.98)
       }}
     >
       <CardActionArea
@@ -64,6 +77,7 @@ function MemoryCard({ memory, memberMap, selectedMemberId }) {
           alignItems: 'stretch',
           height: '100%'
         }}
+        onClick={() => onOpen?.(memory)}
       >
         <CardMedia
           component="img"
@@ -87,11 +101,11 @@ function MemoryCard({ memory, memberMap, selectedMemberId }) {
           <Typography variant="subtitle2" color="text.secondary">
             {memory.date}
           </Typography>
-          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: 0.6 }}>
             {memory.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {memory.description}
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1.05rem', lineHeight: 1.5 }}>
+            {conciseDescription}
           </Typography>
           {tagLabels.length ? (
             <Stack direction="row" flexWrap="wrap" gap={1} sx={{ pt: 1 }}>
@@ -138,6 +152,124 @@ function MemoryCard({ memory, memberMap, selectedMemberId }) {
         </CardContent>
       </CardActionArea>
     </Card>
+  );
+}
+
+function MemoryScrollDialog({ memory, open, onClose, memberMap }) {
+  if (!memory) return null;
+
+  const participantNames = memory.people
+    .map((personId) => memberMap.get(personId))
+    .filter(Boolean)
+    .map((person) => person.name);
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          position: 'relative',
+          overflow: 'hidden',
+          px: { xs: 2.5, sm: 3 },
+          py: { xs: 2, sm: 2.5 },
+          backgroundImage:
+            'linear-gradient(180deg, rgba(251, 243, 231, 0.98), rgba(233, 213, 180, 0.98)), radial-gradient(circle at 18% 10%, rgba(122, 31, 29, 0.16), transparent 30%)',
+          border: (theme) => `2px solid ${alpha(theme.palette.secondary.dark, 0.7)}`,
+          boxShadow: '0 28px 60px rgba(36, 13, 8, 0.45)',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            inset: 10,
+            border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.45)}`,
+            pointerEvents: 'none',
+            boxShadow: 'inset 0 8px 18px rgba(0,0,0,0.08)'
+          }
+        }
+      }}
+    >
+      <DialogTitle sx={{ pr: 6 }}>
+        <Stack spacing={0.5}>
+          <Typography variant="overline" color="secondary.dark" sx={{ letterSpacing: 1.8 }}>
+            Memory scroll
+          </Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            {memory.title}
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+            {memory.date}
+          </Typography>
+        </Stack>
+        <IconButton
+          aria-label="Close"
+          onClick={onClose}
+          sx={{ position: 'absolute', right: 12, top: 12, color: 'text.secondary' }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers sx={{ borderColor: (theme) => alpha(theme.palette.secondary.main, 0.4) }}>
+        <Stack spacing={2.5}>
+          <Box
+            component="img"
+            src={memory.coverUrl}
+            alt={memory.title}
+            sx={{
+              width: '100%',
+              maxHeight: 360,
+              objectFit: 'cover',
+              border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
+              boxShadow: '0 12px 24px rgba(0,0,0,0.2)'
+            }}
+          />
+          <Typography variant="body1" sx={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
+            {memory.description}
+          </Typography>
+          {participantNames.length ? (
+            <Stack spacing={1}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                Cast of characters
+              </Typography>
+              <Stack direction="row" flexWrap="wrap" gap={1}>
+                {participantNames.map((name) => (
+                  <Chip
+                    key={name}
+                    label={name}
+                    size="small"
+                    sx={{
+                      fontWeight: 700,
+                      bgcolor: (theme) => alpha(theme.palette.secondary.light, 0.25)
+                    }}
+                  />
+                ))}
+              </Stack>
+            </Stack>
+          ) : null}
+          {memory.tags?.length ? (
+            <Stack spacing={1}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                Heraldry
+              </Typography>
+              <Stack direction="row" flexWrap="wrap" gap={1}>
+                {memory.tags.map((tag) => (
+                  <Chip key={tag} label={tag} size="small" color="primary" variant="outlined" />
+                ))}
+              </Stack>
+            </Stack>
+          ) : null}
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ justifyContent: 'space-between' }}>
+        <Typography variant="body2" color="text.secondary">
+          {memory.mediaType ? `Recorded as ${memory.mediaType}` : 'Shared with love'}
+        </Typography>
+        <Button variant="contained" color="primary" onClick={onClose}>
+          Close scroll
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 
@@ -233,6 +365,7 @@ export default function HomePage({ onCreateMemory }) {
   const [traditions, setTraditions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMemberId, setSelectedMemberId] = useState('');
+  const [activeMemory, setActiveMemory] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -310,19 +443,29 @@ export default function HomePage({ onCreateMemory }) {
     setSelectedMemberId(memberId);
   };
 
+  const handleOpenMemory = (memory) => {
+    setActiveMemory(memory);
+  };
+
+  const handleCloseMemory = () => {
+    setActiveMemory(null);
+  };
+
   const actionHandlers = {
     createMemory: onCreateMemory
   };
 
   return (
-    <Stack spacing={{ xs: 3, md: 4 }} sx={{ width: '100%', maxWidth: { xs: '100%', lg: 1120 }, mx: 'auto' }}>
+    <>
+      <Stack spacing={{ xs: 3, md: 4 }} sx={{ width: '100%', maxWidth: { xs: '100%', lg: 1120 }, mx: 'auto' }}>
       <Box
         sx={{
-          borderRadius: 4,
+          borderRadius: 2,
           px: { xs: 3, md: 4 },
           py: { xs: 3, md: 4 },
-          bgcolor: 'common.white',
-          boxShadow: '0 18px 32px rgba(44, 95, 45, 0.14)',
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+          border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
+          boxShadow: '0 18px 32px rgba(36, 13, 8, 0.18)',
           textAlign: { xs: 'center', md: 'left' }
         }}
       >
@@ -336,15 +479,14 @@ export default function HomePage({ onCreateMemory }) {
               Welcome, {greetingName}
             </Typography>
             <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              Your family hub is ready to explore
+              Chronicles of your kin await
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ mt: 0.75, maxWidth: 620, mx: { xs: 'auto', md: 0 } }}
             >
-              Tap a loved one on the tree to refresh their highlights, check traditions coming up, or add a new shared memory
-              whenever the moment strikes.
+              Trace the lineage, mark new gatherings, and unfurl treasured keepsakes across the royal family archive.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} width={{ xs: '100%', md: 'auto' }}>
@@ -357,11 +499,11 @@ export default function HomePage({ onCreateMemory }) {
                 startIcon={action.icon}
                 onClick={() => actionHandlers[action.action]?.()}
                 sx={{
-                  borderRadius: 2,
+                  borderRadius: 1,
                   px: 2.5,
                   py: 1,
                   width: { xs: '100%', sm: 'auto' },
-                  boxShadow: '0 12px 28px rgba(125, 46, 50, 0.22)'
+                  boxShadow: '0 12px 28px rgba(36, 13, 8, 0.25)'
                 }}
               >
                 {action.label}
@@ -373,11 +515,12 @@ export default function HomePage({ onCreateMemory }) {
 
       <Box
         sx={{
-          borderRadius: 4,
+          borderRadius: 2,
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          bgcolor: 'common.white',
-          boxShadow: '0 16px 34px rgba(44, 95, 45, 0.18)'
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+          border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
+          boxShadow: '0 16px 34px rgba(36, 13, 8, 0.2)'
         }}
       >
         <Grid container spacing={{ xs: 3, lg: 4 }} alignItems="stretch">
@@ -427,12 +570,12 @@ export default function HomePage({ onCreateMemory }) {
                   startIcon={action.icon}
                   onClick={() => actionHandlers[action.action]?.()}
                   sx={{
-                    borderRadius: 2,
-                    borderColor: (theme) => alpha(theme.palette.primary.main, 0.35),
+                    borderRadius: 1,
+                    borderColor: (theme) => alpha(theme.palette.secondary.dark, 0.45),
                     bgcolor: (theme) => alpha(theme.palette.background.default, 0.7),
                     '&:hover': {
-                      borderColor: 'primary.main',
-                      bgcolor: (theme) => alpha(theme.palette.primary.light, 0.4)
+                      borderColor: 'secondary.dark',
+                      bgcolor: (theme) => alpha(theme.palette.secondary.light, 0.3)
                     }
                   }}
                   fullWidth
@@ -447,11 +590,12 @@ export default function HomePage({ onCreateMemory }) {
 
       <Box
         sx={{
-          borderRadius: 4,
+          borderRadius: 2,
           px: { xs: 2.5, md: 3 },
           py: { xs: 3, md: 3.5 },
-          bgcolor: 'common.white',
-          boxShadow: '0 18px 34px rgba(44, 95, 45, 0.2)'
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+          border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
+          boxShadow: '0 18px 34px rgba(36, 13, 8, 0.22)'
         }}
       >
         <Stack spacing={{ xs: 2.5, md: 3 }}>
@@ -492,7 +636,7 @@ export default function HomePage({ onCreateMemory }) {
                   <Skeleton
                     variant="rounded"
                     height={220}
-                    sx={{ borderRadius: 3, width: '100%' }}
+                    sx={{ borderRadius: 2, width: '100%' }}
                   />
                 </Grid>
               ))}
@@ -505,22 +649,24 @@ export default function HomePage({ onCreateMemory }) {
                     memory={memory}
                     memberMap={memberMap}
                     selectedMemberId={selectedMemberId}
+                    onOpen={handleOpenMemory}
                   />
                 </Grid>
               ))}
             </Grid>
-          ) : (
-            <Box
-              sx={{
-                borderRadius: 3,
-                py: { xs: 4, md: 5 },
-                px: { xs: 3, md: 4 },
-                textAlign: 'center',
-                bgcolor: 'common.white',
-                boxShadow: '0 18px 32px rgba(44, 95, 45, 0.18)'
-              }}
-            >
-              <Stack spacing={1.5} alignItems="center">
+            ) : (
+              <Box
+                sx={{
+                  borderRadius: 2,
+                  py: { xs: 4, md: 5 },
+                  px: { xs: 3, md: 4 },
+                  textAlign: 'center',
+                  bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+                  border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.45)}`,
+                  boxShadow: '0 18px 32px rgba(36, 13, 8, 0.2)'
+                }}
+              >
+                <Stack spacing={1.5} alignItems="center">
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   No memories yet
                 </Typography>
@@ -532,7 +678,7 @@ export default function HomePage({ onCreateMemory }) {
                   size="medium"
                   onClick={() => onCreateMemory?.()}
                   startIcon={<FavoriteBorderIcon />}
-                  sx={{ borderRadius: 2 }}
+                  sx={{ borderRadius: 1 }}
                 >
                   Add memory
                 </Button>
@@ -545,11 +691,12 @@ export default function HomePage({ onCreateMemory }) {
       {traditions.length ? (
         <Box
           sx={{
-            borderRadius: 4,
+            borderRadius: 2,
             px: { xs: 2.5, md: 3 },
             py: { xs: 3, md: 3.5 },
-            bgcolor: 'common.white',
-            boxShadow: '0 18px 34px rgba(44, 95, 45, 0.18)'
+            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+            border: (theme) => `1px solid ${alpha(theme.palette.secondary.dark, 0.5)}`,
+            boxShadow: '0 18px 34px rgba(36, 13, 8, 0.2)'
           }}
         >
           <Stack spacing={{ xs: 2.5, md: 3 }}>
@@ -623,6 +770,13 @@ export default function HomePage({ onCreateMemory }) {
           </Stack>
         </Box>
       ) : null}
-    </Stack>
+      </Stack>
+      <MemoryScrollDialog
+        memory={activeMemory}
+        open={Boolean(activeMemory)}
+        onClose={handleCloseMemory}
+        memberMap={memberMap}
+      />
+    </>
   );
 }
