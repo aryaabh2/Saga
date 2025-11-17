@@ -103,7 +103,7 @@ function SagaLayout({ children }) {
         minHeight: '100vh',
         bgcolor: (theme) => theme.palette.background.default,
         backgroundImage:
-          'radial-gradient(circle at 10% 12%, rgba(181, 18, 47, 0.12), transparent 32%), radial-gradient(circle at 78% 8%, rgba(212, 175, 55, 0.18), transparent 36%), linear-gradient(180deg, rgba(255, 248, 242, 0.96), rgba(255, 236, 210, 0.9))'
+          'radial-gradient(circle at 12% 18%, rgba(181, 18, 47, 0.14), transparent 26%), radial-gradient(circle at 82% 6%, rgba(212, 175, 55, 0.2), transparent 32%)'
       }}
     >
       <AppBar
@@ -111,8 +111,9 @@ function SagaLayout({ children }) {
         elevation={isLoginPage ? 0 : 8}
         color="default"
         sx={{
-          backdropFilter: 'blur(6px)',
-          backgroundImage: 'linear-gradient(110deg, rgba(140, 13, 38, 0.92), rgba(62, 6, 26, 0.9))'
+          backgroundImage: 'linear-gradient(110deg, rgba(140, 13, 38, 0.96), rgba(62, 6, 26, 0.96))',
+          borderBottom: '3px solid',
+          borderColor: 'secondary.main'
         }}
       >
         <Toolbar
@@ -131,11 +132,12 @@ function SagaLayout({ children }) {
               onClick={() => setMenuOpen(true)}
               aria-label="Open navigation menu"
               sx={{
+                border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.6)}`,
                 bgcolor: (theme) => alpha(theme.palette.common.white, 0.12),
-                borderRadius: 1.5,
-                boxShadow: '0 10px 24px rgba(0,0,0,0.25)',
+                borderRadius: 1,
+                boxShadow: '0 6px 14px rgba(0,0,0,0.35)',
                 '&:hover': {
-                  bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.28)
+                  bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.35)
                 }
               }}
             >
@@ -161,8 +163,9 @@ function SagaLayout({ children }) {
               minHeight: '100%',
               bgcolor: (theme) => alpha(theme.palette.background.paper, 0.98),
               backgroundImage:
-                'linear-gradient(180deg, rgba(255, 244, 227, 0.98), rgba(246, 223, 191, 0.95)), radial-gradient(circle at 16% 12%, rgba(181, 18, 47, 0.12), transparent 26%)',
-              boxShadow: '12px 0 32px rgba(122, 8, 32, 0.25)'
+                'linear-gradient(180deg, rgba(255, 244, 227, 0.98), rgba(246, 223, 191, 0.98)), radial-gradient(circle at 16% 12%, rgba(181, 18, 47, 0.14), transparent 24%)',
+              borderRight: (theme) => `2px solid ${alpha(theme.palette.secondary.dark, 0.65)}`,
+              boxShadow: '12px 0 28px rgba(122, 8, 32, 0.32)'
             }}
             role="presentation"
           >
@@ -180,11 +183,12 @@ function SagaLayout({ children }) {
                   sx={{
                     alignItems: 'center',
                     py: 1.25,
-                    borderRadius: 1.5,
+                    borderRadius: 1,
                     mx: 1,
-                    boxShadow: '0 12px 18px rgba(0,0,0,0.08)',
+                    border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.45)}`,
+                    boxShadow: '0 6px 14px rgba(0,0,0,0.12)',
                     '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.secondary.light, 0.2)
+                      bgcolor: (theme) => alpha(theme.palette.secondary.light, 0.25)
                     }
                   }}
                 >
